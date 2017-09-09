@@ -1,0 +1,13 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
+  "env": {
+    "browser": true,
+    "webextensions": true
+  },
+  "rules": {
+    "semi": 2,
+    "strict": [2, "global"]
+  }
+}

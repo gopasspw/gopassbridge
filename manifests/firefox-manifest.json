@@ -1,0 +1,51 @@
+{
+
+  "manifest_version": 2,
+  "name": "Gopass Bridge",
+  "version": "0.0.2",
+
+  "description": "Extension to enable logging in using the gopass password manager",
+  "author": "Martin Hoefling",
+  "homepage_url": "https://github.com/martinhoefling/gopassbridge",
+  "icons": {
+    "48": "icons/gopassbridge-48.png",
+    "96": "icons/gopassbridge-96.png"
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}",
+      "strict_min_version": "45.0"
+    }
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+          "http://*/*",
+          "https://*/*"
+        ],
+      "js": ["content.js"]
+    }
+  ],
+
+  "options_ui": {
+    "page": "options.html"
+  },
+
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "48": "icons/gopassbridge-48.png",
+      "96": "icons/gopassbridge-96.png"
+    },
+    "default_title": "Insert password from gopass",
+    "default_popup": "gopassbridge.html"
+  },
+
+  "permissions": [
+    "<all_urls>",
+    "activeTab",
+    "nativeMessaging"
+  ]
+}

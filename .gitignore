@@ -1,0 +1,6 @@
+*.zip
+web-ext-artifacts
+chrome
+firefox
+chrome-release
+firefox-release

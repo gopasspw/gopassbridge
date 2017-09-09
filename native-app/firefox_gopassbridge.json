@@ -1,0 +1,9 @@
+{
+  "name": "gopassbridge",
+  "description": "Gopass bridge to search and return passwords",
+  "path": "/usr/local/bin/gopass_wrapper.sh",
+  "type": "stdio",
+  "allowed_extensions": [
+    "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}"
+  ]
+}

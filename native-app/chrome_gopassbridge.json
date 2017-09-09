@@ -1,0 +1,10 @@
+{
+  "name": "gopassbridge",
+  "description": "Gopass bridge to search and return passwords",
+  "path": "/usr/local/bin/gopass_wrapper.sh",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/",
+    "chrome-extension://nmlipgjeejicjaapphmmonmlfkecmnoi/"
+  ]
+}
