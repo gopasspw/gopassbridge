@@ -1,4 +1,4 @@
-run-firefox:
+run-firefox: develop
 		web-ext run -v --browser-console -s $(CURDIR)/firefox
 
 develop:
@@ -24,3 +24,6 @@ release:
 
 		web-ext -s $(CURDIR)/firefox-release lint
 		web-ext -s $(CURDIR)/firefox-release build
+
+clean:
+		rm -rf chrome firefox chrome-release firefox-release chrome.zip
