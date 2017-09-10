@@ -1,12 +1,16 @@
 {
 
   "manifest_version": 2,
+  "short_name": "gopassbridge",
   "name": "Gopass Bridge",
   "version": "0.0.3",
 
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager (https://github.com/justwatchcom/gopass). To access gopass, the bridge requires correctly configured native messaging app manifest described on the plugin development page (https://github.com/martinhoefling/gopassbridge)",
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/martinhoefling/gopassbridge",
+  "default_locale": "en",
+  "incognito": "split",
+
   "icons": {
     "48": "icons/gopassbridge-48.png",
     "96": "icons/gopassbridge-96.png"
