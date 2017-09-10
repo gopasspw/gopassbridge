@@ -4,7 +4,7 @@
   "name": "Gopass Bridge",
   "version": "0.0.2",
 
-  "description": "Extension to enable logging in using the gopass password manager",
+  "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager (https://github.com/justwatchcom/gopass). To access gopass, the bridge requires correctly configured native messaging app manifest described on the plugin development page (https://github.com/martinhoefling/gopassbridge)",
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/martinhoefling/gopassbridge",
   "icons": {

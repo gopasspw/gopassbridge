@@ -101,7 +101,7 @@ function onSearchResults(response) {
         });
 
     } else {
-        setStatusText('no results for <b>' + searchTerm + '</b>');
+        setStatusText('no results for ' + searchTerm);
     }
     searching = false;
 }
