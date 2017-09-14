@@ -35,7 +35,7 @@ function switchTab(tab) {
         currentTab = tab;
         browser.tabs.sendMessage(currentTab.id, { type: 'MARK_LOGIN_FIELDS' });
         searchTerm = urlDomain(currentTab.url);
-        search(searchTerm);
+        searchHost(searchTerm);
     }
 }
 
@@ -45,7 +45,7 @@ function onInputEvent(event) {
         search(searchTerm);
     } else {
         searchTerm = urlDomain(currentTab.url);
-        search(searchTerm);
+        searchHost(searchTerm);
     }
 }
 
@@ -58,10 +58,22 @@ function search(query) {
         console.log('Will not search for empty string');
         return;
     }
-    console.log('Searching for ' + query);
+    console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
     var message = { "type": "query", "query": query };
+    sendNativeMessage(app, message, onSearchResults, onSearchError);
+}
+
+function searchHost(searchTerm) {
+    if (searching) {
+        console.log('Search still in progress, skipping query ' + searchTerm);
+        return;
+    }
+    console.log('Searching for host ' + searchTerm);
+    searching = true;
+    searchedUrl = currentTab.url;
+    var message = { "type": "queryHost", "host": searchTerm };
     sendNativeMessage(app, message, onSearchResults, onSearchError);
 }
 
