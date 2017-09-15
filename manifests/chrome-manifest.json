@@ -1,9 +1,8 @@
 {
-
   "manifest_version": 2,
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
-  "version": "0.0.3",
+  "version": "0.0.4",
 
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager.",
   "author": "Martin Hoefling",
@@ -39,8 +38,17 @@
     "default_popup": "gopassbridge.html"
   },
 
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+U"
+      }
+    }
+  },
+
   "permissions": [
     "tabs",
+    "storage",
     "nativeMessaging",
     "http://*/*",
     "https://*/*"

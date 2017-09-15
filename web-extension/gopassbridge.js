@@ -1,6 +1,5 @@
 "use strict";
 
-var browser = browser || chrome;
 var app = "gopassbridge";
 
 var input = document.getElementById("search_input");
@@ -20,6 +19,18 @@ function urlDomain(urlString) {
     return a.hostname;
 }
 
+function executeSetting(setting, trueCallback, falseCallback) {
+    function onError(error) {
+        console.log(error);
+    }
+    getSyncStorage(function (result) {
+        if (result[setting]) {
+            if (trueCallback) trueCallback();
+        } else {
+            if (falseCallback) falseCallback();
+        }
+    }, onError);
+}
 
 function faviconUrl() {
     if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
@@ -33,7 +44,9 @@ function switchTab(tab) {
     console.log('Switching to tab ' + tab.url);
     if (tab && tab.url && tab.id) {
         currentTab = tab;
-        browser.tabs.sendMessage(currentTab.id, { type: 'MARK_LOGIN_FIELDS' });
+        executeSetting("markfields", function () {
+            browser.tabs.sendMessage(currentTab.id, { type: 'MARK_LOGIN_FIELDS' });
+        });
         searchTerm = urlDomain(currentTab.url);
         searchHost(searchTerm);
     }
@@ -75,22 +88,6 @@ function searchHost(searchTerm) {
     searchedUrl = currentTab.url;
     var message = { "type": "queryHost", "host": searchTerm };
     sendNativeMessage(app, message, onSearchResults, onSearchError);
-}
-
-function sendNativeMessage(app, message, onResult, onError) {
-    function onChromeResults(response) {
-        if (response) {
-            return onResult(response);
-        }
-        onError(browser.runtime.lastError);
-    }
-
-    if (chrome) {
-        browser.runtime.sendNativeMessage(app, message, onChromeResults);
-    } else {
-        var sending = browser.runtime.sendNativeMessage(app, message);
-        sending.then(onResult, onError);
-    }
 }
 
 function onSearchResults(response) {
@@ -142,8 +139,12 @@ function onLoginCredentials(response) {
         return;
     }
     browser.tabs.sendMessage(currentTab.id, { type: 'FILL_LOGIN_FIELDS', login: response.username, password: response.password });
-    browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
-    window.close();
+    executeSetting("submitafterfill", function () {
+        browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
+        window.close();
+    }, function () {
+        window.close();
+    });
 }
 
 function onLoginCredentialError(error) {
