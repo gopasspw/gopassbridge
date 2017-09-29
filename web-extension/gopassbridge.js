@@ -1,6 +1,6 @@
 "use strict";
 
-var app = "gopassbridge";
+var app = "com.justwatch.gopass";
 
 var input = document.getElementById("search_input");
 var results = document.getElementById("results");

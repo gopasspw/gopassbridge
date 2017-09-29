@@ -4,10 +4,10 @@ run-firefox: develop
 develop:
 		rm -rf chrome firefox
 		mkdir chrome firefox
-		cd chrome; ln -s ../manifests/chrome-manifest.json manifest.json
-		cd firefox; ln -s ../manifests/firefox-manifest.json manifest.json
-		cd chrome; ln -s ../web-extension/* .
-		cd firefox; ln -s ../web-extension/* .
+		cd chrome; cp ../manifests/chrome-manifest-dev.json manifest.json
+		cd firefox; cp ../manifests/firefox-manifest.json manifest.json
+		cd chrome; cp -R ../web-extension/* .
+		cd firefox; cp -R ../web-extension/* .
 
 release:
 		rm -rf chrome-release firefox-release

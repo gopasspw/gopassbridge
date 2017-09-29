@@ -1,5 +1,5 @@
 {
-  "name": "gopassbridge",
+  "name": "com.justwatch.gopass",
   "description": "Gopass bridge to search and return passwords",
   "path": "/usr/local/bin/gopass_wrapper.sh",
   "type": "stdio",
