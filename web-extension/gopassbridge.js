@@ -53,7 +53,7 @@ function switchTab(tab) {
 }
 
 function onInputEvent(event) {
-    if (event.inputType && input.value.length) {
+    if (input.value.length) {
         searchTerm = input.value;
         search(searchTerm);
     } else {
