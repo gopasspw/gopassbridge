@@ -3,10 +3,22 @@
 var browser = browser || chrome;
 
 var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
-    loginInputIds = ['username', 'user_name', 'userid', 'user_id', 'login', 'email', 'login_field'],
-    loginInputTypesString = 'input[type=email], input[type=text]',
-    loginInputIdString = loginInputIds.map(function (string) {
-        return 'input[id=' + string + ']';
+    loginInputIds = ['username', 'user_name', 'userid', 'user_id', 'login', 'email', 'login_field', 'login-form-username'],
+    loginInputTypes = ['email', 'text'],
+    loginInputTypesString = loginInputTypes.map(function (string) {
+        return 'input[type=' + string + ']';
+    }).join(','),
+    exactLoginInputIdString = loginInputIds.map(function (string) {
+        var idstr = '[id=' + string + ']';
+        return loginInputTypes.map(function (string) {
+            return 'input[type=' + string + ']' + idstr;
+        }).join(',');
+    }).join(','),
+    partialLoginInputIdString = loginInputIds.map(function (string) {
+        var idstr = '[id*=' + string + ']';
+        return loginInputTypes.map(function (string) {
+            return 'input[type=' + string + ']' + idstr;
+        }).join(',');
     }).join(',');
 
 function selectVisibleElements(selector) {
@@ -63,7 +75,10 @@ function getInputFields() {
         return false;
     }
 
-    var loginInput = selectFirstVisibleFormElement(passwordInput.form, loginInputIdString);
+    var loginInput = selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString);
+    if (!loginInput) {
+        loginInput = selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString);
+    }
     if (!loginInput) {
         loginInput = selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
     }
