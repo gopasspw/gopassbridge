@@ -11,3 +11,11 @@ Example manifest configurations and a wrapper for gopass can be found in the `na
 More details can be found in the [Chrome](https://developer.chrome.com/apps/nativeMessaging) and [MDN](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging) documentation of native messaging.
 
 More details for the native app config will follow ...
+
+## Firefox Extension
+
+https://addons.mozilla.org/en-US/firefox/addon/gopass-bridge/
+
+## Chrome Extension
+
+https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk

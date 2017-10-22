@@ -2,11 +2,13 @@
 
 var app = "com.justwatch.gopass";
 
+var content = document.getElementById("content");
 var input = document.getElementById("search_input");
 var results = document.getElementById("results");
 var searching, currentTab, searchedUrl, searchTerm;
 
 input.addEventListener("input", onInputEvent);
+input.focus();
 
 browser.tabs.query({ currentWindow: true, active: true }, function (tabs) {
     switchTab(tabs[0]);
@@ -129,11 +131,34 @@ function onSearchError(error) {
 
 function resultSelected(event) {
     var value = event.target.innerText;
-    var message = { "type": "getLogin", "entry": value };
-    sendNativeMessage(app, message, onLoginCredentials, onLoginCredentialError);
+    var message;
+    if (event.shiftKey) {
+        message = { "type": "getLogin", "entry": value };
+        sendNativeMessage(app, message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
+    } else {
+        message = { "type": "getLogin", "entry": value };
+        sendNativeMessage(app, message, onLoginCredentialsDoLogin, onLoginCredentialError);
+    }
 }
 
-function onLoginCredentials(response) {
+function onLoginCredentialsDoCopyClipboard(response) {
+    if (response.error) {
+        setStatusText(response.error);
+        return;
+    }
+    var hiddenpass = document.createElement('span');
+    hiddenpass.textContent = response.password;
+    content.appendChild(hiddenpass);
+    var tempinput = document.createElement('input');
+    tempinput.value = response.password;
+    content.appendChild(tempinput);
+    tempinput.select();
+    document.execCommand("copy");
+    content.innerHTML = "<div class=\"copied\">copied to clipboard</div>";
+    setTimeout(window.close, 1000);
+}
+
+function onLoginCredentialsDoLogin(response) {
     if (response.error) {
         setStatusText(response.error);
         return;
@@ -151,4 +176,3 @@ function onLoginCredentialError(error) {
     alert(error.message);
     window.close();
 }
-

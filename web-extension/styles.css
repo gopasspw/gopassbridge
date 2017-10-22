@@ -80,3 +80,12 @@ body {
         -webkit-transform: rotate(360deg);
     }
 }
+
+.copied {
+    text-align: center;
+    vertical-align: middle;
+    line-height: 40px;
+    height: 40px;
+    margin: auto;
+    font-size: 20px;
+}
