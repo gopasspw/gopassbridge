@@ -1,12 +1,13 @@
 # gopassbridge
 
-A web extension for firefox and chrome to insert login credentials from [gopass](https://github.com/justwatch/gopass)
+A web extension for firefox and chrome to insert login credentials from [gopass](https://github.com/justwatchcom/gopass)
 
 ## Summary
 
 [Gopass](https://github.com/justwatch/gopass) is the awesome command line password manager. This plugin enables input of login credentials from gopass. 
 To access gopass, a native app has to be configured in the browser in addition to this plugin. 
 The native app is a wrapper that calls gopass with the jsonapi parameter to communicate via stdin/stdout. 
+
 
 ## Setup
 
