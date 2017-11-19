@@ -4,21 +4,22 @@ var browser = browser || chrome;
 
 var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
     loginInputIds = ['username', 'user_name', 'userid', 'user_id', 'login', 'email', 'login_field', 'login-form-username'],
+    ignorePasswordIds = ['signup_minireg_password'],
     loginInputTypes = ['email', 'text'],
     loginInputTypesString = loginInputTypes.map(function (string) {
         return 'input[type=' + string + ']';
-    }).join(','),
+    }).join(',') + ',input:not([type])',
     exactLoginInputIdString = loginInputIds.map(function (string) {
         var idstr = '[id=' + string + ']';
         return loginInputTypes.map(function (string) {
             return 'input[type=' + string + ']' + idstr;
-        }).join(',');
+        }).join(',') + ',input:not([type])' + idstr;
     }).join(','),
     partialLoginInputIdString = loginInputIds.map(function (string) {
         var idstr = '[id*=' + string + ']';
         return loginInputTypes.map(function (string) {
             return 'input[type=' + string + ']' + idstr;
-        }).join(',');
+        }).join(',') + ',input:not([type])' + idstr;
     }).join(',');
 
 function selectVisibleElements(selector) {
@@ -40,20 +41,32 @@ function selectVisibleElements(selector) {
     return visibleElements;
 }
 
-function selectFirstVisibleElement(selector) {
+function selectFirstVisiblePasswordElement(selector) {
     var visibleElements = selectVisibleElements(selector);
-    if (visibleElements.length) {
-        return visibleElements[0];
+    for (var i = 0; i < visibleElements.length; i++) {
+        var element = visibleElements[i];
+        if (ignorePasswordIds.every(function(ignore) {
+            return element.id !== ignore;
+        })) {
+            return element;
+        }
+        console.log('Ignoring password input (in ignore id list)', element);
     }
+
     return null;
 }
 
 function selectFirstVisibleFormElement(form, selector) {
-    var element = selectFirstVisibleElement(selector);
+    var visibleElements = selectVisibleElements(selector);
 
-    if (element && form === element.form) {
-        return element;
+    for (var i = 0; i < visibleElements.length; i++) {
+        var element = visibleElements[i];
+        if (element && form === element.form) {
+            return element;
+        }
     }
+
+    return null;
 }
 
 function updateElement(element, newValue) {
@@ -70,7 +83,8 @@ function updateElement(element, newValue) {
 }
 
 function getInputFields() {
-    var passwordInput = selectFirstVisibleElement('input[type=password]');
+    var passwordInput = selectFirstVisiblePasswordElement('input[type=password]');
+    console.log('Detected password input is', passwordInput);
     if (!passwordInput || !passwordInput.form) {
         return false;
     }
