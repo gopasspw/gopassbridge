@@ -131,7 +131,10 @@ function tryLogIn() {
         passwortInputs[1].select();
     } else {
         window.requestAnimationFrame(function () {
-            selectFirstVisibleElement('[type=submit]').click();
+            var submitButtons = selectVisibleElements('[type=submit]');
+            if (submitButtons.length) {
+                    submitButtons[0].click();
+            }
         });
     }
 }
