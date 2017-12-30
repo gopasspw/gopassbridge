@@ -7,8 +7,15 @@
 </head>
 <body>
 <div class="container">
+    <h1>Usage Hints</h1>
+    <ul>
+        <li>To copy the secret to clipboard, hold shift key while clicking on the secret.</li>
+    </ul>
+    <h1>Settings</h1>
     <label><input type="checkbox" id="markfields"/> Mark fields blue when recognized as user and password input</label>
     <label><input type="checkbox" id="submitafterfill"/> Login after filling in credentials</label>
+    <label>Default folder for new credentials <input type="text" id="defaultfolder"/></label>
+    <button type="button" id="clear">Reset all settings to defaults</button>
     <script src="generic.js"></script>
     <script src="options.js"></script>
 </div>

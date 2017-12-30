@@ -8,7 +8,6 @@ A web extension for firefox and chrome to insert login credentials from [gopass]
 To access gopass, a native app has to be configured in the browser in addition to this plugin. 
 The native app is a wrapper that calls gopass with the jsonapi parameter to communicate via stdin/stdout. 
 
-
 ## Setup
 
 ### Install browser extension

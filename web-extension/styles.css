@@ -22,6 +22,7 @@ body {
 
 .status-text {
     padding: 6px;
+    text-align: center;
 }
 
 .results {
@@ -88,4 +89,69 @@ body {
     height: 40px;
     margin: auto;
     font-size: 20px;
+}
+
+.create > form {
+    display: block;
+}
+
+.create > form > div {
+    padding: 5px;
+    width: 100%;
+}
+
+#create_name {
+    width: 77%;
+}
+
+#create_login {
+    width: 56%;
+}
+
+#create_password {
+    width: 70%;
+}
+
+#create_password:disabled,
+#create_generate_length:disabled
+{
+    background-color: lightgray;
+}
+
+#create_docreate,
+#create_doabort {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 10px 7px 10px 32px;
+    cursor: pointer;
+    border: 0;
+    text-align: center;
+    background-size: 16px 16px;
+    line-height: 1.2;
+    font-size: 14px;
+    min-height: 32px;
+}
+
+#create_docreate {
+    background: #b6dee3;
+}
+
+#create_doabort {
+    background: #ffb0b0;
+}
+
+#create_docreate:hover,
+#create_docreate:focus {
+    outline: 0;
+    background-color: #9ac0c5;
+}
+
+#create_doabort:hover,
+#create_doabort:focus {
+    outline: 0;
+    background-color: #ff8080;
+;
 }

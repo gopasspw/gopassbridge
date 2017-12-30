@@ -2,6 +2,14 @@
 
 var browser = browser || chrome;
 
+var options = null;
+
+getSyncStorage(function (result) {
+    options = result;
+}, function () {
+    alert('Could not read config options');
+});
+
 var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
     loginInputIds = ['username', 'user_name', 'userid', 'user_id', 'login', 'email', 'login_field', 'login-form-username'],
     ignorePasswordIds = ['signup_minireg_password'],
