@@ -1,15 +1,15 @@
 'use strict';
 var browser = browser || chrome;
 
-var checkboxes = document.querySelectorAll("input[type=checkbox]");
-var textinputs = document.querySelectorAll("input[type=text]");
+var checkboxes = document.querySelectorAll('input[type=checkbox]');
+var textinputs = document.querySelectorAll('input[type=text]');
 
 var syncstorage = browser.storage.sync;
 
 var DEFAULT_SETTINGS = {
     markfields: true,
     submitafterfill: true,
-    defaultfolder: 'Account'
+    defaultfolder: 'Account',
 };
 
 function getSyncStorage(onResult, onError) {
@@ -19,7 +19,6 @@ function getSyncStorage(onResult, onError) {
 
     function onChromeResults(response) {
         if (response) {
-
             return onResult(assignDefaults(response));
         }
         onError(browser.runtime.lastError);
@@ -34,7 +33,7 @@ function getSyncStorage(onResult, onError) {
 }
 
 function sendNativeMessage(message, onResult, onError) {
-    var app = "com.justwatch.gopass";
+    var app = 'com.justwatch.gopass';
 
     function onChromeResults(response) {
         if (response) {
@@ -57,7 +56,7 @@ function executeOnSetting(setting, trueCallback, falseCallback) {
     function onError(error) {
         console.log(error);
     }
-    getSyncStorage(function (result) {
+    getSyncStorage(function(result) {
         if (result[setting]) {
             if (trueCallback) trueCallback();
         } else {
@@ -73,7 +72,7 @@ function createButtonWithCallback(className, text, style, callback) {
     if (style) {
         element.style = style;
     }
-    element.addEventListener("click", callback);
+    element.addEventListener('click', callback);
     return element;
 }
 

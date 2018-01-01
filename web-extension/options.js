@@ -1,6 +1,6 @@
 'use strict';
 
-document.getElementById("clear").addEventListener("click", resetStorage);
+document.getElementById('clear').addEventListener('click', resetStorage);
 
 function resetStorage() {
     syncstorage.clear();
@@ -8,13 +8,13 @@ function resetStorage() {
 }
 
 function init() {
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener("change", onCheckboxChange);
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', onCheckboxChange);
         getSyncStorage(setCheckboxes, onGetError);
     });
 
-    textinputs.forEach(function (textinput) {
-        textinput.addEventListener("change", onTextinputChange);
+    textinputs.forEach(function(textinput) {
+        textinput.addEventListener('change', onTextinputChange);
         getSyncStorage(setTextinputs, onGetError);
     });
 }
@@ -24,7 +24,7 @@ function onGetError(error) {
 }
 
 function setCheckboxes(result) {
-    Object.keys(result).forEach(function (key) {
+    Object.keys(result).forEach(function(key) {
         var checkbox = document.getElementById(key);
         if (checkbox) {
             checkbox.checked = !!result[key];
@@ -38,10 +38,8 @@ function onCheckboxChange(event) {
     syncstorage.set(update);
 }
 
-
-
 function setTextinputs(result) {
-    Object.keys(result).forEach(function (key) {
+    Object.keys(result).forEach(function(key) {
         var textinput = document.getElementById(key);
         if (textinput) {
             textinput.value = result[key];

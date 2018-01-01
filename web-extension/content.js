@@ -4,36 +4,67 @@ var browser = browser || chrome;
 
 var options = null;
 
-getSyncStorage(function (result) {
-    options = result;
-}, function () {
-    alert('Could not read config options');
-});
+getSyncStorage(
+    function(result) {
+        options = result;
+    },
+    function() {
+        alert('Could not read config options');
+    }
+);
 
 var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
-    loginInputIds = ['username', 'user_name', 'userid', 'user_id', 'login', 'email', 'login_field', 'login-form-username'],
+    loginInputIds = [
+        'username',
+        'user_name',
+        'userid',
+        'user_id',
+        'login',
+        'email',
+        'login_field',
+        'login-form-username',
+    ],
     ignorePasswordIds = ['signup_minireg_password'],
     loginInputTypes = ['email', 'text'],
-    loginInputTypesString = loginInputTypes.map(function (string) {
-        return 'input[type=' + string + ']';
-    }).join(',') + ',input:not([type])',
-    exactLoginInputIdString = loginInputIds.map(function (string) {
-        var idstr = '[id=' + string + ']';
-        return loginInputTypes.map(function (string) {
-            return 'input[type=' + string + ']' + idstr;
-        }).join(',') + ',input:not([type])' + idstr;
-    }).join(','),
-    partialLoginInputIdString = loginInputIds.map(function (string) {
-        var idstr = '[id*=' + string + ']';
-        return loginInputTypes.map(function (string) {
-            return 'input[type=' + string + ']' + idstr;
-        }).join(',') + ',input:not([type])' + idstr;
-    }).join(',');
+    loginInputTypesString =
+        loginInputTypes
+            .map(function(string) {
+                return 'input[type=' + string + ']';
+            })
+            .join(',') + ',input:not([type])',
+    exactLoginInputIdString = loginInputIds
+        .map(function(string) {
+            var idstr = '[id=' + string + ']';
+            return (
+                loginInputTypes
+                    .map(function(string) {
+                        return 'input[type=' + string + ']' + idstr;
+                    })
+                    .join(',') +
+                ',input:not([type])' +
+                idstr
+            );
+        })
+        .join(','),
+    partialLoginInputIdString = loginInputIds
+        .map(function(string) {
+            var idstr = '[id*=' + string + ']';
+            return (
+                loginInputTypes
+                    .map(function(string) {
+                        return 'input[type=' + string + ']' + idstr;
+                    })
+                    .join(',') +
+                ',input:not([type])' +
+                idstr
+            );
+        })
+        .join(',');
 
 function selectVisibleElements(selector) {
     var visibleElements = [];
 
-    document.querySelectorAll(selector).forEach(function (element) {
+    document.querySelectorAll(selector).forEach(function(element) {
         var elementStyle = window.getComputedStyle(element);
         if (element.offsetWidth < 50) {
             return;
@@ -53,9 +84,11 @@ function selectFirstVisiblePasswordElement(selector) {
     var visibleElements = selectVisibleElements(selector);
     for (var i = 0; i < visibleElements.length; i++) {
         var element = visibleElements[i];
-        if (ignorePasswordIds.every(function(ignore) {
-            return element.id !== ignore;
-        })) {
+        if (
+            ignorePasswordIds.every(function(ignore) {
+                return element.id !== ignore;
+            })
+        ) {
             return element;
         }
         console.log('Ignoring password input (in ignore id list)', element);
@@ -84,8 +117,8 @@ function updateElement(element, newValue) {
     element.setAttribute('value', newValue);
     element.value = newValue;
 
-    inputEventNames.forEach(function (name) {
-        element.dispatchEvent(new Event(name, { 'bubbles': true }));
+    inputEventNames.forEach(function(name) {
+        element.dispatchEvent(new Event(name, { bubbles: true }));
     });
     return true;
 }
@@ -109,7 +142,7 @@ function getInputFields() {
     }
     return {
         login: loginInput,
-        password: passwordInput
+        password: passwordInput,
     };
 }
 
@@ -138,10 +171,10 @@ function tryLogIn() {
     if (passwortInputs.length > 1) {
         passwortInputs[1].select();
     } else {
-        window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function() {
             var submitButtons = selectVisibleElements('[type=submit]');
             if (submitButtons.length) {
-                    submitButtons[0].click();
+                submitButtons[0].click();
             }
         });
     }

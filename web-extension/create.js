@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
-document.getElementById("create_docreate").addEventListener("click", onDoCreate);
-document.getElementById("create_doabort").addEventListener("click", onDoAbort);
-document.getElementById("create_generate").addEventListener("change", onGenerateCheckboxChange);
+document.getElementById('create_docreate').addEventListener('click', onDoCreate);
+document.getElementById('create_doabort').addEventListener('click', onDoAbort);
+document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
 
 function createNewDialog(event) {
     document.getElementsByClassName('search')[0].style.display = 'none';
@@ -19,21 +19,21 @@ function switchToSearch() {
 
 function onDoCreate(event) {
     event.preventDefault();
-    var entryName = document.getElementById("create_name").value,
-        login = document.getElementById("create_login").value,
-        password = document.getElementById("create_password").value,
-        generate = document.getElementById(("create_generate")).checked,
-        passwordLength = Number(document.getElementById(("create_generate_length")).value),
-        useSymbols = document.getElementById(("create_use_symbols")).checked;
+    var entryName = document.getElementById('create_name').value,
+        login = document.getElementById('create_login').value,
+        password = document.getElementById('create_password').value,
+        generate = document.getElementById('create_generate').checked,
+        passwordLength = Number(document.getElementById('create_generate_length').value),
+        useSymbols = document.getElementById('create_use_symbols').checked;
     console.log('creating secret', entryName);
     var message = {
-        type: "create",
+        type: 'create',
         entry_name: entryName,
         login: login,
         password: password,
         length: passwordLength,
         generate: generate,
-        use_symbols: useSymbols
+        use_symbols: useSymbols,
     };
     sendNativeMessage(message, onCreateResult, onCreateError);
 }
@@ -61,7 +61,7 @@ function onCreateResult(response) {
         setStatusText(response.error);
         return;
     }
-    console.log("created");
+    console.log('created');
     searchTerm = urlDomain(currentTab.url);
     searchHost(searchTerm);
 }

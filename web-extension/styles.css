@@ -10,8 +10,8 @@ body {
     box-sizing: border-box;
     width: 100%;
     border: 0;
-    border-bottom: 1px solid #6BD6E4;
-    background: url("icons/si-glyph-magnifier.svg") center right 6px no-repeat;
+    border-bottom: 1px solid #6bd6e4;
+    background: url('icons/si-glyph-magnifier.svg') center right 6px no-repeat;
     background-size: 16px 16px;
     padding: 7px 20px 7px 7px;
 }
@@ -39,7 +39,7 @@ body {
     padding: 10px 7px 10px 32px;
     cursor: pointer;
     border: 0;
-    border-bottom: 1px dotted #6BD6E4;
+    border-bottom: 1px dotted #6bd6e4;
     text-align: left;
     background: white url('icons/si-glyph-key-2.svg') no-repeat left 8px center;
     background-size: 16px 16px;
@@ -113,8 +113,7 @@ body {
 }
 
 #create_password:disabled,
-#create_generate_length:disabled
-{
+#create_generate_length:disabled {
     background-color: lightgray;
 }
 
@@ -153,5 +152,4 @@ body {
 #create_doabort:focus {
     outline: 0;
     background-color: #ff8080;
-;
 }

@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 var searching, searchedUrl, searchTerm;
 
-var input = document.getElementById("search_input");
+var input = document.getElementById('search_input');
 
-input.addEventListener("input", onInputEvent);
+input.addEventListener('input', onInputEvent);
 input.focus();
 
 function faviconUrl() {
@@ -16,7 +16,7 @@ function faviconUrl() {
 }
 
 function onInputEvent(event) {
-    var input = document.getElementById("search_input");
+    var input = document.getElementById('search_input');
 
     if (input.value.length) {
         searchTerm = input.value;
@@ -39,7 +39,7 @@ function search(query) {
     console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
-    var message = { "type": "query", "query": query };
+    var message = { type: 'query', query: query };
     sendNativeMessage(message, onSearchResults, onSearchError);
 }
 
@@ -51,12 +51,12 @@ function searchHost(searchTerm) {
     console.log('Searching for host ' + searchTerm);
     searching = true;
     searchedUrl = currentTab.url;
-    var message = { "type": "queryHost", "host": searchTerm };
+    var message = { type: 'queryHost', host: searchTerm };
     sendNativeMessage(message, onSearchResults, onSearchError);
 }
 
 function onSearchResults(response) {
-    var results = document.getElementById("results");
+    var results = document.getElementById('results');
 
     if (response.error) {
         setStatusText(response.error);
@@ -67,9 +67,15 @@ function onSearchResults(response) {
     }
     if (response.length) {
         results.innerHTML = '';
-        response.forEach(function (result) {
-            results.appendChild(createButtonWithCallback(
-                'login', result, 'background-image: url(\'' + faviconUrl() + '\')', resultSelected));
+        response.forEach(function(result) {
+            results.appendChild(
+                createButtonWithCallback(
+                    'login',
+                    result,
+                    "background-image: url('" + faviconUrl() + "')",
+                    resultSelected
+                )
+            );
         });
     } else {
         setStatusText('no results for ' + searchTerm);
@@ -79,7 +85,7 @@ function onSearchResults(response) {
 }
 
 function setStatusText(text) {
-    var results = document.getElementById("results");
+    var results = document.getElementById('results');
     var element = document.createElement('div');
     element.textContent = text;
     element.className = 'status-text';
@@ -95,16 +101,16 @@ function resultSelected(event) {
     var value = event.target.innerText;
     var message;
     if (event.shiftKey) {
-        message = { "type": "getLogin", "entry": value };
+        message = { type: 'getLogin', entry: value };
         sendNativeMessage(message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
     } else {
-        message = { "type": "getLogin", "entry": value };
+        message = { type: 'getLogin', entry: value };
         sendNativeMessage(message, onLoginCredentialsDoLogin, onLoginCredentialError);
     }
 }
 
 function onLoginCredentialsDoCopyClipboard(response) {
-    var content = document.getElementById("content");
+    var content = document.getElementById('content');
 
     if (response.error) {
         setStatusText(response.error);
@@ -117,8 +123,8 @@ function onLoginCredentialsDoCopyClipboard(response) {
     tempinput.value = response.password;
     content.appendChild(tempinput);
     tempinput.select();
-    document.execCommand("copy");
-    content.innerHTML = "<div class=\"copied\">copied to clipboard</div>";
+    document.execCommand('copy');
+    content.innerHTML = '<div class="copied">copied to clipboard</div>';
     setTimeout(window.close, 1000);
 }
 
@@ -127,17 +133,24 @@ function onLoginCredentialsDoLogin(response) {
         setStatusText(response.error);
         return;
     }
-    browser.tabs.sendMessage(currentTab.id, { type: 'FILL_LOGIN_FIELDS', login: response.username, password: response.password });
-    executeOnSetting("submitafterfill", function () {
-        browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
-        window.close();
-    }, function () {
-        window.close();
+    browser.tabs.sendMessage(currentTab.id, {
+        type: 'FILL_LOGIN_FIELDS',
+        login: response.username,
+        password: response.password,
     });
+    executeOnSetting(
+        'submitafterfill',
+        function() {
+            browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
+            window.close();
+        },
+        function() {
+            window.close();
+        }
+    );
 }
 
 function onLoginCredentialError(error) {
     alert(error.message);
     window.close();
 }
-
