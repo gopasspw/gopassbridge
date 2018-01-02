@@ -1,3 +1,7 @@
+## 0.1.1 / 2018-01-02
+
+* Bugfix. Fixes missing content script injection
+
 ## 0.1 / 2018-01-01
 
 * Allow creating new secrets
@@ -14,7 +18,7 @@
 
 ## 0.0.5 / 2017-09-29
 
-* Renamed native app to com.justwatch.gopass to comply with native messaging setup functionality in gopass q
+* Renamed native app to com.justwatch.gopass to comply with native messaging setup functionality in gopass
 
 ## 0.0.4 / 2017-09-15
 
