@@ -19,7 +19,7 @@
           "http://*/*",
           "https://*/*"
         ],
-      "js": ["content.js"]
+      "js": ["generic.js", "content.js"]
     }
   ],
 
