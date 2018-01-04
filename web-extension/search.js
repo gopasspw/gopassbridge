@@ -133,6 +133,12 @@ function onLoginCredentialsDoLogin(response) {
         setStatusText(response.error);
         return;
     }
+
+    if (response.username === urlDomain(currentTab.url)) {
+        setStatusText('could not determine username');
+        return;
+    }
+
     browser.tabs.sendMessage(currentTab.id, {
         type: 'FILL_LOGIN_FIELDS',
         login: response.username,
