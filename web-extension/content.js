@@ -87,16 +87,9 @@ function selectVisibleElements(selector) {
     document.querySelectorAll('iframe').forEach(function(iframe) {
         iframe.contentWindow.document.body.querySelectorAll(selector).forEach(function(element) {
         var elementStyle = window.getComputedStyle(element);
-            if (element.offsetWidth < 50) {
-                return;
+            if (isVisible(element)) {
+                visibleElements.push(element);
             }
-            if (element.offsetHeight < 10) {
-                return;
-            }
-            if (elementStyle.visibility === 'hidden') {
-                return;
-            }
-            visibleElements.push(element);
         });
     });
 
