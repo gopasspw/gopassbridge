@@ -85,12 +85,14 @@ function selectVisibleElements(selector) {
     });
 
     document.querySelectorAll('iframe').forEach(function(iframe) {
-        iframe.contentWindow.document.body.querySelectorAll(selector).forEach(function(element) {
-        var elementStyle = window.getComputedStyle(element);
-            if (isVisible(element)) {
-                visibleElements.push(element);
-            }
-        });
+        if (iframe.src.startsWith(window.location.origin)) {
+            iframe.contentWindow.document.body.querySelectorAll(selector).forEach(function(element) {
+                var elementStyle = window.getComputedStyle(element);
+                if (isVisible(element)) {
+                    visibleElements.push(element);
+                }
+            });
+        }
     });
 
     return visibleElements;
