@@ -9,6 +9,14 @@ develop: format
 		cd chrome; cp -R ../web-extension/* .
 		cd firefox; cp -R ../web-extension/* .
 
+test_release:
+		rm -rf chrome-release firefox-release
+		mkdir chrome-release firefox-release
+		cd chrome-release; cp ../manifests/chrome-manifest.json manifest.json
+		cd firefox-release; cp ../manifests/firefox-manifest.json manifest.json
+		cd chrome-release; cp -R ../web-extension/* .
+		cd firefox-release; cp -R ../web-extension/* .
+
 release: format
 		rm -rf chrome-release firefox-release
 		mkdir chrome-release firefox-release
@@ -30,5 +38,8 @@ clean:
 
 format:
 		prettier --write web-extension/*.js web-extension/*.css
+
+tests:
+		npm run prettier
 		eslint web-extension
 		web-ext -s $(CURDIR)/firefox-release lint

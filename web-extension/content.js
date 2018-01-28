@@ -59,7 +59,7 @@ var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input'
                 idstr
             );
         })
-    .join(',');
+        .join(',');
 
 function isVisible(element) {
     var elementStyle = window.getComputedStyle(element);
@@ -80,7 +80,7 @@ function selectVisibleElements(selector) {
 
     document.querySelectorAll(selector).forEach(function(element) {
         if (isVisible(element)) {
-                visibleElements.push(element);
+            visibleElements.push(element);
         }
     });
 
