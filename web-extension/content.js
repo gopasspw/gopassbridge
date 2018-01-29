@@ -82,9 +82,11 @@ function selectFocusedElement(parent) {
     if (parent.body === parent.activeElement || parent.activeElement.tagName == 'IFRAME') {
         // Get iframes
         parent.querySelectorAll('iframe').forEach(function(iframe) {
-            var focused = selectFocusedElement(iframe.contentWindow.document);
-            if (focused !== false) {
-                return focused; // The focused
+            if (iframe.src.startsWith(window.location.origin)) {
+                var focused = selectFocusedElement(iframe.contentWindow.document);
+                if (focused !== false) {
+                    return focused; // The focused
+                }
             }
         });
     } else return parent.activeElement;
