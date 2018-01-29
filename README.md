@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/martinhoefling/gopassbridge.svg?branch=master)](https://travis-ci.org/martinhoefling/gopassbridge)
+
 # gopassbridge
 
 A web extension for firefox and chrome to insert login credentials from [gopass](https://github.com/justwatchcom/gopass)
