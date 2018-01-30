@@ -79,13 +79,11 @@ function selectFocusedElement(parent) {
             if (iframe.src.startsWith(window.location.origin)) {
                 var focused = selectFocusedElement(iframe.contentWindow.document);
                 if (focused) {
-                    console.log(focused);
                     return focused;
                 }
             }
         });
     } else {
-        console.log(parent.activeElement);
         return parent.activeElement;
     }
 
