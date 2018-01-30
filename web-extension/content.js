@@ -69,29 +69,27 @@ function isVisible(element) {
     if (element.offsetHeight < 10) {
         return false;
     }
-    if (elementStyle.visibility === 'hidden') {
-        return false;
-    }
-    return true;
+    return elementStyle.visibility !== 'hidden';
 }
 
 function selectFocusedElement(parent) {
     parent = parent || document;
-    // Got this here: https://stackoverflow.com/questions/25420219/find-focused-element-in-document-with-many-iframes/25420726#25420726
-    // Check if the active element is in the main web or iframe
-    if (parent.body === parent.activeElement || parent.activeElement.tagName == 'IFRAME') {
-        // Get iframes
+    if (parent.body === parent.activeElement || parent.activeElement.tagName === 'IFRAME') {
         parent.querySelectorAll('iframe').forEach(function(iframe) {
             if (iframe.src.startsWith(window.location.origin)) {
                 var focused = selectFocusedElement(iframe.contentWindow.document);
-                if (focused !== false) {
-                    return focused; // The focused
+                if (focused) {
+                    console.log(focused);
+                    return focused;
                 }
             }
         });
-    } else return parent.activeElement;
+    } else {
+        console.log(parent.activeElement);
+        return parent.activeElement;
+    }
 
-    return false;
+    return null;
 }
 
 function selectVisibleElements(selector) {
@@ -106,7 +104,6 @@ function selectVisibleElements(selector) {
     document.querySelectorAll('iframe').forEach(function(iframe) {
         if (iframe.src.startsWith(window.location.origin)) {
             iframe.contentWindow.document.body.querySelectorAll(selector).forEach(function(element) {
-                var elementStyle = window.getComputedStyle(element);
                 if (isVisible(element)) {
                     visibleElements.push(element);
                 }
@@ -128,7 +125,6 @@ function selectFirstVisiblePasswordElement(selector) {
         ) {
             return element;
         }
-        console.log('Ignoring password input (in ignore id list)', element);
     }
 
     return null;
@@ -164,42 +160,38 @@ function getInputFields() {
     var passwordInput;
     var loginInput;
     var focusedInput = selectFocusedElement(document);
-    if (focusedInput !== false) {
-        if (focusedInput.tagName == 'INPUT') {
-            if (focusedInput.type == 'password') {
-                passwordInput = focusedInput;
-            } else if (
-                focusedInput.matches(exactLoginInputIdString) ||
-                focusedInput.matches(partialLoginInputIdString) ||
-                focusedInput.matches(loginInputTypesString)
-            ) {
-                passwordInput = selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
-                if (passwordInput) {
-                    loginInput = focusedInput;
-                }
+    if (focusedInput && focusedInput.tagName === 'INPUT') {
+        if (focusedInput.type === 'password') {
+            passwordInput = focusedInput;
+        } else if (
+            focusedInput.matches(exactLoginInputIdString) ||
+            focusedInput.matches(partialLoginInputIdString) ||
+            focusedInput.matches(loginInputTypesString)
+        ) {
+            passwordInput = selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
+            if (passwordInput) {
+                loginInput = focusedInput;
             }
         }
     }
     passwordInput = passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
-    console.log('Detected password input is', passwordInput);
-    if (!passwordInput || !passwordInput.form) {
-        return false;
+
+    if (passwordInput && passwordInput.form && !loginInput) {
+        loginInput =
+            loginInput ||
+            selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString) ||
+            selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString) ||
+            selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
     }
 
-    loginInput = loginInput || selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString);
-    if (!loginInput) {
-        loginInput = selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString);
+    if (passwordInput || loginInput) {
+        return {
+            login: loginInput,
+            password: passwordInput,
+        };
     }
-    if (!loginInput) {
-        loginInput = selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
-    }
-    // if (!loginInput) {
-    //     return false;
-    // }
-    return {
-        login: loginInput,
-        password: passwordInput,
-    };
+
+    return false;
 }
 
 function markElement(element) {
@@ -209,8 +201,12 @@ function markElement(element) {
 function markLoginFields() {
     var inputs = getInputFields();
     if (inputs) {
-        markElement(inputs.login);
-        markElement(inputs.password);
+        if (inputs.login) {
+            markElement(inputs.login);
+        }
+        if (inputs.password) {
+            markElement(inputs.password);
+        }
     }
 }
 
