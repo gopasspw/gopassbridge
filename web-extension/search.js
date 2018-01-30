@@ -15,7 +15,7 @@ function faviconUrl() {
     return 'icons/si-glyph-key-2.svg';
 }
 
-function onInputEvent(event) {
+function onInputEvent() {
     var input = document.getElementById('search_input');
 
     if (input.value.length) {

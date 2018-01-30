@@ -8,11 +8,13 @@ function resetStorage() {
 }
 
 function init() {
+    var checkboxes = document.querySelectorAll('input[type=checkbox]');
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', onCheckboxChange);
         getSyncStorage(setCheckboxes, onGetError);
     });
 
+    var textinputs = document.querySelectorAll('input[type=text]');
     textinputs.forEach(function(textinput) {
         textinput.addEventListener('change', onTextinputChange);
         getSyncStorage(setTextinputs, onGetError);

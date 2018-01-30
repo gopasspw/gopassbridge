@@ -1,8 +1,6 @@
 'use strict';
-var browser = browser || chrome;
 
-var checkboxes = document.querySelectorAll('input[type=checkbox]');
-var textinputs = document.querySelectorAll('input[type=text]');
+var browser = browser || chrome;
 
 var syncstorage = browser.storage.sync;
 

@@ -4,7 +4,7 @@ document.getElementById('create_docreate').addEventListener('click', onDoCreate)
 document.getElementById('create_doabort').addEventListener('click', onDoAbort);
 document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
 
-function createNewDialog(event) {
+function createNewDialog() {
     document.getElementsByClassName('search')[0].style.display = 'none';
     document.getElementsByClassName('results')[0].style.display = 'none';
     document.getElementsByClassName('create')[0].style.display = 'block';
@@ -19,26 +19,19 @@ function switchToSearch() {
 
 function onDoCreate(event) {
     event.preventDefault();
-    var entryName = document.getElementById('create_name').value,
-        login = document.getElementById('create_login').value,
-        password = document.getElementById('create_password').value,
-        generate = document.getElementById('create_generate').checked,
-        passwordLength = Number(document.getElementById('create_generate_length').value),
-        useSymbols = document.getElementById('create_use_symbols').checked;
-    console.log('creating secret', entryName);
     var message = {
         type: 'create',
-        entry_name: entryName,
-        login: login,
-        password: password,
-        length: passwordLength,
-        generate: generate,
-        use_symbols: useSymbols,
+        entry_name: document.getElementById('create_name').value,
+        login: document.getElementById('create_login').value,
+        password: document.getElementById('create_password').value,
+        length: Number(document.getElementById('create_generate_length').value),
+        generate: document.getElementById('create_generate').checked,
+        use_symbols: document.getElementById('create_use_symbols').checked,
     };
     sendNativeMessage(message, onCreateResult, onCreateError);
 }
 
-function onDoAbort(event) {
+function onDoAbort() {
     switchToSearch();
 }
 
