@@ -6,7 +6,20 @@
     "browser": true,
     "webextensions": true
   },
+  "globals": {
+    "chrome": true
+  },
+  "plugins": [
+    "json",
+    "promise"
+  ],
+  "extends": [
+    "eslint:recommended"
+  ],
   "rules": {
+    "no-undef": 0,
+    "no-console": 0,
+    "no-unused-vars": 0,
     "semi": 2,
     "strict": [2, "global"]
   }

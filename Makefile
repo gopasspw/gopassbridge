@@ -31,15 +31,10 @@ release: format
 		cd chrome-release; zip -r ../chrome.zip .
 
 		web-ext -s $(CURDIR)/firefox-release lint
-		web-ext -s $(CURDIR)/firefox-release build
+		web-ext -s $(CURDIR)/firefox-release build --overwrite-dest
 
 clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip
 
 format:
-		prettier --write web-extension/*.js web-extension/*.css
-
-tests:
-		npm run prettier
-		eslint web-extension
-		web-ext -s $(CURDIR)/firefox-release lint
+		prettier --write web-extension/*.js web-extension/*.css tests/*.js
