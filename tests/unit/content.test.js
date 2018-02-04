@@ -4,6 +4,7 @@ var fs = require('fs');
 
 var heightMockReturn = 10;
 var widthMockReturn = 50;
+var clickCallback;
 
 global.chrome = {
     runtime: {
@@ -92,19 +93,36 @@ describe('on sample login form', function() {
         expectLoginAndPasswordHaveValues('someuser', 'mypassword');
     });
 
-    test('does click submit', function() {
-        global.window.requestAnimationFrame = function(fn) {
-            fn();
-        };
-        var clickCallback = jest.fn();
-        var form = document.getElementById('form');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+    describe('submit is clicked when', function() {
+        beforeEach(function() {
+            global.window.requestAnimationFrame = function(fn) {
+                fn();
+            };
+            clickCallback = jest.fn();
+            var form = document.getElementById('form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
+            var element = document.getElementById('submit');
+            element.addEventListener('click', clickCallback);
         });
-        var element = document.getElementById('submit');
-        element.addEventListener('click', clickCallback);
-        content.processMessage({ type: 'TRY_LOGIN' });
-        expect(clickCallback.mock.calls.length).toBe(1);
+
+        test('only one password field is present', function() {
+            content.processMessage({ type: 'TRY_LOGIN' });
+            expect(clickCallback.mock.calls.length).toBe(1);
+        });
+
+        test('more than one password field is present', function() {
+            document.body.innerHTML =
+                "<html><body><form id='form' action='/session' method='post'>" +
+                "<input id='login' type='text' class='test-login'>" +
+                "<input type='password' class='test-password'>" +
+                "<input type='password' class='another-password'>" +
+                "<input id='submit' type='submit'>" +
+                '</form></body></html>';
+            content.processMessage({ type: 'TRY_LOGIN' });
+            expect(clickCallback.mock.calls.length).toBe(0);
+        });
     });
 });
 
