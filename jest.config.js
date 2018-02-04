@@ -6,5 +6,6 @@ module.exports = {
         'web-extension'
     ],
     coverageDirectory: "./coverage/",
-    collectCoverage: true
+    collectCoverage: true,
+    testEnvironment: "jest-environment-jsdom-global"
 };

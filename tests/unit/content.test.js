@@ -31,8 +31,9 @@ Object.defineProperties(global.HTMLElement.prototype, {
 
 var content = require('content.js');
 
-function expectClassHasBorder(cls, not) {
-    var element = document.getElementsByClassName(cls)[0];
+function expectClassHasBorder(cls, not, base) {
+    var doc = base || document;
+    var element = doc.getElementsByClassName(cls)[0];
     if (not) {
         expect(element.style._values.border).not.toEqual('3px solid blue');
     } else {
@@ -45,14 +46,14 @@ function expectClassHasValue(cls, value) {
     expect(element.value).toEqual(value);
 }
 
-function expectLoginAndPassword() {
-    expectClassHasBorder('test-login');
-    expectClassHasBorder('test-password');
+function expectLoginAndPassword(login, password, base) {
+    expectClassHasBorder(login || 'test-login', false, base);
+    expectClassHasBorder(password || 'test-password', false, base);
 }
 
-function expectNotLoginAndPassword() {
-    expectClassHasBorder('test-login', true);
-    expectClassHasBorder('test-password', true);
+function expectNotLoginAndPassword(login, password, base) {
+    expectClassHasBorder(login || 'test-login', true, base);
+    expectClassHasBorder(password || 'test-password', true, base);
 }
 
 function expectPasswordOnly() {
@@ -166,6 +167,74 @@ describe('on sample login form', function() {
             content.processMessage({ type: 'TRY_LOGIN' });
             expect(clickCallback.mock.calls.length).toBe(0);
         });
+    });
+});
+
+describe('on sample login form with multiple inputs', function() {
+    beforeEach(function() {
+        heightMockReturn = 10;
+        widthMockReturn = 50;
+        document.body.innerHTML =
+            "<html><body><form id='form' action='/session' method='post'>" +
+            "<input id='login' type='text' class='test-login-first'>" +
+            "<input id='login' type='text' class='test-login-second'>" +
+            "<input type='password' class='test-password-first'>" +
+            "<input type='password' class='test-password-second'>" +
+            "<input id='submit' type='submit'>" +
+            '</form></body></html>';
+    });
+    test('selects first textfield and first password without focus', function() {
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('test-login-first', 'test-password-first');
+    });
+
+    test('selects second textfield if focused', function() {
+        var second = document.getElementsByClassName('test-login-second')[0];
+        second.focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('test-login-second', 'test-password-first');
+    });
+
+    test('selects second password if focused', function() {
+        var second = document.getElementsByClassName('test-password-second')[0];
+        second.focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('test-login-first', 'test-password-second');
+    });
+});
+
+describe('on sample login form with inputs in iframe', function() {
+    beforeEach(function() {
+        heightMockReturn = 10;
+        widthMockReturn = 50;
+        document.body.innerHTML =
+            "<html><body><iframe src='https://www.somedomain.com/iframe.html'></iframe></body></html>";
+        var iframe = document.querySelectorAll('iframe')[0];
+        iframe.contentWindow.document.write(
+            "<form id='form' action='/session' method='post'>" +
+                "<input id='login' type='text' class='test-login'>" +
+                "<input type='password' class='test-password'>" +
+                "<input id='submit' type='submit'>" +
+                '</form>'
+        );
+    });
+
+    test('selects login and password', function() {
+        jsdom.reconfigure({
+            url: 'https://www.somedomain.com/',
+        });
+        var iframe = document.querySelectorAll('iframe')[0];
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword(null, null, iframe.contentWindow.document);
+    });
+
+    test('does not select login and password if iframe starts with different url', function() {
+        jsdom.reconfigure({
+            url: 'https://www.someotherdomain.com/',
+        });
+        var iframe = document.querySelectorAll('iframe')[0];
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectNotLoginAndPassword(null, null, iframe.contentWindow.document);
     });
 });
 
