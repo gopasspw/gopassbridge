@@ -55,6 +55,11 @@ function expectNotLoginAndPassword() {
     expectClassHasBorder('test-password', true);
 }
 
+function expectPasswordOnly() {
+    expectClassHasBorder('test-login', true);
+    expectClassHasBorder('test-password');
+}
+
 function expectLoginAndPasswordHaveValues(login, password) {
     expectClassHasValue('test-login', login);
     expectClassHasValue('test-password', password);
@@ -76,6 +81,29 @@ describe('on sample login form', function() {
         expectLoginAndPassword();
     });
 
+    test('does not detect login if no form', function() {
+        document.body.innerHTML =
+            '<html><body>' +
+            "<input id='login' type='text' class='test-login'>" +
+            "<input type='password' class='test-password'>" +
+            "<input id='submit' type='submit'>" +
+            '</body></html>';
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectPasswordOnly();
+    });
+
+    test('does not detect login if outside form', function() {
+        document.body.innerHTML =
+            '<html><body>' +
+            "<input id='login' type='text' class='test-login'>" +
+            "<form id='form' action='/session' method='post'>" +
+            "<input type='password' class='test-password'>" +
+            "<input id='submit' type='submit'>" +
+            '</form></body></html>';
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectPasswordOnly();
+    });
+
     test('does not detect fields not high enough', function() {
         heightMockReturn = 9;
         content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
@@ -88,8 +116,23 @@ describe('on sample login form', function() {
         expectNotLoginAndPassword();
     });
 
+    test('does not detect fields with style visibility hidden', function() {
+        var login = document.getElementsByClassName('test-login')[0];
+        login.style.visibility = 'hidden';
+        var password = document.getElementsByClassName('test-password')[0];
+        password.style.visibility = 'hidden';
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectNotLoginAndPassword();
+    });
+
     test('does insert data to password and login fields', function() {
         content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'someuser', password: 'mypassword' });
+        expectLoginAndPasswordHaveValues('someuser', 'mypassword');
+    });
+
+    test('does not overwrite data in password and login fields if new value is empty', function() {
+        content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'someuser', password: 'mypassword' });
+        content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: '', password: 'mypassword' });
         expectLoginAndPasswordHaveValues('someuser', 'mypassword');
     });
 
