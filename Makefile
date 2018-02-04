@@ -37,4 +37,4 @@ clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip
 
 format:
-		prettier --write web-extension/*.js web-extension/*.css tests/*.js
+		prettier --write web-extension/*.js web-extension/*.css tests/**/*.js

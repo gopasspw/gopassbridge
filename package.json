@@ -7,7 +7,7 @@
     "test": "npm-run-all test:*",
     "test:lint": "npm run lint",
     "lint": "npm-run-all lint:*",
-    "lint:prettier": "prettier-check web-extension/*.js web-extension/*.css tests/*.js",
+    "lint:prettier": "prettier-check web-extension/*.js web-extension/*.css tests/**/*.js",
     "lint:eslint": "eslint --ext=.js,.json web-extension manifests tests",
     "lint:webext": "web-ext -s firefox-release lint",
     "test:jest": "jest"
