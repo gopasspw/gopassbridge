@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/martinhoefling/gopassbridge.svg?branch=master)](https://travis-ci.org/martinhoefling/gopassbridge)
+[![codecov](https://codecov.io/gh/martinhoefling/gopassbridge/branch/master/graph/badge.svg)](https://codecov.io/gh/martinhoefling/gopassbridge)
 
 # gopassbridge
 
