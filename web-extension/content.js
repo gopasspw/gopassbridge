@@ -251,3 +251,8 @@ function processMessage(message) {
 browser.runtime.onMessage.addListener(processMessage);
 
 console.log('Content script for gopassbridge initialized');
+
+// Not required at runtime, only to access functions in tests
+module.exports = {
+    processMessage: processMessage,
+};

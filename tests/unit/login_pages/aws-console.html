@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <title>Amazon Web Services Sign-In</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+
+        #container>h1.background{background-repeat:no-repeat;background-size:contain;color:rgba(0,0,0,0);height:50px;padding:0;width:84px;border-bottom:0;margin-bottom:40px;margin-top:30px;background-image:url("data:image/png;base64,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")}
+        #container>h1.background-bjs{background-position:.1em 0;background-repeat:no-repeat;background-size:contain;color:rgba(0,0,0,0);height:6em;margin:10px 0 10px 10px;padding:0;width:165px;background-image:url("//s3.cn-north-1.amazonaws.com.cn/signin-assets/roundtable/cn/AWS-logo-CN_Web-op-sinnet-Chinese.png");font-size:1em}
+        body{font-size:75%;font-family:Helvetica,Arial,sans-serif;padding:0;margin:0}
+        a{color:black}
+        a#logo_link{color:transparent;width:84px;height:50px;display:block;font-size:12px}
+        input{font:16px / 18px sans-serif}
+        fieldset{margin:0;padding:0;border:0}
+        a.more{text-decoration:none;font-size:.8em}
+        .textaslabel{border:0;background-color:#fff;font:16px / 18px sans-serif}
+        .buttoninput{clear:both}
+        .checkboxinput{clear:both;padding-top:10px;padding-left:240px}
+        .textinput{padding-top:20px;clear:both}
+        .textinput label{display:block;clear:left;padding-right:10px;line-height:21px;font-weight:bold;font-size:14px;margin-bottom:7px;color:#444;font-family:"Helvetica Neue",Roboto,Arial,sans-serif}
+        form div{padding:0}
+        .textinput input{border:1px solid #ccc;border-radius:4px;box-sizing:border-box;font-size:14px;padding:7px 10px;width:310px}
+        .textinput input:focus{border-color:#38d;box-shadow:0 0 8px rgba(51,136,221,0.5);outline:0 none}
+        #accountFields{padding-right:60px}
+        #input_account{padding-top:0}
+        .error input{border-color:red}
+        .error label{color:red}
+        .link{font-size:.8em}
+        .mainError{padding-left:20px;color:red}
+        .mainInfo{padding-left:20px;color:blue}
+        .signin-tabs{margin:1.67em 1.67em 0}
+        .signin-tabs ul{margin:0;padding:0;width:100%;list-style:none}
+        .signin-tabs ul:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+        .signin-tabs ul li{margin:0;padding:0;float:left;width:50%}
+        .signin-tabs ul li a,.signin-tabs ul li a:visited{display:block;text-align:center;text-decoration:none;margin:0;padding:.93em 0;border:1px solid #BBB;font-weight:bold;color:#000;background:0;background-color:#f1f1f1;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAADICAIAAACmkByiAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAEZJREFUeNqsw4kNwCAMBDD23zZAgPxdoYew5FZVDZ2ZT0bEdXeHmxlUVaEiAj3n/L73hq61oMwMnXPCxxjXe+9PEhHyE2AAARBFdOaEAOUAAAAASUVORK5CYII=);background-repeat:no-repeat;background-size:100% 100%;-webkit-touch-callout:none}
+        .signin-tabs ul li:first-child a{border-radius:.5em 0 0 .5em;-webkit-border-radius:.5em 0 0 .5em;border-right-width:0}
+        .signin-tabs ul li:last-child a{border-right:solid 1px #ccc;border-radius:0 .5em .5em 0;-webkit-border-radius:0 .5em .5em 0}
+        .signin-tabs ul li a.signin-active{background-color:#dfdfdf;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAADICAIAAACmkByiAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC9JREFUeNpiuHDhAhMDAwPRmJGRkST11DSDHH2k6iFF/UCrHQxupVe8DFD6AwgwAFBMBCxDk7alAAAAAElFTkSuQmCC)}
+        .amzn_button{background:-webkit-linear-gradient(top,#fd8 15%,#f49d00 85%);background:-moz-linear-gradient(top,#fd8 15%,#f49d00 85%);background:-webkit-gradient(linear,left top,left bottom,color-stop(0.15,#fd8),color-stop(1.0,#f49d00));background:-webkit-linear-gradient(top,#fd8 15%,#f49d00 85%);border:1px solid #2164a6;margin-right:20px;padding:5px 15px 4px 15px;text-decoration:none;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;box-shadow:inset 0 0 2px #fff;-webkit-box-shadow:inset 0 0 2px #fff;-moz-box-shadow:inset 0 0 2px #fff;color:#000;font-size:13px}
+        .css3button{-moz-border-bottom-colors:none;-moz-border-left-colors:none;-moz-border-right-colors:none;-moz-border-top-colors:none;background-color:#16b;background-image:linear-gradient(#2d8cec,#16b);border-color:#16b #0b4075 #0b4075;border-image:none;border-style:solid;border-width:1px;color:white;text-shadow:0 1px 1px rgba(0,0,0,0.75);font-size:14px;line-height:21px;padding:4px 14px;-moz-appearance:none;border-radius:4px;cursor:pointer;display:inline-block;font-size:14px;font-weight:bold;line-height:21px;padding:4px 14px;text-align:center;font-weight:bold;text-decoration:none;text-transform:none;overflow:visible;white-space:nowrap;width:310px;box-sizing:border-box;margin-bottom:20px}
+        #content{width:940px}
+        #center-2{margin-top:10px}
+        #mfaMovedText{display:none}
+        #root_account_signin{font-size:14px;font-family:"Helvetica Neue",Roboto,Arial,sans-serif;font-size:14px;line-height:21px;color:#16b}
+        #input_password{padding-bottom:20px}
+        #mfaFields{padding-right:60px}
+        #input_mfacode{padding-top:0;padding-bottom:20px}
+        #next_mfacode{margin-bottom:20px}
+        #input_resync_button{padding-right:60px}
+        #login_head{margin-bottom:30px}
+        #login_head b{font-size:22px;line-height:28px;color:#444;font-family:"Helvetica Neue",Roboto,Arial,sans-serif;overflow-wrap:break-word}
+        .signin_form{float:left;width:370px}
+        .mfa_form{float:left;width:370px}
+        a:focus{color:#ccc}
+        #container{margin:0 auto;padding:0;width:940px}
+        #smallprint br{display:none}
+        .saml-role{display:block;margin:20px}
+        .saml-role-description{margin:0;font-weight:bold;font-size:16px;color:#000;vertical-align:middle}
+        .saml-role-invalid{color:#bbb}
+        .saml-account{padding-left:20px;margin-bottom:20px}
+        .saml-account-name{font-size:18px;display:inline;vertical-align:middle}
+        .saml-error{display:inline;color:red;vertical-align:middle;float:right}
+        .saml-radio{width:18px;height:18px;vertical-align:middle;s}
+        .warningbox{border:thin solid #000;width:50%;margin-left:auto;margin-right:auto}
+        .awsc-classification-notice{font-family:Arial,sans-serif;font-size:14px;text-decoration:none;padding:5px;spacing:0;margin:0;background-color:#ff0}
+        .awsc-classification-notice-footer{font-family:Arial,sans-serif;font-size:14px;text-decoration:none;padding:5px;spacing:0;margin:0;background-color:#ff0;bottom:0;position:fixed;width:100%}
+        .awsc-notice-link{position:absolute;left:10px}
+        .awsc-notice{text-align:center}
+        a.awsc-notice-link:link{color:#6e6f1b;text-decoration:none}
+        a.awsc-notice-link:visited{color:#6e6f1b;text-decoration:none}
+        a.awsc-notice-link:hover{color:#6e6f1b;text-decoration:underline}
+        a.awsc-notice-link:active{color:#6e6f1b;text-decoration:none}
+        .mfaMovedText{padding-top:10px}
+        p#mfaHeaderMessage{margin-bottom:0;font-size:28px;border-bottom:1px solid #CCC;width:200%}
+        .resendButton{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#444;padding:4px 14px;line-height:21px;display:inline-block;margin-left:0;text-decoration:none;background:-moz-linear-gradient(top,#fff 0,#dedede);background:-webkit-gradient(linear,left top,left bottom,from(#fff),to(#dedede));-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;border:1px solid #b8b8b8;-moz-box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);-webkit-box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);text-shadow:0 1px 1px rgba(255,255,255,.75);border-top-color:#dedede;background-color:#dedede;margin-bottom:20px;text-align:center;box-sizing:border-box;width:310px}
+        .resendButtonDisable{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;color:#444;opacity:.5;padding:4px 14px;line-height:21px;display:inline-block;margin-left:0;text-decoration:none;background:-moz-linear-gradient(top,#fff 0,#dedede);background:-webkit-gradient(linear,left top,left bottom,from(#fff),to(#dedede));-moz-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;border:1px solid #b8b8b8;-moz-box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);-webkit-box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);box-shadow:0 0 0 rgba(000,000,000,0),inset 0 0 2px rgba(255,255,255,1);text-shadow:0 1px 1px rgba(255,255,255,.75);border-top-color:#dedede;background-color:#dedede;pointer-events:none;cursor:default;margin-bottom:20px;text-align:center;box-sizing:border-box;width:310px}
+        .resendButton:visited{color:#444}
+        a#cancel_button{font-size:14px;font-weight:bold;font-style:normal;color:#16b;display:block}
+        a#lost_device{font-size:14px;font-weight:400;font-style:normal;color:#444;line-height:27px}
+        .mfaFields{padding-bottom:100px}
+        .ui-dialog.feedback-dialog .ui-dialog-titlebar-close:hover,.ui-dialog .ui-dialog-titlebar-close:focus{padding:1px}
+        .no-close .ui-dialog-titlebar-close{display:none}
+        .awsc-nav-dialog-modal{font-size:12px;line-height:1.5em}
+        .awsc-nav-dialog-modal .ui-dialog-title{font-size:13px}
+        .awsc-nav-dialog-modal .btn{display:inline-block;padding:4px 14px;margin-bottom:0;font-size:14px;font-weight:bold;line-height:1.5em;color:#444;text-align:center;text-decoration:none;text-shadow:0 1px 1px rgba(255,255,255,0.75);vertical-align:middle;cursor:pointer;background-color:#f2f2f2;background-image:-webkit-linear-gradient(top,#fff,#dedede);background-image:linear-gradient(to bottom,#fff,#dedede);background-repeat:repeat-x;border:1px solid #bbb;border-top-color:#ccc;border-radius:.3em;box-shadow:"0 1px 0 rgba(0, 0, 0, 0.1)"}
+        .awsc-nav-dialog-modal .btn.focus,.awsc-nav-dialog-modal .btn:focus,.awsc-nav-dialog-modal .btn.hover,.awsc-nav-dialog-modal .btn:hover{color:#444;text-decoration:none;text-shadow:0 1px 1px rgba(255,255,255,0.75);background-color:#ebebeb;background-image:-webkit-linear-gradient(top,#fff,#ccc);background-image:linear-gradient(to bottom,#fff,#ccc);background-position:0 0;background-repeat:repeat-x}
+        .awsc-nav-dialog-modal .btn::-moz-focus-inner{border:0}
+        .awsc-nav-dialog-modal .btn.active,.awsc-nav-dialog-modal .btn:active{color:#444;text-shadow:0 -1px 1px rgba(255,255,255,0.75);background-color:#ebebeb;background-image:-webkit-linear-gradient(top,#dedede,#fff);background-image:linear-gradient(to bottom,#dedede,#fff);background-position:0 0;background-repeat:repeat-x;outline:0;box-shadow:"inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05)"}
+        .awsc-nav-dialog-modal .btn-primary.active{color:rgba(255,255,255,0.75)}
+        .awsc-nav-dialog-modal .btn-primary{color:#fff;text-shadow:0 1px 1px rgba(0,0,0,0.75);background-color:#257acf;background-image:-webkit-linear-gradient(top,#38d,#16b);background-image:linear-gradient(to bottom,#38d,#16b);background-repeat:repeat-x;border:1px solid #16b;border-top-color:#05a}
+        .awsc-nav-dialog-modal .btn-primary.focus,.awsc-nav-dialog-modal .btn-primary:focus,.awsc-nav-dialog-modal .btn-primary.hover,.awsc-nav-dialog-modal .btn-primary:hover{color:#fff;text-shadow:0 1px 1px rgba(0,0,0,0.75);background-color:#1f74c9;background-image:-webkit-linear-gradient(top,#38d,#05a);background-image:linear-gradient(to bottom,#38d,#05a);background-repeat:repeat-x}
+        .awsc-nav-dialog-modal .btn-primary.active,.awsc-nav-dialog-modal .btn-primary:active{color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,0.75);background-color:#1f74c9;background-image:-webkit-linear-gradient(top,#16b,#38d);background-image:linear-gradient(to bottom,#16b,#38d);background-repeat:repeat-x}
+        .awsc-nav-dialog-modal.ui-widget,.awsc-nav-dialog-modal.ui-widget button{font-family:Verdana,Arial,sans-serif}
+        .awsc-nav-dialog-modal .ui-widget-header{background-color:#f2f2f2;background-image:-webkit-linear-gradient(top,#fff,#dedede);background-image:linear-gradient(to bottom,#fff,#dedede);background-repeat:repeat-x;border:0;padding:1em 1em}
+        .awsc-nav-dialog-modal.ui-dialog{padding:0}
+        .awsc-nav-dialog-modal .ui-dialog-buttonpane{margin-top:1em;padding:.5em 1em .5em .4em;border-top:1px solid #ddd;background-color:#f5f5f5}
+        .awsc-nav-dialog-modal .ui-dialog-buttonpane button{margin:.5em .4em}
+        .messageDiv{padding-left:20px;width:45%}
+        .alert{padding:8px 25px 8px 14px;margin:.5em 0 1em 0;text-shadow:0 1px 0 rgba(255,255,255,0.5);background-color:#fffcec;border:1px solid #e07700;border-radius:.3em}
+        .alert.alert-info{color:#444;background-color:#f0f9ff;border-color:#16b}
+        .alert .imgclass{float:left;margin-left:10px;margin-right:14px;width:20px;height:20px;background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABbUlEQVR4nK3UPUgdQRSG4eeKBH9I/MUuBkxhpWBl2lR2kYABKyEJprEIgaBYWGknaGOjCWrASkiRCKZQEKuQ0sLEwkZsbCIELirRwuLuwDDsXi7oB8vMOfPNO7O7M6fU9m7Hfaq+IF/CEF6gHy0o4w+28Q3XtQL7sJGBUj3Da5xk7V5qqEviUfxKYH3Zjpui3BPs4mM14CC+oDHxXGXtZc7cebyMk+GVG7CJB+mKGMdpzkJB6/iJsxg4hu6CCZMF+aBHeI/psG0YyTHuq3y78DRXgb4KnQAcyDFdJfFFFeBTPIyBbTmmASyhswooVnsMLOcYujCB1hqB5Rh4WOOkIp3hbwzcuiPwe+gE4Ar+JaY9lb97HOVK+Jz4brCYAs/xNjHmXn78T+IpHIUgLg5fMYPZLH4eGyM9jvqrWIgH02ozhwOsoQO9Bbu8xAcspwN55WsLPXiDYZVq06pyLH7jBz7J7m6q0n1X7LQe3lm38dY7Km33QX8AAAAASUVORK5CYII=')}
+        .alert .header{font-size:18px;display:inline;color:#16b;padding:4px 0}
+        .alert .message{color:#444;margin-left:45px;padding:4px 0;margin-top:0;margin-bottom:0}
+
+        .ui-dialog{position:absolute;padding:.2em;width:300px;overflow:hidden}
+        .ui-dialog .ui-dialog-titlebar{padding:.4em 1em;position:relative}
+        .ui-dialog .ui-dialog-title{float:left;margin:.1em 16px .1em 0}
+        .ui-dialog .ui-dialog-titlebar-close{position:absolute;right:.3em;top:50%;width:19px;margin:-10px 0 0 0;padding:1px;height:18px}
+        .ui-dialog .ui-dialog-titlebar-close span{display:block;margin:1px}
+        .ui-dialog .ui-dialog-titlebar-close:hover,.ui-dialog .ui-dialog-titlebar-close:focus{padding:0}
+        .ui-dialog .ui-dialog-content{position:relative;border:0;padding:.5em 1em;background:0;overflow:auto;zoom:1}
+        .ui-dialog .ui-dialog-buttonpane{text-align:left;border-width:1px 0 0 0;background-image:none;margin:.5em 0 0 0;padding:.3em 1em .5em .4em}
+        .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset{float:right}
+        .ui-dialog .ui-dialog-buttonpane button{margin:.5em .4em .5em 0;cursor:pointer}
+        .ui-dialog .ui-resizable-se{width:14px;height:14px;right:3px;bottom:3px}
+        .ui-draggable .ui-dialog-titlebar{cursor:move}
+        .ui-helper-hidden{display:none}
+        .ui-helper-hidden-accessible{position:absolute!important;clip:rect(1px 1px 1px 1px);clip:rect(1px,1px,1px,1px)}
+        .ui-helper-reset{margin:0;padding:0;border:0;outline:0;line-height:1.3;text-decoration:none;font-size:100%;list-style:none}
+        .ui-helper-clearfix:before,.ui-helper-clearfix:after{content:"";display:table}
+        .ui-helper-clearfix:after{clear:both}
+        .ui-helper-clearfix{zoom:1}
+        .ui-helper-zfix{width:100%;height:100%;top:0;left:0;position:absolute;opacity:0;filter:Alpha(Opacity=0)}
+        .ui-state-disabled{cursor:default!important}
+        .ui-icon{display:block;text-indent:-99999px;overflow:hidden;background-repeat:no-repeat}
+        .ui-widget-overlay{position:absolute;top:0;left:0;width:100%;height:100%}
+        .ui-widget{font-family:Verdana,Arial,sans-serif;font-size:1.1em}
+        .ui-widget .ui-widget{font-size:1em}
+        .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button{font-family:Verdana,Arial,sans-serif;font-size:1em}
+        .ui-widget-content{border:1px solid #aaaaaa;background:#ffffff url(0
+        ) 50% 50% repeat-x;color:#222}
+        .ui-widget-content a{color:#222}
+        .ui-widget-header{border:1px solid #aaaaaa;background:#cccccc url(0
+        ) 50% 50% repeat-x;color:#222;font-weight:bold}
+        .ui-widget-header a{color:#222}
+        .ui-icon{width:16px;height:16px;background-image:url(-222222
+        )}
+        .ui-state-hover .ui-icon,.ui-state-focus .ui-icon{background-image:url(-454545
+        )}
+        .ui-icon-close{background-position:-80px -128px}
+        .ui-icon-closethick{background-position:-96px -128px}
+        .ui-corner-all,.ui-corner-top,.ui-corner-left,.ui-corner-tl{-moz-border-radius-topleft:4px;-webkit-border-top-left-radius:4px;-khtml-border-top-left-radius:4px;border-top-left-radius:4px}
+        .ui-corner-all,.ui-corner-top,.ui-corner-right,.ui-corner-tr{-moz-border-radius-topright:4px;-webkit-border-top-right-radius:4px;-khtml-border-top-right-radius:4px;border-top-right-radius:4px}
+        .ui-corner-all,.ui-corner-bottom,.ui-corner-left,.ui-corner-bl{-moz-border-radius-bottomleft:4px;-webkit-border-bottom-left-radius:4px;-khtml-border-bottom-left-radius:4px;border-bottom-left-radius:4px}
+        .ui-corner-all,.ui-corner-bottom,.ui-corner-right,.ui-corner-br{-moz-border-radius-bottomright:4px;-webkit-border-bottom-right-radius:4px;-khtml-border-bottom-right-radius:4px;border-bottom-right-radius:4px}
+        .ui-widget-overlay{background:#aaaaaa url(0
+        ) 50% 50% repeat-x;opacity:.3;filter:Alpha(Opacity=30)}
+        .ui-widget-shadow{margin:-8px 0 0 -8px;padding:8px;background:#aaaaaa url(0
+        ) 50% 50% repeat-x;opacity:.3;filter:Alpha(Opacity=30);-moz-border-radius:8px;-khtml-border-radius:8px;-webkit-border-radius:8px;border-radius:8px}
+    </style>
+</head>
+<body>
+
+
+
+<div id="container">
+
+    <h1 class="background">
+
+        <a id="logo_link" href="https://aws.amazon.com">Amazon Web Services Login</a>
+
+    </h1>
+
+
+
+    <div id="content">
+
+        <div id="main_message"></div>
+
+
+        <form id="signin_form" name="signin_form" class="signin_form" action="/oauth" method="post">
+            <input type="hidden" name="redirect_uri" id="redirect_uri" value="https://console.aws.amazon.com/console/home?state=hashArgs%23&isauthcode=true" />
+            <input type="hidden" name="client_id" value="arn:aws:iam::015428540659:user/homepage" />
+            <input type="hidden" id="forceMobileApp" name="forceMobileApp" value="" />
+            <input type="hidden" id="forceMobileLayout" name="forceMobileLayout" value="" />
+            <input type="hidden" id="isIAMUser" name="isIAMUser" value="1" />
+            <input type="hidden" id="mfaLoginFailure" name="mfaLoginFailure"  value="" />
+            <input type="hidden" id="mfaType" name="mfaType"  value="" />
+            <input type="hidden" id="metadata1" name="metadata1" />
+            <input type="hidden" name="Action" value="login" />
+            <input type="hidden" name="RemainingExpiryPeriod" value="" />
+
+
+            <div id="accountFields">
+                <fieldset>
+                    <div class="textinput" id="input_account">
+                        <label for="account">Account ID or alias</label>
+                        <input id="account" name="account" autocapitalize="off" autocorrect="off" value="test"></input>
+                    </div>
+                    <div class="textinput" id="input_username">
+                        <label for="username">IAM user name</label>
+                        <input id="username" class="test-login" name="username" autocapitalize="off" autocorrect="off" value=""></input>
+                    </div>
+                    <div class="textinput" id="input_password">
+                        <label for="password">Password</label>
+                        <input id="password" class="test-password" name="password" type="password" autocapitalize="off" autocorrect="off"></input>
+                    </div>
+                </fieldset>
+
+                <div id="mfaMovedText" class="mfaMovedText">MFA users, enter your code on the next screen.</div>
+
+                <div class="buttoninput" id="input_signin_button">
+                    <a id="signin_button" class="css3button" href="#" alt="Continue" value="Continue">Sign In</a>
+                </div>
+            </div>
+
+            <div id="mfaFields" class="mfaFields">
+                <div id="displayHeaderMessage"></div>
+                <div id="displayTextMessage"></div>
+                <fieldset>
+                    <div class="textinput" id="input_mfacode">
+                        <label for="mfacode" id="mfa_login_label">MFA Code:</label>
+                        <label for="mfacode" id="mfa_resync_label">MFA Code #1:</label>
+                        <input id="mfacode" name="mfacode" autocapitalize="off" autocorrect="off" autocomplete="off" maxLength="6"></input>
+                        <div class="link" id="link_lost_device">
+                            <a id="lost_device" href="#">Lost Device?</a>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <div class="textinput" id="input_next_mfacode">
+                        <label for="next_mfacode">MFA Code #2:</label>
+                        <input id="next_mfacode" name="next_mfacode" autocapitalize="off" autocorrect="off" autocomplete="off" maxLength="6"></input>
+                    </div>
+                </fieldset>
+                <div class="buttoninput" id="input_mfa_buttons">
+                    <a id="submitMfa_button" class="css3button" href="#" alt="Submit" value="Submit">Submit</a>
+                    <a id="resendCode_button" class="resendButtonDisable" href="#" alt="Resend Code" value="Resend Code">Resend Code</a>
+                    <a id="cancel_button" alt="Cancel" value="Cancel">Cancel</a>
+                </div>
+            </div>
+
+            <div class="buttoninput" id="input_resync_button">
+                <a id="resync_button" class="css3button" href="#">Resync and Sign In</a>
+            </div>
+
+
+            <div class="link" id="link_root_account_signin">
+            </div>
+
+
+        </form>
+
+        <div id="center-2">
+            <a id="marketingimagelink" href="https://aws.amazon.com/mxnet/?&trk=ha_a131L000005CvfAQAS&sc_ichannel=ha&sc_icampaign=pac_q4_site_merch_sign-in_deep_learning&sc_ioutcome=Product_Adoption_Campaigns&sc_iplace=SignInPage" target="_blank"><img src= "//d1.awsstatic.com/Digital%20Marketing/House/signin/en_US/other/2017-q4-pac/PAC-Q4_HA_Deep-Learning_Sign-in.f5b83671c724d6b05d8c72e98913444fb1a41a08.png" alt="AWS Marketing" width="466" height="376"></a>
+            <br>
+        </div>
+    </div>
+
+
+    <br>
+
+    <div id="smallprint" style="text-align: center;">
+        <div class="textinput" style = "text-align: center; font-size: x-small;">
+
+            <div style="border-top: 1px solid #ccc; margin-bottom: 12px; padding-top: 1em; text-align: center;">
+                <select id="languageSelector">
+
+                    <option value="en_US"  selected >English</option>
+
+                    <option value="de_DE" >Deutsch</option>
+
+                    <option value="es_ES" >Español</option>
+
+                    <option value="fr_FR" >Français</option>
+
+                    <option value="ja" >日本語</option>
+
+                    <option value="pt_BR" >Português</option>
+
+                    <option value="ko_KR" >한국어</option>
+
+                    <option value="zh_CN" >中文(简体)</option>
+
+                </select>
+
+            </div>
+
+            <a href="https://aws.amazon.com/terms/">Terms of Use</a>
+            <a href="https://aws.amazon.com/privacy/">Privacy Policy</a><br/>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+<div id="lostDeviceHeader"></div>
+</body>
+</html>

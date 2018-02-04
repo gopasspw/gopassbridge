@@ -4,3 +4,6 @@ node_js:
 cache: yarn
 before_script:
   - make test_release
+script:
+  - npm test
+  - codecov

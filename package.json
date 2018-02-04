@@ -4,8 +4,13 @@
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "index.js",
   "scripts": {
-    "test": "make tests",
-    "prettier": "prettier-check web-extension/*.js web-extension/*.css"
+    "test": "npm-run-all test:*",
+    "test:lint": "npm run lint",
+    "lint": "npm-run-all lint:*",
+    "lint:prettier": "prettier-check web-extension/*.js web-extension/*.css tests/*.js",
+    "lint:eslint": "eslint --ext=.js,.json web-extension manifests tests",
+    "lint:webext": "web-ext -s firefox-release lint",
+    "test:jest": "jest"
   },
   "repository": {
     "type": "git",
@@ -22,8 +27,16 @@
     "url": "https://github.com/martinhoefling/gopassbridge/issues"
   },
   "homepage": "https://github.com/martinhoefling/gopassbridge#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "codecov": "^3.0.0",
     "eslint": "^4.16.0",
+    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "global": "^4.3.2",
+    "jest": "^22.1.4",
+    "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "prettier-check": "^2.0.0",
     "web-ext": "^2.3.2"
