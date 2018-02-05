@@ -1,3 +1,8 @@
+## 0.2 / 2018-02-05
+
+* Prefer focused fields instead of taking the first one
+* Also fill into iframes if iframes source starts with same domain
+
 ## 0.1.1 / 2018-01-02
 
 * Bugfix. Fixes missing content script injection

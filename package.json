@@ -1,6 +1,6 @@
 {
   "name": "gopassbridge",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "index.js",
   "scripts": {
