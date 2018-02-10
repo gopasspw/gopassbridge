@@ -128,13 +128,19 @@ function selectFirstVisiblePasswordElement(selector) {
     return null;
 }
 
-function selectFirstVisibleFormElement(form, selector) {
+function selectFirstVisibleFormElement(form, selector, afterTabInd) {
     var visibleElements = selectVisibleElements(selector);
 
     for (var i = 0; i < visibleElements.length; i++) {
         var element = visibleElements[i];
         if (element && form === element.form) {
-            return element;
+            if (afterTabInd === undefined) {
+                return element;
+            } else {
+                if (element.tabIndex > afterTabInd) {
+                    return element;
+                }
+            }
         }
     }
 
@@ -166,7 +172,9 @@ function getInputFields() {
             focusedInput.matches(partialLoginInputIdString) ||
             focusedInput.matches(loginInputTypesString)
         ) {
-            passwordInput = selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
+            passwordInput =
+                selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]', focusedInput.tabIndex) ||
+                selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
             if (passwordInput) {
                 loginInput = focusedInput;
             }
@@ -180,6 +188,14 @@ function getInputFields() {
             selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString) ||
             selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString) ||
             selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
+        if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
+            var matchingPasswordInput = selectFirstVisibleFormElement(
+                loginInput.form,
+                'input[type=password]',
+                loginInput.tabIndex
+            );
+            passwordInput = matchingPasswordInput || passwordInput;
+        }
     }
 
     if (passwordInput || loginInput) {

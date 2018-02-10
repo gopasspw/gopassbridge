@@ -238,6 +238,39 @@ describe('on sample login form with inputs in iframe', function() {
     });
 });
 
+describe('on sample login form with decoy password inputs with different tabIndex', function() {
+    beforeEach(function() {
+        heightMockReturn = 10;
+        widthMockReturn = 50;
+    });
+
+    test('selects first input and password with larger tabindex if focused', function() {
+        document.body.innerHTML =
+            "<html><body><form id='form' action='/session' method='post'>" +
+            "<input type='password' class='' tabindex='-1'>" +
+            "<input id='login' type='text' class='test-login' tabindex='0'>" +
+            "<input type='password' class='test-password' tabindex='1'>" +
+            "<input id='submit' type='submit'>" +
+            '</form></body></html>';
+        var login = document.getElementsByClassName('test-login')[0];
+        login.focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('test-login', 'test-password');
+    });
+
+    test('selects matching textfield and password with largert tabindex without focus', function() {
+        document.body.innerHTML =
+            "<html><body><form id='form' action='/session' method='post'>" +
+            "<input type='password' class='' tabindex='-1'>" +
+            "<input id='login' type='text' class='test-login' tabindex='0'>" +
+            "<input type='password' class='test-password' tabindex='1'>" +
+            "<input id='submit' type='submit'>" +
+            '</form></body></html>';
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('test-login', 'test-password');
+    });
+});
+
 ['github', 'aws-console', 'ing-nl'].forEach(function(page) {
     describe('on ' + page, function() {
         beforeEach(function() {
