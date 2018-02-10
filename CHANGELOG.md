@@ -1,3 +1,7 @@
+## 0.2.1 / 2018-02-10
+
+* Prefer password fields with larger tabIndex. Prevents selection of decoy fields
+
 ## 0.2 / 2018-02-05
 
 * Prefer focused fields instead of taking the first one
