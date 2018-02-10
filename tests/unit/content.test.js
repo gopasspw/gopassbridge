@@ -238,7 +238,7 @@ describe('on sample login form with inputs in iframe', function() {
     });
 });
 
-['github', 'aws-console'].forEach(function(page) {
+['github', 'aws-console', 'ing-nl'].forEach(function(page) {
     describe('on ' + page, function() {
         beforeEach(function() {
             heightMockReturn = 10;
