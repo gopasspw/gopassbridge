@@ -17,11 +17,11 @@ The native app is a wrapper that calls gopass with the jsonapi parameter to comm
 
 #### Firefox Extension
 
-https://addons.mozilla.org/en-US/firefox/addon/gopass-bridge/
+[https://addons.mozilla.org/en-US/firefox/addon/gopass-bridge/](https://addons.mozilla.org/en-US/firefox/addon/gopass-bridge/)
 
 #### Chrome / Chromium Extension
 
-https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk
+[https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
 
 ### Build and install browser extension from source
 
