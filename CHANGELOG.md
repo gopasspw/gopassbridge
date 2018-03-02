@@ -1,3 +1,7 @@
+## 0.2.2 / 2018-03-03
+
+* Remove module exports only required for tests on release bundling to prevent errors
+
 ## 0.2.1 / 2018-02-10
 
 * Prefer password fields with larger tabIndex. Prevents selection of decoy fields
