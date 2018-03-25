@@ -22,8 +22,6 @@ release: format
 		mkdir chrome-release firefox-release
 		cd chrome-release; cp ../manifests/chrome-manifest.json manifest.json
 		cd firefox-release; cp ../manifests/firefox-manifest.json manifest.json
-		cd chrome-release; cp -R ../web-extension/* .;  gsed -i '/\/\/ Not required at runtime, only to access functions in tests/Q' *
-		cd firefox-release; cp -R ../web-extension/* .;  gsed -i '/\/\/ Not required at runtime, only to access functions in tests/Q' *
 
 		cp chrome.pem chrome-release/key.pem
 

@@ -29,7 +29,8 @@ Object.defineProperties(global.HTMLElement.prototype, {
     },
 });
 
-var content = require('content.js');
+require('content.js');
+var content = window.test.content;
 
 function expectClassHasBorder(cls, not, base) {
     var doc = base || document;
@@ -213,6 +214,7 @@ describe('on sample login form with inputs in iframe', function() {
         iframe.contentWindow.document.write(
             "<form id='form' action='/session' method='post'>" +
                 "<input id='login' type='text' class='test-login'>" +
+                "<input id='login2' type='text' class='another-test-login'>" +
                 "<input type='password' class='test-password'>" +
                 "<input id='submit' type='submit'>" +
                 '</form>'
@@ -235,6 +237,17 @@ describe('on sample login form with inputs in iframe', function() {
         var iframe = document.querySelectorAll('iframe')[0];
         content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
         expectNotLoginAndPassword(null, null, iframe.contentWindow.document);
+    });
+
+    test('selects second textfield if focused', function() {
+        jsdom.reconfigure({
+            url: 'https://www.somedomain.com/',
+        });
+        var iframe = document.querySelectorAll('iframe')[0];
+        var second = iframe.contentWindow.document.getElementsByClassName('another-test-login')[0];
+        second.focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectLoginAndPassword('another-test-login', 'test-password', iframe.contentWindow.document);
     });
 });
 

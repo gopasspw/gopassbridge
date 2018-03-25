@@ -75,19 +75,19 @@ function isVisible(element) {
 function selectFocusedElement(parent) {
     parent = parent || document;
     if (parent.body === parent.activeElement || parent.activeElement.tagName === 'IFRAME') {
+        var focusedElement = null;
         parent.querySelectorAll('iframe').forEach(function(iframe) {
             if (iframe.src.startsWith(window.location.origin)) {
                 var focused = selectFocusedElement(iframe.contentWindow.document);
                 if (focused) {
-                    return focused;
+                    focusedElement = focused;
                 }
             }
         });
+        return focusedElement;
     } else {
         return parent.activeElement;
     }
-
-    return null;
 }
 
 function selectVisibleElements(selector) {
@@ -268,7 +268,6 @@ browser.runtime.onMessage.addListener(processMessage);
 
 console.log('Content script for gopassbridge initialized');
 
-// Not required at runtime, only to access functions in tests
-module.exports = {
+window.test.content = {
     processMessage: processMessage,
 };

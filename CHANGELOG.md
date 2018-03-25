@@ -1,3 +1,8 @@
+## unreleased
+
+* Fix focused case for iframes
+* Simplify build process by binding functions to window for testing
+
 ## 0.2.2 / 2018-03-03
 
 * Remove module exports only required for tests on release bundling to prevent errors
