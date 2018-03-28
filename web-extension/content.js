@@ -19,6 +19,7 @@ var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input'
         'user_name',
         'userid',
         'user_id',
+        'user',
         'login',
         'email',
         'login_field',
