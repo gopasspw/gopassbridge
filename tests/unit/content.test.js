@@ -284,7 +284,7 @@ describe('on sample login form with decoy password inputs with different tabInde
     });
 });
 
-['github', 'aws-console', 'ing-nl'].forEach(function(page) {
+['github', 'aws-console', 'ing-nl', 'rote-liste-iframe'].forEach(function(page) {
     describe('on ' + page, function() {
         beforeEach(function() {
             heightMockReturn = 10;

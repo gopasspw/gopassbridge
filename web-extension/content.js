@@ -31,35 +31,43 @@ var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input'
             .map(function(string) {
                 return 'input[type=' + string + ']';
             })
-            .join(',') + ',input:not([type])',
+            .join(',') + ',input:not([type])';
+
+function exactMatch(property, string){
+    var idstr = '[' + property + '=' + string + ']';
+    return (
+        loginInputTypes
+            .map(function(string) {
+                return 'input[type=' + string + ']' + idstr;
+            })
+            .join(',') +
+        ',input:not([type])' +
+        idstr
+    );
+}
+
+function partialMatch(property, string) {
+    var idstr = '[' + property + '*=' + string + ']';
+    return (
+        loginInputTypes
+            .map(function(string) {
+                return 'input[type=' + string + ']' + idstr;
+            })
+            .join(',') +
+        ',input:not([type])' +
+        idstr
+    );
+}
+
+var
     exactLoginInputIdString = loginInputIds
-        .map(function(string) {
-            var idstr = '[id=' + string + ']';
-            return (
-                loginInputTypes
-                    .map(function(string) {
-                        return 'input[type=' + string + ']' + idstr;
-                    })
-                    .join(',') +
-                ',input:not([type])' +
-                idstr
-            );
-        })
-        .join(','),
+        .map(exactMatch.bind(null, 'id')).join(','),
     partialLoginInputIdString = loginInputIds
-        .map(function(string) {
-            var idstr = '[id*=' + string + ']';
-            return (
-                loginInputTypes
-                    .map(function(string) {
-                        return 'input[type=' + string + ']' + idstr;
-                    })
-                    .join(',') +
-                ',input:not([type])' +
-                idstr
-            );
-        })
-        .join(',');
+        .map(partialMatch.bind(null, 'id')).join(','),
+    exactLoginInputNameString = loginInputIds
+        .map(exactMatch.bind(null, 'name')).join(','),
+    partialLoginInputNameString = loginInputIds
+        .map(partialMatch.bind(null, 'name')).join(',');
 
 function isVisible(element) {
     var elementStyle = window.getComputedStyle(element);
@@ -170,6 +178,8 @@ function getInputFields() {
         } else if (
             focusedInput.matches(exactLoginInputIdString) ||
             focusedInput.matches(partialLoginInputIdString) ||
+            focusedInput.matches(exactLoginInputNameString) ||
+            focusedInput.matches(partialLoginInputNameString) ||
             focusedInput.matches(loginInputTypesString)
         ) {
             passwordInput =
@@ -187,6 +197,8 @@ function getInputFields() {
             loginInput ||
             selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString) ||
             selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString) ||
+            selectFirstVisibleFormElement(passwordInput.form, exactLoginInputNameString) ||
+            selectFirstVisibleFormElement(passwordInput.form, partialLoginInputNameString) ||
             selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
         if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
             var matchingPasswordInput = selectFirstVisibleFormElement(
