@@ -34,7 +34,7 @@ var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input'
             })
             .join(',') + ',input:not([type])';
 
-function exactMatch(property, string){
+function exactMatch(property, string) {
     var idstr = '[' + property + '=' + string + ']';
     return (
         loginInputTypes
@@ -60,15 +60,10 @@ function partialMatch(property, string) {
     );
 }
 
-var
-    exactLoginInputIdString = loginInputIds
-        .map(exactMatch.bind(null, 'id')).join(','),
-    partialLoginInputIdString = loginInputIds
-        .map(partialMatch.bind(null, 'id')).join(','),
-    exactLoginInputNameString = loginInputIds
-        .map(exactMatch.bind(null, 'name')).join(','),
-    partialLoginInputNameString = loginInputIds
-        .map(partialMatch.bind(null, 'name')).join(',');
+var exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
+    partialLoginInputIdString = loginInputIds.map(partialMatch.bind(null, 'id')).join(','),
+    exactLoginInputNameString = loginInputIds.map(exactMatch.bind(null, 'name')).join(','),
+    partialLoginInputNameString = loginInputIds.map(partialMatch.bind(null, 'name')).join(',');
 
 function isVisible(element) {
     var elementStyle = window.getComputedStyle(element);
