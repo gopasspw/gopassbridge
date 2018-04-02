@@ -78,8 +78,10 @@ function onSearchResults(response) {
             );
         });
     } else {
-        setStatusText('no results for ' + searchTerm);
-        results.appendChild(createButtonWithCallback('login', 'create new login entry', null, createNewDialog));
+        setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
+        results.appendChild(
+            createButtonWithCallback('login', i18n.getMessage('createNewEntryButtonText'), null, createNewDialog)
+        );
     }
     searching = false;
 }
@@ -124,7 +126,7 @@ function onLoginCredentialsDoCopyClipboard(response) {
     content.appendChild(tempinput);
     tempinput.select();
     document.execCommand('copy');
-    content.innerHTML = '<div class="copied">copied to clipboard</div>';
+    content.innerHTML = '<div class="copied">' + i18n.getMessage('copiedToClipboardMessage') + '</div>';
     setTimeout(window.close, 1000);
 }
 
@@ -135,7 +137,7 @@ function onLoginCredentialsDoLogin(response) {
     }
 
     if (response.username === urlDomain(currentTab.url)) {
-        setStatusText('could not determine username');
+        setStatusText(i18n.getMessage('couldNotDetermineUsernameMessage'));
         return;
     }
 

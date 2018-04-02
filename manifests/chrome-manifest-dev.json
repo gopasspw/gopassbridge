@@ -3,7 +3,7 @@
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
   "version": "0.2.2",
-  "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager.",
+  "description": "__MSG_extensionDescription__",
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/martinhoefling/gopassbridge",
   "incognito": "split",
@@ -29,13 +29,15 @@
     "page": "options.html"
   },
 
+  "default_locale": "en",
+
   "browser_action": {
     "browser_style": true,
     "default_icon": {
       "48": "icons/gopassbridge-48.png",
       "96": "icons/gopassbridge-96.png"
     },
-    "default_title": "Insert password from gopass",
+    "default_title": "__MSG_browserActionTitle__",
     "default_popup": "gopassbridge.html"
   },
 

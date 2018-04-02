@@ -2,6 +2,7 @@
 
 * Fix focused case for iframes
 * Simplify build process by binding functions to window for testing
+* Setup i18n, translate to german
 
 ## 0.2.2 / 2018-03-03
 

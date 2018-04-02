@@ -1,0 +1,115 @@
+{
+  "extensionDescription": {
+    "message": "Gopass Bridge ermöglicht das Durchsuchen und Einfügen von Anmeldedaten aus dem Gopass Passwort Manager.",
+    "description": "Description of the extension."
+  },
+  "browserActionTitle": {
+    "message": "Passwort aus Gopass einfügen",
+    "description": "Title of the popup menu."
+  },
+  "createNewEntryButtonText": {
+    "message": "neuen Eintrag erstellen",
+    "description": "Text of create new entry button"
+  },
+  "copiedToClipboardMessage": {
+    "message": "kopiert in die Zwischenablage",
+    "description": "Text to display when an entry was copied to clipboard"
+  },
+  "couldNotDetermineUsernameMessage": {
+    "message": "Benutzername konnte nicht bestimmt werden",
+    "description": "shown when no username in response does not match current domain"
+  },
+  "searchPlaceholder": {
+    "message": "tippen um zu suchen...",
+    "description": "placeholder in search field"
+  },
+  "searchButtonText": {
+    "message": "Suchen",
+    "description": "caption of search button"
+  },
+  "createNameLabel": {
+    "message": "Name",
+    "description": "label for name"
+  },
+  "createLoginLabel": {
+    "message": "Login / Benutzername",
+    "description": "label for login"
+  },
+  "createPasswordLabel": {
+    "message": "Passwort",
+    "description": "label for password"
+  },
+  "createGenerateLabel": {
+    "message": "Automatisch erzeugen",
+    "description": "label for generate checkbox"
+  },
+  "createGenerateLengthLabel": {
+    "message": "Passwortlänge",
+    "description": "label for length input"
+  },
+  "createUseSymbolsLabel": {
+    "message": "Symbole verwenden",
+    "description": "label for use symbols checkbox"
+  },
+  "createDoCreateButton": {
+    "message": "Erzeugen",
+    "description": "caption for create button"
+  },
+  "createDoAbortButton": {
+    "message": "Abbrechen",
+    "description": "caption for abort button"
+  },
+  "createPasswordAutogeneratePlaceholder": {
+    "message": "wird automatisch erzeugt",
+    "description": "password placeholder when autogeneration is used"
+  },
+  "createPasswordPlaceholder": {
+    "message": "Passwort hier eingeben",
+    "description": "password placeholder when input is used"
+  },
+  "optionsChangelogTitle": {
+    "message": "Änderungshistorie",
+    "description": "Title of changelog"
+  },
+  "optionsChangelogText": {
+    "message": "Änderungen können in der <a href=\"$URL$\">Github Änderungshistorie</a> verfolgt werden.",
+    "description": "Text of changelog",
+    "placeholders": {
+      "url": {
+        "content": "https://github.com/martinhoefling/gopassbridge/blob/master/CHANGELOG.md"
+      }
+    }
+  },
+  "optionsUsageHintsTitle": {
+    "message": "Tipps und Tricks",
+    "description": "Title of UsageHints"
+  },
+  "optionsUsageHintsClipboardText": {
+    "message": "Um ein Passwort in die Zwischenablage zu kopieren, Großstelltaste halten während man auf den Eintrag klickt..",
+    "description": "Clipboard hint text"
+  },
+  "optionsSettingsTitle": {
+    "message": "Einstellungen",
+    "description": "Title of Settings"
+  },
+  "optionsMarkFieldsLabel": {
+    "message": "Felder blau markieren wenn als Login oder Passwort Feld erkannt",
+    "description": "label of mark fields checkbox"
+  },
+  "optionsLoginAfterFillLabel": {
+    "message": "Einloggen wenn Logindaten ausgefüllt wurden",
+    "description": "label of login after fill checkbox"
+  },
+  "optionsDefaultFolderLabel": {
+    "message": "Standardordner für neue Logins",
+    "description": "label of default folder"
+  },
+  "optionsResetButtonText": {
+    "message": "Alle Einstellungen auf den Standard zurücksetzen",
+    "description": "text of reset button"
+  },
+  "noResultsForMessage": {
+    "message": "keine Suchergebnisse für",
+    "description": "Message shown if no results are found"
+  }
+}
