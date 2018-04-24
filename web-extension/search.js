@@ -17,13 +17,11 @@ function faviconUrl() {
 
 function onInputEvent() {
     var input = document.getElementById('search_input');
-
+    var currentHost = urlDomain(currentTab.url);
     if (input.value.length) {
-        searchTerm = input.value;
-        search(searchTerm);
+        search(input.value);
     } else {
-        searchTerm = urlDomain(currentTab.url);
-        searchHost(searchTerm);
+        searchHost(currentHost);
     }
 }
 
@@ -32,6 +30,8 @@ function search(query) {
         console.log('Search still in progress, skipping query ' + query);
         return;
     }
+    searchTerm = query;
+    input.value = query;
     if (!query) {
         console.log('Will not search for empty string');
         return;
@@ -43,15 +43,18 @@ function search(query) {
     sendNativeMessage(message, onSearchResults, onSearchError);
 }
 
-function searchHost(searchTerm) {
+function searchHost(term) {
     if (searching) {
-        console.log('Search still in progress, skipping query ' + searchTerm);
+        console.log('Search still in progress, skipping query ' + term);
         return;
     }
-    console.log('Searching for host ' + searchTerm);
+    removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + term);
+    searchTerm = term;
+    input.value = '';
+    console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
-    var message = { type: 'queryHost', host: searchTerm };
+    var message = { type: 'queryHost', host: term };
     sendNativeMessage(message, onSearchResults, onSearchError);
 }
 
@@ -66,6 +69,7 @@ function onSearchResults(response) {
         console.log('Result is not from the same URL as we were searching for, ignoring');
     }
     if (response.length) {
+        setLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url), input.value);
         results.innerHTML = '';
         response.forEach(function(result) {
             results.appendChild(
@@ -78,6 +82,7 @@ function onSearchResults(response) {
             );
         });
     } else {
+        removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
         setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
         results.appendChild(
             createButtonWithCallback('login', i18n.getMessage('createNewEntryButtonText'), null, createNewDialog)

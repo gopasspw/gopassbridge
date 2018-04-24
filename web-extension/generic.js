@@ -3,12 +3,15 @@
 var browser = browser || chrome;
 
 var syncstorage = browser.storage.sync;
+var localstorage = browser.storage.local;
 
 var DEFAULT_SETTINGS = {
     markfields: true,
     submitafterfill: true,
     defaultfolder: 'Account',
 };
+
+var LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
 
 function getSyncStorage(onResult, onError) {
     function assignDefaults(response) {
@@ -78,4 +81,52 @@ function urlDomain(urlString) {
     var a = document.createElement('a');
     a.href = urlString;
     return a.hostname;
+}
+
+function setLocalStorage(update, onSet) {
+    function onError(error) {
+        console.log(error);
+    }
+
+    console.log('setting local storage', update);
+
+    if (chrome) {
+        localstorage.set(update, onSet);
+    } else {
+        localstorage.set(update).then(onSet, onError);
+    }
+}
+
+function setLocalStorageKey(key, value, onSet) {
+    var update = {};
+    update[key] = value;
+    setLocalStorage(update, onSet);
+}
+
+function getLocalStorage(key, onGet) {
+    function onError(error) {
+        console.log(error);
+    }
+
+    console.log('getting local storage', key);
+
+    if (chrome) {
+        localstorage.get(key, onGet);
+    } else {
+        localstorage.get(key).then(onGet, onError);
+    }
+}
+
+function removeLocalStorage(key, onRemove) {
+    function onError(error) {
+        console.log(error);
+    }
+
+    console.log('clearing local storage key', key);
+
+    if (chrome) {
+        localstorage.remove(key, onRemove);
+    } else {
+        localstorage.remove(key).then(onRemove, onError);
+    }
 }

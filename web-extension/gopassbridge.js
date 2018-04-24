@@ -4,6 +4,8 @@ var currentTab;
 
 var options = null;
 
+var input = document.getElementById('search_input');
+
 getSyncStorage(
     function(result) {
         options = result;
@@ -26,7 +28,16 @@ function switchTab(tab) {
         executeOnSetting('markfields', function() {
             browser.tabs.sendMessage(currentTab.id, { type: 'MARK_LOGIN_FIELDS' });
         });
-        searchTerm = urlDomain(currentTab.url);
-        searchHost(searchTerm);
+        var term = urlDomain(currentTab.url);
+        if (term) {
+            getLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + term, function(values) {
+                var value = values[LAST_DOMAIN_SEARCH_PREFIX + term];
+                if (value) {
+                    search(value);
+                } else {
+                    searchHost(term);
+                }
+            });
+        }
     }
 }
