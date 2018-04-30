@@ -19,7 +19,7 @@ function switchToSearch() {
 
 function onDoCreate(event) {
     event.preventDefault();
-    var message = {
+    const message = {
         type: 'create',
         entry_name: document.getElementById('create_name').value,
         login: document.getElementById('create_login').value,
@@ -36,7 +36,7 @@ function onDoAbort() {
 }
 
 function onGenerateCheckboxChange(event) {
-    var password = document.getElementById('create_password');
+    const password = document.getElementById('create_password');
     if (event.target.checked) {
         password.value = '';
         password.placeholder = i18n.getMessage('createPasswordAutogeneratePlaceholder');

@@ -1,8 +1,8 @@
 'use strict';
 
-var searching, searchedUrl, searchTerm;
+let searching, searchedUrl, searchTerm;
 
-var input = document.getElementById('search_input');
+const input = document.getElementById('search_input');
 
 input.addEventListener('input', onInputEvent);
 input.focus();
@@ -16,8 +16,8 @@ function faviconUrl() {
 }
 
 function onInputEvent() {
-    var input = document.getElementById('search_input');
-    var currentHost = urlDomain(currentTab.url);
+    const input = document.getElementById('search_input');
+    const currentHost = urlDomain(currentTab.url);
     if (input.value.length) {
         search(input.value);
     } else {
@@ -39,8 +39,7 @@ function search(query) {
     console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
-    var message = { type: 'query', query: query };
-    sendNativeMessage(message, onSearchResults, onSearchError);
+    sendNativeMessage({ type: 'query', query: query }, onSearchResults, onSearchError);
 }
 
 function searchHost(term) {
@@ -54,12 +53,11 @@ function searchHost(term) {
     console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
-    var message = { type: 'queryHost', host: term };
-    sendNativeMessage(message, onSearchResults, onSearchError);
+    sendNativeMessage({ type: 'queryHost', host: term }, onSearchResults, onSearchError);
 }
 
 function onSearchResults(response) {
-    var results = document.getElementById('results');
+    const results = document.getElementById('results');
 
     if (response.error) {
         setStatusText(response.error);
@@ -71,7 +69,7 @@ function onSearchResults(response) {
     if (response.length) {
         setLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url), input.value);
         results.innerHTML = '';
-        response.forEach(function(result) {
+        response.forEach(result => {
             results.appendChild(
                 createButtonWithCallback(
                     'login',
@@ -92,8 +90,8 @@ function onSearchResults(response) {
 }
 
 function setStatusText(text) {
-    var results = document.getElementById('results');
-    var element = document.createElement('div');
+    const results = document.getElementById('results');
+    const element = document.createElement('div');
     element.textContent = text;
     element.className = 'status-text';
     results.innerHTML = '';
@@ -105,33 +103,31 @@ function onSearchError(error) {
 }
 
 function resultSelected(event) {
-    var value = event.target.innerText;
-    var message;
+    const value = event.target.innerText;
+    const message = { type: 'getLogin', entry: value };
     if (event.shiftKey) {
-        message = { type: 'getLogin', entry: value };
         sendNativeMessage(message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
     } else {
-        message = { type: 'getLogin', entry: value };
         sendNativeMessage(message, onLoginCredentialsDoLogin, onLoginCredentialError);
     }
 }
 
 function onLoginCredentialsDoCopyClipboard(response) {
-    var content = document.getElementById('content');
+    const content = document.getElementById('content');
 
     if (response.error) {
         setStatusText(response.error);
         return;
     }
-    var hiddenpass = document.createElement('span');
+    const hiddenpass = document.createElement('span');
     hiddenpass.textContent = response.password;
     content.appendChild(hiddenpass);
-    var tempinput = document.createElement('input');
+    const tempinput = document.createElement('input');
     tempinput.value = response.password;
     content.appendChild(tempinput);
     tempinput.select();
     document.execCommand('copy');
-    content.innerHTML = '<div class="copied">' + i18n.getMessage('copiedToClipboardMessage') + '</div>';
+    content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
     setTimeout(window.close, 1000);
 }
 
@@ -151,6 +147,7 @@ function onLoginCredentialsDoLogin(response) {
         login: response.username,
         password: response.password,
     });
+
     executeOnSetting(
         'submitafterfill',
         function() {

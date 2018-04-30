@@ -1,19 +1,10 @@
 'use strict';
 
-var browser = browser || chrome;
+let options = null;
 
-var options = null;
+getSyncStorage(result => (options = result), () => alert('Could not read config options'));
 
-getSyncStorage(
-    function(result) {
-        options = result;
-    },
-    function() {
-        alert('Could not read config options');
-    }
-);
-
-var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
+const inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
     loginInputIds = [
         'username',
         'user_name',
@@ -27,32 +18,19 @@ var inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input'
     ],
     ignorePasswordIds = ['signup_minireg_password'],
     loginInputTypes = ['email', 'text'],
-    loginInputTypesString =
-        loginInputTypes
-            .map(function(string) {
-                return 'input[type=' + string + ']';
-            })
-            .join(',') + ',input:not([type])';
+    loginInputTypesString = loginInputTypes.map(string => `input[type=${string}]`).join(',') + ',input:not([type])';
 
 function exactMatch(property, string) {
-    var idstr = '[' + property + '=' + string + ']';
-    return (
-        loginInputTypes
-            .map(function(string) {
-                return 'input[type=' + string + ']' + idstr;
-            })
-            .join(',') +
-        ',input:not([type])' +
-        idstr
-    );
+    const idstr = `[${property}=${string}]`;
+    return loginInputTypes.map(string => `input[type=${string}]${idstr}`).join(',') + `,input:not([type])${idstr}`;
 }
 
 function partialMatch(property, string) {
-    var idstr = '[' + property + '*=' + string + ']';
+    const idstr = `[${property}*=${string}]`;
     return (
         loginInputTypes
             .map(function(string) {
-                return 'input[type=' + string + ']' + idstr;
+                return `input[type=${string}]${idstr}`;
             })
             .join(',') +
         ',input:not([type])' +
@@ -60,13 +38,13 @@ function partialMatch(property, string) {
     );
 }
 
-var exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
+const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
     partialLoginInputIdString = loginInputIds.map(partialMatch.bind(null, 'id')).join(','),
     exactLoginInputNameString = loginInputIds.map(exactMatch.bind(null, 'name')).join(','),
     partialLoginInputNameString = loginInputIds.map(partialMatch.bind(null, 'name')).join(',');
 
 function isVisible(element) {
-    var elementStyle = window.getComputedStyle(element);
+    const elementStyle = window.getComputedStyle(element);
     if (element.offsetWidth < 50) {
         return false;
     }
@@ -79,10 +57,10 @@ function isVisible(element) {
 function selectFocusedElement(parent) {
     parent = parent || document;
     if (parent.body === parent.activeElement || parent.activeElement.tagName === 'IFRAME') {
-        var focusedElement = null;
-        parent.querySelectorAll('iframe').forEach(function(iframe) {
+        let focusedElement = null;
+        parent.querySelectorAll('iframe').forEach(iframe => {
             if (iframe.src.startsWith(window.location.origin)) {
-                var focused = selectFocusedElement(iframe.contentWindow.document);
+                const focused = selectFocusedElement(iframe.contentWindow.document);
                 if (focused) {
                     focusedElement = focused;
                 }
@@ -95,17 +73,17 @@ function selectFocusedElement(parent) {
 }
 
 function selectVisibleElements(selector) {
-    var visibleElements = [];
+    const visibleElements = [];
 
-    document.querySelectorAll(selector).forEach(function(element) {
+    document.querySelectorAll(selector).forEach(element => {
         if (isVisible(element)) {
             visibleElements.push(element);
         }
     });
 
-    document.querySelectorAll('iframe').forEach(function(iframe) {
+    document.querySelectorAll('iframe').forEach(iframe => {
         if (iframe.src.startsWith(window.location.origin)) {
-            iframe.contentWindow.document.body.querySelectorAll(selector).forEach(function(element) {
+            iframe.contentWindow.document.body.querySelectorAll(selector).forEach(element => {
                 if (isVisible(element)) {
                     visibleElements.push(element);
                 }
@@ -117,11 +95,11 @@ function selectVisibleElements(selector) {
 }
 
 function selectFirstVisiblePasswordElement(selector) {
-    var visibleElements = selectVisibleElements(selector);
-    for (var i = 0; i < visibleElements.length; i++) {
-        var element = visibleElements[i];
+    const visibleElements = selectVisibleElements(selector);
+    for (let i = 0; i < visibleElements.length; i++) {
+        const element = visibleElements[i];
         if (
-            ignorePasswordIds.every(function(ignore) {
+            ignorePasswordIds.every(ignore => {
                 return element.id !== ignore;
             })
         ) {
@@ -133,10 +111,10 @@ function selectFirstVisiblePasswordElement(selector) {
 }
 
 function selectFirstVisibleFormElement(form, selector, afterTabInd) {
-    var visibleElements = selectVisibleElements(selector);
+    const visibleElements = selectVisibleElements(selector);
 
-    for (var i = 0; i < visibleElements.length; i++) {
-        var element = visibleElements[i];
+    for (let i = 0; i < visibleElements.length; i++) {
+        const element = visibleElements[i];
         if (element && form === element.form) {
             if (afterTabInd === undefined) {
                 return element;
@@ -158,16 +136,16 @@ function updateElement(element, newValue) {
     element.setAttribute('value', newValue);
     element.value = newValue;
 
-    inputEventNames.forEach(function(name) {
+    inputEventNames.forEach(name => {
         element.dispatchEvent(new Event(name, { bubbles: true }));
     });
     return true;
 }
 
 function getInputFields() {
-    var passwordInput;
-    var loginInput;
-    var focusedInput = selectFocusedElement(document);
+    let passwordInput;
+    let loginInput;
+    let focusedInput = selectFocusedElement(document);
     if (focusedInput && focusedInput.tagName === 'INPUT') {
         if (focusedInput.type === 'password') {
             passwordInput = focusedInput;
@@ -197,7 +175,7 @@ function getInputFields() {
             selectFirstVisibleFormElement(passwordInput.form, partialLoginInputNameString) ||
             selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
         if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
-            var matchingPasswordInput = selectFirstVisibleFormElement(
+            const matchingPasswordInput = selectFirstVisibleFormElement(
                 loginInput.form,
                 'input[type=password]',
                 loginInput.tabIndex
@@ -221,7 +199,7 @@ function markElement(element) {
 }
 
 function markLoginFields() {
-    var inputs = getInputFields();
+    const inputs = getInputFields();
     if (inputs) {
         if (inputs.login) {
             markElement(inputs.login);
@@ -233,7 +211,7 @@ function markLoginFields() {
 }
 
 function updateInputFields(login, password) {
-    var inputs = getInputFields();
+    const inputs = getInputFields();
     if (inputs) {
         if (inputs.login) {
             updateElement(inputs.login, login);
@@ -245,12 +223,12 @@ function updateInputFields(login, password) {
 }
 
 function tryLogIn() {
-    var passwortInputs = selectVisibleElements('input[type=password]');
+    const passwortInputs = selectVisibleElements('input[type=password]');
     if (passwortInputs.length > 1) {
         passwortInputs[1].select();
     } else {
-        window.requestAnimationFrame(function() {
-            var submitButtons = selectVisibleElements('[type=submit]');
+        window.requestAnimationFrame(() => {
+            const submitButtons = selectVisibleElements('[type=submit]');
             if (submitButtons.length) {
                 submitButtons[0].click();
             }
@@ -277,5 +255,5 @@ browser.runtime.onMessage.addListener(processMessage);
 console.log('Content script for gopassbridge initialized');
 
 window.test.content = {
-    processMessage: processMessage,
+    processMessage,
 };

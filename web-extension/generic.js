@@ -1,17 +1,17 @@
 'use strict';
 
-var browser = browser || chrome;
+const browser = global.browser || browser || chrome;
 
-var syncstorage = browser.storage.sync;
-var localstorage = browser.storage.local;
+const syncstorage = browser.storage.sync;
+const localstorage = browser.storage.local;
 
-var DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS = {
     markfields: true,
     submitafterfill: true,
     defaultfolder: 'Account',
 };
 
-var LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
+const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
 
 function getSyncStorage(onResult, onError) {
     function assignDefaults(response) {
@@ -26,15 +26,17 @@ function getSyncStorage(onResult, onError) {
     }
 
     if (chrome) {
-        syncstorage.get(undefined, onChromeResults);
+        syncstorage.get(null, onChromeResults);
     } else {
-        var get = syncstorage.get();
-        get.then(assignDefaults).then(onResult, onError);
+        syncstorage
+            .get()
+            .then(assignDefaults)
+            .then(onResult, onError);
     }
 }
 
 function sendNativeMessage(message, onResult, onError) {
-    var app = 'com.justwatch.gopass';
+    const app = 'com.justwatch.gopass';
 
     function onChromeResults(response) {
         if (response) {
@@ -48,8 +50,7 @@ function sendNativeMessage(message, onResult, onError) {
     if (chrome) {
         browser.runtime.sendNativeMessage(app, message, onChromeResults);
     } else {
-        var sending = browser.runtime.sendNativeMessage(app, message);
-        sending.then(onResult, onError);
+        browser.runtime.sendNativeMessage(app, message).then(onResult, onError);
     }
 }
 
@@ -57,7 +58,7 @@ function executeOnSetting(setting, trueCallback, falseCallback) {
     function onError(error) {
         console.log(error);
     }
-    getSyncStorage(function(result) {
+    getSyncStorage(result => {
         if (result[setting]) {
             if (trueCallback) trueCallback();
         } else {
@@ -67,7 +68,7 @@ function executeOnSetting(setting, trueCallback, falseCallback) {
 }
 
 function createButtonWithCallback(className, text, style, callback) {
-    var element = document.createElement('button');
+    const element = document.createElement('button');
     element.className = className;
     element.textContent = text;
     if (style) {
@@ -78,7 +79,7 @@ function createButtonWithCallback(className, text, style, callback) {
 }
 
 function urlDomain(urlString) {
-    var a = document.createElement('a');
+    const a = document.createElement('a');
     a.href = urlString;
     return a.hostname;
 }
@@ -98,7 +99,7 @@ function setLocalStorage(update, onSet) {
 }
 
 function setLocalStorageKey(key, value, onSet) {
-    var update = {};
+    const update = {};
     update[key] = value;
     setLocalStorage(update, onSet);
 }
@@ -130,3 +131,14 @@ function removeLocalStorage(key, onRemove) {
         localstorage.remove(key).then(onRemove, onError);
     }
 }
+
+window.test.generic = {
+    DEFAULT_SETTINGS,
+    getSyncStorage,
+    sendNativeMessage,
+    executeOnSetting,
+    urlDomain,
+    setLocalStorageKey,
+    getLocalStorage,
+    removeLocalStorage,
+};

@@ -8,14 +8,14 @@ function resetStorage() {
 }
 
 function init() {
-    var checkboxes = document.querySelectorAll('input[type=checkbox]');
-    checkboxes.forEach(function(checkbox) {
+    const checkboxes = document.querySelectorAll('input[type=checkbox]');
+    checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', onCheckboxChange);
         getSyncStorage(setCheckboxes, onGetError);
     });
 
-    var textinputs = document.querySelectorAll('input[type=text]');
-    textinputs.forEach(function(textinput) {
+    const textinputs = document.querySelectorAll('input[type=text]');
+    textinputs.forEach(textinput => {
         textinput.addEventListener('change', onTextinputChange);
         getSyncStorage(setTextinputs, onGetError);
     });
@@ -26,8 +26,8 @@ function onGetError(error) {
 }
 
 function setCheckboxes(result) {
-    Object.keys(result).forEach(function(key) {
-        var checkbox = document.getElementById(key);
+    Object.keys(result).forEach(key => {
+        const checkbox = document.getElementById(key);
         if (checkbox) {
             checkbox.checked = !!result[key];
         }
@@ -35,14 +35,14 @@ function setCheckboxes(result) {
 }
 
 function onCheckboxChange(event) {
-    var update = {};
+    const update = {};
     update[event.target.id] = event.target.checked;
     syncstorage.set(update);
 }
 
 function setTextinputs(result) {
-    Object.keys(result).forEach(function(key) {
-        var textinput = document.getElementById(key);
+    Object.keys(result).forEach(key => {
+        const textinput = document.getElementById(key);
         if (textinput) {
             textinput.value = result[key];
         }
@@ -50,7 +50,7 @@ function setTextinputs(result) {
 }
 
 function onTextinputChange(event) {
-    var update = {};
+    const update = {};
     update[event.target.id] = event.target.value;
     syncstorage.set(update);
 }
