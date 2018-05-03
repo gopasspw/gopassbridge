@@ -42,7 +42,7 @@ function search(query) {
     console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeMessage({ type: 'query', query: query }, onSearchResults, onSearchError);
+    sendNativeMessage({ type: 'query', query: query }, result => onSearchResults(result, false), onSearchError);
 }
 
 function searchHost(term) {
@@ -56,10 +56,10 @@ function searchHost(term) {
     console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeMessage({ type: 'queryHost', host: term }, onSearchResults, onSearchError);
+    sendNativeMessage({ type: 'queryHost', host: term }, result => onSearchResults(result, true), onSearchError);
 }
 
-function onSearchResults(response) {
+function onSearchResults(response, isHostQuery) {
     const results = document.getElementById('results');
 
     if (response.error) {
@@ -77,7 +77,7 @@ function onSearchResults(response) {
                 createButtonWithCallback(
                     'login',
                     result,
-                    "background-image: url('" + faviconUrl() + "')",
+                    `background-image: url('${isHostQuery ? faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
                     resultSelected
                 )
             );
