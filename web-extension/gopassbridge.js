@@ -4,8 +4,6 @@ let currentTab;
 
 let options = null;
 
-const input = document.getElementById('search_input');
-
 getSyncStorage(result => (options = result), () => alert('Could not read config options'));
 
 browser.tabs.query({ currentWindow: true, active: true }, tabs => switchTab(tabs[0]));

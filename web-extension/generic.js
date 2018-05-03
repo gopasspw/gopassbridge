@@ -1,6 +1,6 @@
 'use strict';
 
-const browser = global.browser || browser || chrome;
+var browser = browser || chrome;
 
 const syncstorage = browser.storage.sync;
 const localstorage = browser.storage.local;
@@ -132,13 +132,16 @@ function removeLocalStorage(key, onRemove) {
     }
 }
 
-window.test.generic = {
-    DEFAULT_SETTINGS,
-    getSyncStorage,
-    sendNativeMessage,
-    executeOnSetting,
-    urlDomain,
-    setLocalStorageKey,
-    getLocalStorage,
-    removeLocalStorage,
+window.tests = {
+    generic: {
+        DEFAULT_SETTINGS,
+        getSyncStorage,
+        sendNativeMessage,
+        executeOnSetting,
+        urlDomain,
+        setLocalStorageKey,
+        getLocalStorage,
+        removeLocalStorage,
+        createButtonWithCallback,
+    },
 };

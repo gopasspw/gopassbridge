@@ -254,6 +254,8 @@ browser.runtime.onMessage.addListener(processMessage);
 
 console.log('Content script for gopassbridge initialized');
 
-window.test.content = {
-    processMessage,
+window.tests = {
+    content: {
+        processMessage,
+    },
 };

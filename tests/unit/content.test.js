@@ -24,7 +24,7 @@ Object.defineProperties(global.HTMLElement.prototype, {
 require('generic.js');
 require('content.js');
 
-const content = window.test.content;
+const content = window.tests.content;
 
 function expectClassHasBorder(cls, not, base) {
     const doc = base || document;

@@ -2,7 +2,7 @@
 
 require('generic.js');
 
-const generic = window.test.generic;
+const generic = window.tests.generic;
 
 describe('getSyncStorage', () => {
     afterEach(() => {
@@ -13,7 +13,7 @@ describe('getSyncStorage', () => {
         const mockOnResult = jest.fn();
         const mockOnError = jest.fn();
         generic.getSyncStorage(mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual([window.test.generic.DEFAULT_SETTINGS]);
+        expect(mockOnResult.mock.calls[0]).toEqual([generic.DEFAULT_SETTINGS]);
         expect(mockOnError.mock.calls.length).toEqual(0);
     });
 
@@ -32,7 +32,7 @@ describe('getSyncStorage', () => {
         const mockOnResult = jest.fn();
         const mockOnError = jest.fn();
         generic.getSyncStorage(mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual([Object.assign(changes, window.test.generic.DEFAULT_SETTINGS)]);
+        expect(mockOnResult.mock.calls[0]).toEqual([Object.assign(changes, generic.DEFAULT_SETTINGS)]);
     });
 });
 
@@ -116,5 +116,16 @@ describe('localStorage wrappers', () => {
 
         generic.getLocalStorage('muh', mockOnGet);
         expect(mockOnGet.mock.calls[1]).toEqual([{ muh: undefined }]);
+    });
+});
+
+describe('createButtonWithCallback', () => {
+    test('callback works', () => {
+        const buttonCbMock = jest.fn();
+        const button = generic.createButtonWithCallback('myclass', 'the text', 'border: 5px red;', buttonCbMock);
+        expect(buttonCbMock.mock.calls.length).toBe(0);
+        button.click();
+        expect(buttonCbMock.mock.calls.length).toBe(1);
+        expect(button.style._values.border).toEqual('5px red');
     });
 });
