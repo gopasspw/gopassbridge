@@ -27,6 +27,8 @@ function switchTab(tab) {
                     searchHost(term);
                 }
             });
+        } else {
+            document.getElementById('results').innerHTML = '';
         }
     }
 }

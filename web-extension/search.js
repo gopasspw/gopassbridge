@@ -1,6 +1,6 @@
 'use strict';
 
-let searching, searchedUrl, searchTerm;
+let searching, searchedUrl, searchTerm, spinnerTimeout;
 
 const input = document.getElementById('search_input');
 
@@ -8,7 +8,7 @@ input.addEventListener('input', onInputEvent);
 
 setTimeout(() => {
     input.focus();
-}, 100);
+}, 200);
 
 function faviconUrl() {
     if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
@@ -28,11 +28,20 @@ function onInputEvent() {
     }
 }
 
+function armSpinnerTimeout() {
+    clearTimeout(spinnerTimeout);
+    spinnerTimeout = setTimeout(
+        () => (document.getElementById('results').innerHTML = '<div class="loader"></div>'),
+        200
+    );
+}
+
 function search(query) {
     if (searching) {
         console.log('Search still in progress, skipping query ' + query);
         return;
     }
+    armSpinnerTimeout();
     searchTerm = query;
     input.value = query;
     if (!query) {
@@ -50,6 +59,7 @@ function searchHost(term) {
         console.log('Search still in progress, skipping query ' + term);
         return;
     }
+    armSpinnerTimeout();
     removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + term);
     searchTerm = term;
     input.value = '';
@@ -61,7 +71,7 @@ function searchHost(term) {
 
 function onSearchResults(response, isHostQuery) {
     const results = document.getElementById('results');
-
+    clearTimeout(spinnerTimeout);
     if (response.error) {
         setStatusText(response.error);
         return;
