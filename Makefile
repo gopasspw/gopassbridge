@@ -34,5 +34,7 @@ release: format
 clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip
 
+LOCAL_PRETTIER=node_modules/.bin/prettier
 format:
-		prettier --write web-extension/*.js web-extension/*.css tests/**/*.js
+		PRETTIER_CMD=prettier; if [ -e $(LOCAL_PRETTIER) ]; then PRETTIER_CMD=$(LOCAL_PRETTIER); fi; \
+		$$PRETTIER_CMD --write web-extension/*.js web-extension/*.css tests/**/*.js
