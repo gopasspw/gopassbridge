@@ -1,6 +1,8 @@
-## unreleased
+## 0.3.0 / 2018-05-3
 
 * Fix focused case for iframes
+* Fix focus of search field on firefox on open
+* Store last search and replay if host query not found
 * Simplify build process by binding functions to window for testing
 * Setup i18n, translate to german
 

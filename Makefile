@@ -1,3 +1,5 @@
+LOCAL_PRETTIER=node_modules/.bin/prettier
+
 run-firefox: develop
 		web-ext run -v --browser-console -s $(CURDIR)/firefox
 
@@ -9,7 +11,7 @@ develop: format
 		cd chrome; cp -R ../web-extension/* .
 		cd firefox; cp -R ../web-extension/* .
 
-test_release:
+package: format
 		rm -rf chrome-release firefox-release
 		mkdir chrome-release firefox-release
 		cd chrome-release; cp ../manifests/chrome-manifest.json manifest.json
@@ -17,12 +19,7 @@ test_release:
 		cd chrome-release; cp -R ../web-extension/* .
 		cd firefox-release; cp -R ../web-extension/* .
 
-release: format
-		rm -rf chrome-release firefox-release
-		mkdir chrome-release firefox-release
-		cd chrome-release; cp ../manifests/chrome-manifest.json manifest.json
-		cd firefox-release; cp ../manifests/firefox-manifest.json manifest.json
-
+release: package
 		cp chrome.pem chrome-release/key.pem
 
 		rm -f chrome.zip
@@ -34,7 +31,6 @@ release: format
 clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip
 
-LOCAL_PRETTIER=node_modules/.bin/prettier
 format:
 		PRETTIER_CMD=prettier; if [ -e $(LOCAL_PRETTIER) ]; then PRETTIER_CMD=$(LOCAL_PRETTIER); fi; \
 		$$PRETTIER_CMD --write web-extension/*.js web-extension/*.css tests/**/*.js
