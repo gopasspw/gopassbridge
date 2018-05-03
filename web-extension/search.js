@@ -5,7 +5,10 @@ let searching, searchedUrl, searchTerm;
 const input = document.getElementById('search_input');
 
 input.addEventListener('input', onInputEvent);
-input.focus();
+
+setTimeout(() => {
+    input.focus();
+}, 100);
 
 function faviconUrl() {
     if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
