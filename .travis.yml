@@ -3,7 +3,7 @@ node_js:
   - "8"
 cache: yarn
 before_script:
-  - make test_release
+  - make package
 script:
   - npm test
   - codecov
