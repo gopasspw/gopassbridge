@@ -5,6 +5,7 @@ let searching, searchedUrl, searchTerm, spinnerTimeout;
 const input = document.getElementById('search_input');
 
 input.addEventListener('input', onInputEvent);
+input.addEventListener('keypress', onKeypressEvent);
 
 setTimeout(() => {
     input.focus();
@@ -16,6 +17,22 @@ function faviconUrl() {
     }
 
     return 'icons/si-glyph-key-2.svg';
+}
+
+function onKeypressEvent(event) {
+    if (event.keyCode === 13) {
+        const elements = document.getElementsByClassName('login');
+        if (elements.length === 1) {
+            const value = elements[0].innerText;
+            const message = { type: 'getLogin', entry: value };
+            if (event.shiftKey) {
+                sendNativeMessage(message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
+            } else {
+                sendNativeMessage(message, onLoginCredentialsDoLogin, onLoginCredentialError);
+            }
+        }
+        event.preventDefault();
+    }
 }
 
 function onInputEvent() {
