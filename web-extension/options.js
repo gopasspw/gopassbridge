@@ -1,13 +1,16 @@
 'use strict';
 
-document.getElementById('clear').addEventListener('click', resetStorage);
-
 function resetStorage() {
     syncstorage.clear();
     init();
 }
 
 function init() {
+    const clearButton = document.getElementById('clear');
+    if (clearButton) {
+        clearButton.addEventListener('click', resetStorage);
+    }
+
     const checkboxes = document.querySelectorAll('input[type=checkbox]');
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', onCheckboxChange);
@@ -56,3 +59,10 @@ function onTextinputChange(event) {
 }
 
 init();
+
+window.tests = {
+    options: {
+        init,
+        onTextinputChange,
+    },
+};

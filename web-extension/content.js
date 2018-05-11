@@ -1,9 +1,5 @@
 'use strict';
 
-let options = null;
-
-getSyncStorage(result => (options = result), () => alert('Could not read config options'));
-
 const inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'input', 'blur', 'change'],
     loginInputIds = [
         'username',
@@ -142,7 +138,17 @@ function updateElement(element, newValue) {
     return true;
 }
 
-function getInputFields() {
+function getLoginInputFromPasswordInputForm(passwordInputForm) {
+    return (
+        selectFirstVisibleFormElement(passwordInputForm, exactLoginInputIdString) ||
+        selectFirstVisibleFormElement(passwordInputForm, partialLoginInputIdString) ||
+        selectFirstVisibleFormElement(passwordInputForm, exactLoginInputNameString) ||
+        selectFirstVisibleFormElement(passwordInputForm, partialLoginInputNameString) ||
+        selectFirstVisibleFormElement(passwordInputForm, loginInputTypesString)
+    );
+}
+
+function getInputFieldsFromFocus() {
     let passwordInput;
     let loginInput;
     let focusedInput = selectFocusedElement(document);
@@ -164,16 +170,19 @@ function getInputFields() {
             }
         }
     }
-    passwordInput = passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
+    return {
+        loginInput,
+        passwordInput,
+    };
+}
 
-    if (passwordInput && passwordInput.form && !loginInput) {
-        loginInput =
-            loginInput ||
-            selectFirstVisibleFormElement(passwordInput.form, exactLoginInputIdString) ||
-            selectFirstVisibleFormElement(passwordInput.form, partialLoginInputIdString) ||
-            selectFirstVisibleFormElement(passwordInput.form, exactLoginInputNameString) ||
-            selectFirstVisibleFormElement(passwordInput.form, partialLoginInputNameString) ||
-            selectFirstVisibleFormElement(passwordInput.form, loginInputTypesString);
+function getInputFields() {
+    const focusedInputs = getInputFieldsFromFocus();
+    let loginInput = focusedInputs.loginInput;
+    let passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
+
+    if (passwordInput && passwordInput.form && !focusedInputs.loginInput) {
+        loginInput = getLoginInputFromPasswordInputForm(passwordInput.form);
         if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
             const matchingPasswordInput = selectFirstVisibleFormElement(
                 loginInput.form,
@@ -184,14 +193,10 @@ function getInputFields() {
         }
     }
 
-    if (passwordInput || loginInput) {
-        return {
-            login: loginInput,
-            password: passwordInput,
-        };
-    }
-
-    return false;
+    return {
+        login: loginInput,
+        password: passwordInput,
+    };
 }
 
 function markElement(element) {
@@ -200,25 +205,21 @@ function markElement(element) {
 
 function markLoginFields() {
     const inputs = getInputFields();
-    if (inputs) {
-        if (inputs.login) {
-            markElement(inputs.login);
-        }
-        if (inputs.password) {
-            markElement(inputs.password);
-        }
+    if (inputs.login) {
+        markElement(inputs.login);
+    }
+    if (inputs.password) {
+        markElement(inputs.password);
     }
 }
 
 function updateInputFields(login, password) {
     const inputs = getInputFields();
-    if (inputs) {
-        if (inputs.login) {
-            updateElement(inputs.login, login);
-        }
-        if (inputs.password) {
-            updateElement(inputs.password, password);
-        }
+    if (inputs.login) {
+        updateElement(inputs.login, login);
+    }
+    if (inputs.password) {
+        updateElement(inputs.password, password);
     }
 }
 

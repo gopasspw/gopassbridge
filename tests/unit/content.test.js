@@ -21,7 +21,6 @@ Object.defineProperties(global.HTMLElement.prototype, {
     },
 });
 
-require('generic.js');
 require('content.js');
 
 const content = window.tests.content;

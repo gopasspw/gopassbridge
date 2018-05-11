@@ -132,6 +132,10 @@ function removeLocalStorage(key, onRemove) {
     }
 }
 
+let settings;
+
+getSyncStorage(result => (settings = result), () => alert('Could not read config settings'));
+
 window.tests = {
     generic: {
         DEFAULT_SETTINGS,
