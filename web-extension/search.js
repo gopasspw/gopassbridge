@@ -113,7 +113,12 @@ function onSearchResults(response, isHostQuery) {
         removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
         setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
         results.appendChild(
-            createButtonWithCallback('login', i18n.getMessage('createNewEntryButtonText'), null, createNewDialog)
+            createButtonWithCallback(
+                'login',
+                i18n.getMessage('createNewEntryButtonText'),
+                null,
+                switchToCreateNewDialog
+            )
         );
     }
     searching = false;
@@ -193,4 +198,11 @@ function onLoginCredentialsDoLogin(response) {
 function onLoginCredentialError(error) {
     alert(error.message);
     window.close();
+}
+
+function switchToCreateNewDialog() {
+    document.getElementsByClassName('search')[0].style.display = 'none';
+    document.getElementsByClassName('results')[0].style.display = 'none';
+    document.getElementsByClassName('create')[0].style.display = 'block';
+    document.getElementById('create_name').value = [settings['defaultfolder'], urlDomain(currentTab.url)].join('/');
 }

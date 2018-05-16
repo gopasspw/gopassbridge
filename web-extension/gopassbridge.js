@@ -2,10 +2,6 @@
 
 let currentTab;
 
-let options = null;
-
-getSyncStorage(result => (options = result), () => alert('Could not read config options'));
-
 browser.tabs.query({ currentWindow: true, active: true }, tabs => switchTab(tabs[0]));
 
 browser.tabs.onActivated.addListener(switchTab);

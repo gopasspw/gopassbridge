@@ -4,13 +4,6 @@ document.getElementById('create_docreate').addEventListener('click', onDoCreate)
 document.getElementById('create_doabort').addEventListener('click', onDoAbort);
 document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
 
-function createNewDialog() {
-    document.getElementsByClassName('search')[0].style.display = 'none';
-    document.getElementsByClassName('results')[0].style.display = 'none';
-    document.getElementsByClassName('create')[0].style.display = 'block';
-    document.getElementById('create_name').value = [options['defaultfolder'], urlDomain(currentTab.url)].join('/');
-}
-
 function switchToSearch() {
     document.getElementsByClassName('search')[0].style.display = 'block';
     document.getElementsByClassName('results')[0].style.display = 'block';
