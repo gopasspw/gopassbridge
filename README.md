@@ -3,7 +3,7 @@
 
 # gopassbridge
 
-A web extension for firefox and chrome to insert login credentials from [gopass](https://github.com/justwatchcom/gopass)
+A web extension for Firefox and Chrome to insert login credentials from [gopass](https://github.com/justwatchcom/gopass)
 
 ## Summary
 
@@ -29,7 +29,7 @@ https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbi
 
 #### Build and install browser extension from source
 
-See `Makefile` release target. For firefox, the development plugin can be installed only temporarily while for chrome, the extracted extension can be installed permanently.
+See `Makefile` release target. For Firefox, the development plugin can be installed only temporarily while for Chrome, the extracted extension can be installed permanently.
 
 ### Connect to gopass
 
@@ -51,5 +51,5 @@ Contributions to this project are welcome!
 To start with development of this extension
 * clone the repo
 * run `yarn` to install the dependencies
-* run `make develop` to setup the development directories for firefox and chrome
-* run `make run-firefox` to start an empty firefox profile with the extension loaded and a debugger open
+* run `make develop` to setup the development directories for Firefox and Chrome
+* run `make run-firefox` to start an empty Firefox profile with the extension loaded and a debugger open

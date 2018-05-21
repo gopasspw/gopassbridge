@@ -10,4 +10,4 @@
 The gopassbridge code must be fully reviewable also when installed as extension. 
 Therefore, no 3rd party libraries and plain ES5 must be used. Also keep your code as simple as possible. 
 
-Also note in your pull request if you want the maintainer to prepare a new release of the chrome and firefox plugins.
+Also note in your pull request if you want the maintainer to prepare a new release of the Chrome and Firefox plugins.
