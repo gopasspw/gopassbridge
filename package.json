@@ -1,8 +1,8 @@
 {
   "name": "gopassbridge",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
-  "main": "index.js",
+  "main": "web-extension/gopassbridge.js",
   "scripts": {
     "test": "npm-run-all test:*",
     "test:lint": "npm run lint",
@@ -27,7 +27,8 @@
     "url": "https://github.com/martinhoefling/gopassbridge/issues"
   },
   "homepage": "https://github.com/martinhoefling/gopassbridge#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "codecov": "^3.0.0",
     "eslint": "^4.16.0",
     "eslint-plugin-json": "^1.2.0",
