@@ -9,13 +9,13 @@ A web extension for Firefox and Chrome to insert login credentials from [gopass]
 
 ## Summary
 
-[Gopass](https://github.com/justwatchcom/gopass) is the awesome command line password manager. This plugin enables input of login credentials from gopass.
+[Gopass](https://github.com/gopasspw/gopass) is the awesome command line password manager. This plugin enables input of login credentials from gopass.
 To access gopass, a native app has to be configured in the browser in addition to this plugin. 
 The native app is a wrapper that calls gopass with the jsonapi parameter to communicate via stdin/stdout. 
 
 ## Quick impression
 
-[![Watch the video](https://raw.github.com/martinhoefling/gopassbridge/master/media/GopassBridgeWalkaroundPlaceholder.png)](https://youtu.be/ovOX_xP0d3s)
+[![Watch the video](https://raw.github.com/gopasspw/gopassbridge/master/media/GopassBridgeWalkaroundPlaceholder.png)](https://youtu.be/ovOX_xP0d3s)
 
 ## Setup
 
@@ -38,7 +38,7 @@ See `Makefile` release target. For Firefox, the development plugin can be instal
 The connection to gopass is achieved via the native messaging.
 For this a native messaging manifest is necessary.
 
-It is recommended that you set up the manifests with gopass as described in the [gopass documentation, "filling passwords from browser"](https://github.com/justwatchcom/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser).
+It is recommended that you set up the manifests with gopass as described in the [gopass documentation, "filling passwords from browser"](https://github.com/gopasspw/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser).
 In most cases it is enough to run `gopass jsonapi configure` and follow the tutorial.
 
 If you prefer a manual setup, example manifest configurations and a wrapper for gopass can be found in the `native-app` directory of this repository. 
