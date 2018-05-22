@@ -26,9 +26,9 @@ function onKeypressEvent(event) {
             const value = elements[0].innerText;
             const message = { type: 'getLogin', entry: value };
             if (event.shiftKey) {
-                sendNativeMessage(message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
+                sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
             } else {
-                sendNativeMessage(message, onLoginCredentialsDoLogin, onLoginCredentialError);
+                sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, onLoginCredentialError);
             }
         }
         event.preventDefault();
@@ -68,7 +68,7 @@ function search(query) {
     console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeMessage({ type: 'query', query: query }, result => onSearchResults(result, false), onSearchError);
+    sendNativeAppMessage({ type: 'query', query: query }).then(result => onSearchResults(result, false), onSearchError);
 }
 
 function searchHost(term) {
@@ -77,13 +77,16 @@ function searchHost(term) {
         return;
     }
     armSpinnerTimeout();
-    removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + term);
+    browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + term);
     searchTerm = term;
     input.value = '';
     console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeMessage({ type: 'queryHost', host: term }, result => onSearchResults(result, true), onSearchError);
+    sendNativeAppMessage({ type: 'queryHost', host: term }).then(
+        result => onSearchResults(result, true),
+        onSearchError
+    );
 }
 
 function onSearchResults(response, isHostQuery) {
@@ -110,7 +113,7 @@ function onSearchResults(response, isHostQuery) {
             );
         });
     } else {
-        removeLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
+        browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
         setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
         results.appendChild(
             createButtonWithCallback(
@@ -141,9 +144,9 @@ function resultSelected(event) {
     const value = event.target.innerText;
     const message = { type: 'getLogin', entry: value };
     if (event.shiftKey) {
-        sendNativeMessage(message, onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
+        sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
     } else {
-        sendNativeMessage(message, onLoginCredentialsDoLogin, onLoginCredentialError);
+        sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, onLoginCredentialError);
     }
 }
 
@@ -201,8 +204,10 @@ function onLoginCredentialError(error) {
 }
 
 function switchToCreateNewDialog() {
-    document.getElementsByClassName('search')[0].style.display = 'none';
-    document.getElementsByClassName('results')[0].style.display = 'none';
-    document.getElementsByClassName('create')[0].style.display = 'block';
-    document.getElementById('create_name').value = [settings['defaultfolder'], urlDomain(currentTab.url)].join('/');
+    getSettings().then(settings => {
+        document.getElementsByClassName('search')[0].style.display = 'none';
+        document.getElementsByClassName('results')[0].style.display = 'none';
+        document.getElementsByClassName('create')[0].style.display = 'block';
+        document.getElementById('create_name').value = [settings['defaultfolder'], urlDomain(currentTab.url)].join('/');
+    });
 }

@@ -3,93 +3,98 @@
 require('generic.js');
 
 const generic = window.tests.generic;
-
-describe('getSyncStorage', () => {
-    afterEach(() => {
-        chrome.storage.sync.get = jest.fn((_, cb) => cb(null));
-    });
-
-    test('loads defaults if no entry provided', () => {
-        const mockOnResult = jest.fn();
-        const mockOnError = jest.fn();
-        generic.getSyncStorage(mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual([generic.DEFAULT_SETTINGS]);
-        expect(mockOnError.mock.calls.length).toEqual(0);
-    });
-
-    test('calls error callback on error', () => {
-        chrome.storage.sync.get = jest.fn((_, cb) => cb(null));
-        const mockOnResult = jest.fn();
-        const mockOnError = jest.fn();
-        generic.getSyncStorage(mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual(undefined);
-        expect(mockOnError.mock.calls.length).toEqual(1);
-    });
-
-    test('mixes defaults and stored entries', () => {
-        const changes = { defaultfolder: 'MySpecialFolder', anothersetting: false };
-        chrome.storage.sync.get = jest.fn((_, cb) => cb(changes));
-        const mockOnResult = jest.fn();
-        const mockOnError = jest.fn();
-        generic.getSyncStorage(mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual([Object.assign(changes, generic.DEFAULT_SETTINGS)]);
-    });
-});
+let mockOnTrue, mockOnFalse, mockOnResult, mockOnError;
 
 describe('executeOnSetting', () => {
-    afterEach(() => {
-        chrome.storage.sync.get = jest.fn();
+    beforeEach(() => {
+        mockOnTrue = jest.fn();
+        mockOnFalse = jest.fn();
     });
 
-    test('executes callback when setting turned on', () => {
-        chrome.storage.sync.get = jest.fn((_, cb) => cb({ mysetting: true }));
-        const mockOnTrue = jest.fn();
-        const mockOnFalse = jest.fn();
-        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse);
-        expect(mockOnTrue.mock.calls.length).toEqual(1);
-        expect(mockOnFalse.mock.calls.length).toEqual(0);
+    test('executes success callback when setting turned on', () => {
+        expect.assertions(2);
+        global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
+        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
+            expect(mockOnTrue.mock.calls.length).toEqual(1);
+            expect(mockOnFalse.mock.calls.length).toEqual(0);
+        });
     });
 
-    test('does not execute callback when setting turned off', () => {
-        chrome.storage.sync.get = jest.fn((_, cb) => cb({ mysetting: false }));
-        const mockOnTrue = jest.fn();
-        const mockOnFalse = jest.fn();
-        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse);
-        expect(mockOnTrue.mock.calls.length).toEqual(0);
-        expect(mockOnFalse.mock.calls.length).toEqual(1);
+    test('no error if no success callback', () => {
+        expect.assertions(1);
+        global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
+        generic.executeOnSetting('mysetting', null, mockOnFalse).then(() => {
+            expect(true).toEqual(true);
+        });
+    });
+
+    test('does execute error callback when setting turned off', () => {
+        expect.assertions(2);
+        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
+            expect(mockOnTrue.mock.calls.length).toEqual(0);
+            expect(mockOnFalse.mock.calls.length).toEqual(1);
+        });
+    });
+
+    test('no error if no error callback', () => {
+        expect.assertions(1);
+        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        generic.executeOnSetting('mysetting', mockOnTrue, false).then(() => {
+            expect(true).toEqual(true);
+        });
     });
 
     test('does not execute callback when setting does not exist', () => {
-        chrome.storage.sync.get = jest.fn((_, cb) => cb({ mysetting: false }));
-        const mockOnTrue = jest.fn();
-        const mockOnFalse = jest.fn();
-        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse);
-        expect(mockOnTrue.mock.calls.length).toEqual(0);
-        expect(mockOnFalse.mock.calls.length).toEqual(1);
+        expect.assertions(2);
+        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
+            expect(mockOnTrue.mock.calls.length).toEqual(0);
+            expect(mockOnFalse.mock.calls.length).toEqual(1);
+        });
+    });
+
+    test('resolves no callback when error occurs on getting value', () => {
+        expect.assertions(3);
+        global.browser.storage.sync.get.mockRejectedValue('some error');
+        global.console.log = jest.fn();
+        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).catch(() => {
+            expect(mockOnTrue.mock.calls.length).toEqual(0);
+            expect(mockOnFalse.mock.calls.length).toEqual(0);
+            expect(global.console.log.mock.calls).toEqual([['some error']]);
+        });
     });
 });
 
 describe('sendNativeMessage', () => {
-    afterEach(() => {
-        chrome.runtime.sendNativeMessage = jest.fn();
+    beforeEach(() => {
+        mockOnResult = jest.fn();
+        mockOnError = jest.fn();
+        global.browser.runtime.sendNativeMessage = jest.fn();
     });
 
     test('sends message with response on success', () => {
-        chrome.runtime.sendNativeMessage = jest.fn((_, __, cb) => cb({ maeh: '123' }));
-        const mockOnResult = jest.fn();
-        const mockOnError = jest.fn();
-        generic.sendNativeMessage({ payload: 'muh' }, mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual([{ maeh: '123' }]);
-        expect(mockOnError.mock.calls.length).toEqual(0);
+        expect.assertions(2);
+        global.browser.runtime.sendNativeMessage.mockResolvedValue({ maeh: '123' });
+        generic
+            .sendNativeAppMessage({ payload: 'muh' })
+            .then(mockOnResult, mockOnError)
+            .then(() => {
+                expect(mockOnResult.mock.calls[0]).toEqual([{ maeh: '123' }]);
+                expect(mockOnError.mock.calls.length).toEqual(0);
+            });
     });
 
     test('calls error handler on failure', () => {
-        chrome.runtime.sendNativeMessage = jest.fn((_, __, cb) => cb(null));
-        const mockOnResult = jest.fn();
-        const mockOnError = jest.fn();
-        generic.sendNativeMessage({ payload: 'muh' }, mockOnResult, mockOnError);
-        expect(mockOnResult.mock.calls[0]).toEqual(undefined);
-        expect(mockOnError.mock.calls.length).toEqual(1);
+        expect.assertions(2);
+        global.browser.runtime.sendNativeMessage.mockRejectedValue('An error');
+        generic
+            .sendNativeAppMessage({ payload: 'muh' })
+            .then(mockOnResult, mockOnError)
+            .then(() => {
+                expect(mockOnResult.mock.calls[0]).toEqual(undefined);
+                expect(mockOnError.mock.calls.length).toEqual(1);
+            });
     });
 });
 
@@ -100,32 +105,38 @@ describe('urlDomain', () => {
 });
 
 describe('localStorage wrappers', () => {
-    test('set, get and remove key', () => {
-        const mockOnSet = jest.fn();
-        const mockOnGet = jest.fn();
-        const mockOnRemove = jest.fn();
+    test('set key', () => {
+        expect.assertions(1);
+        generic.setLocalStorageKey('muh', 123).then(() => {
+            expect(global.browser.storage.local.set.mock.calls).toEqual([[{ muh: 123 }]]);
+        });
+    });
 
-        generic.setLocalStorageKey('muh', 123, mockOnSet);
-        expect(mockOnSet.mock.calls.length).toEqual(1);
-
-        generic.getLocalStorage('muh', mockOnGet);
-        expect(mockOnGet.mock.calls[0]).toEqual([{ muh: 123 }]);
-
-        generic.removeLocalStorage('muh', mockOnRemove);
-        expect(mockOnRemove.mock.calls.length).toEqual(1);
-
-        generic.getLocalStorage('muh', mockOnGet);
-        expect(mockOnGet.mock.calls[1]).toEqual([{ muh: undefined }]);
+    test('get key', () => {
+        expect.assertions(1);
+        generic.setLocalStorageKey('muh', 123).then(() => {
+            generic.getLocalStorageKey('muh').then(value => {
+                expect(value).toBe(123);
+            });
+        });
     });
 });
 
 describe('createButtonWithCallback', () => {
-    test('callback works', () => {
+    test('callback works for button with style', () => {
         const buttonCbMock = jest.fn();
         const button = generic.createButtonWithCallback('myclass', 'the text', 'border: 5px red;', buttonCbMock);
         expect(buttonCbMock.mock.calls.length).toBe(0);
         button.click();
         expect(buttonCbMock.mock.calls.length).toBe(1);
         expect(button.style._values.border).toEqual('5px red');
+    });
+
+    test('callback works for button without style', () => {
+        const buttonCbMock = jest.fn();
+        const button = generic.createButtonWithCallback('myclass', 'the text', null, buttonCbMock);
+        expect(buttonCbMock.mock.calls.length).toBe(0);
+        button.click();
+        expect(buttonCbMock.mock.calls.length).toBe(1);
     });
 });

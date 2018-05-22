@@ -21,7 +21,7 @@ function onDoCreate(event) {
         generate: document.getElementById('create_generate').checked,
         use_symbols: document.getElementById('create_use_symbols').checked,
     };
-    sendNativeMessage(message, onCreateResult, onCreateError);
+    sendNativeAppMessage(message).then(onCreateResult, onCreateError);
 }
 
 function onDoAbort() {

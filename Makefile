@@ -29,8 +29,14 @@ release: package
 		web-ext -s $(CURDIR)/firefox-release build --overwrite-dest
 
 clean:
-		rm -rf chrome firefox chrome-release firefox-release chrome.zip
+		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill
 
 format:
 		PRETTIER_CMD=prettier; if [ -e $(LOCAL_PRETTIER) ]; then PRETTIER_CMD=$(LOCAL_PRETTIER); fi; \
 		$$PRETTIER_CMD --write web-extension/*.js web-extension/*.css tests/**/*.js
+
+webextension-polyfill: clean
+	    git clone https://github.com/mozilla/webextension-polyfill.git
+		cd webextension-polyfill && yarn
+		cp webextension-polyfill/dist/browser-polyfill.js web-extension/vendor/
+		rm -rf webextension-polyfill

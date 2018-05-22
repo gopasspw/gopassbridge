@@ -1,7 +1,7 @@
 'use strict';
 
 function resetStorage() {
-    syncstorage.clear();
+    browser.storage.sync.clear();
     init();
 }
 
@@ -11,24 +11,23 @@ function init() {
         clearButton.addEventListener('click', resetStorage);
     }
 
-    const checkboxes = document.querySelectorAll('input[type=checkbox]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', onCheckboxChange);
-        getSyncStorage(setCheckboxes, onGetError);
-    });
+    return getSettings().then(settings => {
+        const checkboxes = document.querySelectorAll('input[type=checkbox]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', _onCheckboxChange);
+        });
+        _setCheckboxes(settings);
 
-    const textinputs = document.querySelectorAll('input[type=text]');
-    textinputs.forEach(textinput => {
-        textinput.addEventListener('change', onTextinputChange);
-        getSyncStorage(setTextinputs, onGetError);
-    });
+        const textinputs = document.querySelectorAll('input[type=text]');
+        textinputs.forEach(textinput => {
+            textinput.addEventListener('change', _onTextinputChange);
+        });
+        _setTextinputs(settings);
+        console.log('Options initialized');
+    }, logError);
 }
 
-function onGetError(error) {
-    console.log(error);
-}
-
-function setCheckboxes(result) {
+function _setCheckboxes(result) {
     Object.keys(result).forEach(key => {
         const checkbox = document.getElementById(key);
         if (checkbox) {
@@ -37,13 +36,13 @@ function setCheckboxes(result) {
     });
 }
 
-function onCheckboxChange(event) {
+function _onCheckboxChange(event) {
     const update = {};
     update[event.target.id] = event.target.checked;
-    syncstorage.set(update);
+    browser.storage.sync.set(update);
 }
 
-function setTextinputs(result) {
+function _setTextinputs(result) {
     Object.keys(result).forEach(key => {
         const textinput = document.getElementById(key);
         if (textinput) {
@@ -52,10 +51,10 @@ function setTextinputs(result) {
     });
 }
 
-function onTextinputChange(event) {
+function _onTextinputChange(event) {
     const update = {};
     update[event.target.id] = event.target.value;
-    syncstorage.set(update);
+    browser.storage.sync.set(update);
 }
 
 init();
@@ -63,6 +62,6 @@ init();
 window.tests = {
     options: {
         init,
-        onTextinputChange,
+        _onTextinputChange,
     },
 };

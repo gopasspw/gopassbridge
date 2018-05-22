@@ -19,11 +19,16 @@
           "http://*/*",
           "https://*/*"
         ],
-      "js": ["generic.js", "content.js"]
+      "js": [
+        "vendor/browser-polyfill.js",
+        "generic.js",
+        "content.js"
+      ]
     }
   ],
 
   "options_ui": {
+    "browser_style": true,
     "page": "options.html"
   },
 

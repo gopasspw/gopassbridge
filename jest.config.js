@@ -2,7 +2,8 @@
 
 module.exports = {
     setupFiles: [
-        'jest-webextension-mock'
+        'jest-webextension-mock',
+        'jest-plugin-unhandled-promise/setup'
     ],
     verbose: true,
     modulePaths: [
