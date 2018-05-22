@@ -2,7 +2,7 @@
 
 let currentTab;
 
-browser.tabs.query({ currentWindow: true, active: true }, tabs => switchTab(tabs[0]));
+browser.tabs.query({ currentWindow: true, active: true }).then(tabs => switchTab(tabs[0]));
 
 browser.tabs.onActivated.addListener(switchTab);
 
@@ -15,8 +15,7 @@ function switchTab(tab) {
         });
         const term = urlDomain(currentTab.url);
         if (term) {
-            getLocalStorage(LAST_DOMAIN_SEARCH_PREFIX + term, values => {
-                const value = values[LAST_DOMAIN_SEARCH_PREFIX + term];
+            return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + term).then(value => {
                 if (value) {
                     search(value);
                 } else {
@@ -27,4 +26,14 @@ function switchTab(tab) {
             document.getElementById('results').innerHTML = '';
         }
     }
+    return Promise.resolve();
 }
+
+window.tests = {
+    gopassbridge: {
+        switchTab,
+        getCurrentTab: () => {
+            return currentTab;
+        },
+    },
+};
