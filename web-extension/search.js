@@ -187,3 +187,11 @@ function onLoginCredentialsDoLogin(response) {
 }
 
 initSearch();
+
+window.tests = {
+    search: {
+        initSearch,
+        _onSearchInputEvent,
+        _onSearchKeypressEvent,
+    },
+};
