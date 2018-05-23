@@ -4,12 +4,6 @@ document.getElementById('create_docreate').addEventListener('click', onDoCreate)
 document.getElementById('create_doabort').addEventListener('click', onDoAbort);
 document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
 
-function switchToSearch() {
-    document.getElementsByClassName('search')[0].style.display = 'block';
-    document.getElementsByClassName('results')[0].style.display = 'block';
-    document.getElementsByClassName('create')[0].style.display = 'none';
-}
-
 function onDoCreate(event) {
     event.preventDefault();
     const message = {
@@ -21,7 +15,8 @@ function onDoCreate(event) {
         generate: document.getElementById('create_generate').checked,
         use_symbols: document.getElementById('create_use_symbols').checked,
     };
-    sendNativeAppMessage(message).then(onCreateResult, onCreateError);
+    armSpinnerTimeout();
+    sendNativeAppMessage(message).then(onCreateResult, logAndDisplayError);
 }
 
 function onDoAbort() {
@@ -50,10 +45,4 @@ function onCreateResult(response) {
     console.log('created');
     searchTerm = urlDomain(currentTab.url);
     searchHost(searchTerm);
-}
-
-function onCreateError(error) {
-    console.log(error);
-    switchToSearch();
-    setStatusText(error.message);
 }

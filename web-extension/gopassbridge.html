@@ -8,14 +8,14 @@
 <body>
 <div class="container">
     <div id="content">
-        <div class="search">
+        <div class="search" style="display: block;">
             <form>
                 <input id="search_input" placeholder="__MSG_searchPlaceholder__" autocomplete="off" autofocus
                        name="search"/>
                 <input type="submit" value="__MSG_searchButtonText__" style="display: none;">
             </form>
         </div>
-        <div id="results" class="results">
+        <div id="results" class="results" style="display: block;">
             <div class="loader"></div>
         </div>
         <div class="create" style="display: none;">
@@ -52,6 +52,7 @@
 </div>
 <script src="vendor/browser-polyfill.js"></script>
 <script src="generic.js"></script>
+<script src="popup.js"></script>
 <script src="i18n.js"></script>
 <script src="create.js"></script>
 <script src="search.js"></script>

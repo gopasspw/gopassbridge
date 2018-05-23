@@ -1,25 +1,19 @@
 'use strict';
 
-let searching, searchedUrl, searchTerm, spinnerTimeout;
+let searching, searchedUrl, searchTerm;
 
-const input = document.getElementById('search_input');
+function initSearch() {
+    const input = document.getElementById('search_input');
 
-input.addEventListener('input', onInputEvent);
-input.addEventListener('keypress', onKeypressEvent);
+    input.addEventListener('input', _onSearchInputEvent);
+    input.addEventListener('keypress', _onSearchKeypressEvent);
 
-setTimeout(() => {
-    input.focus();
-}, 200);
-
-function faviconUrl() {
-    if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
-        return currentTab.favIconUrl;
-    }
-
-    return 'icons/si-glyph-key-2.svg';
+    setTimeout(() => {
+        input.focus();
+    }, 200);
 }
 
-function onKeypressEvent(event) {
+function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
         const elements = document.getElementsByClassName('login');
         if (elements.length === 1) {
@@ -35,7 +29,7 @@ function onKeypressEvent(event) {
     }
 }
 
-function onInputEvent() {
+function _onSearchInputEvent() {
     const input = document.getElementById('search_input');
     const currentHost = urlDomain(currentTab.url);
     if (input.value.length) {
@@ -45,14 +39,6 @@ function onInputEvent() {
     }
 }
 
-function armSpinnerTimeout() {
-    clearTimeout(spinnerTimeout);
-    spinnerTimeout = setTimeout(
-        () => (document.getElementById('results').innerHTML = '<div class="loader"></div>'),
-        200
-    );
-}
-
 function search(query) {
     if (searching) {
         console.log('Search still in progress, skipping query ' + query);
@@ -60,7 +46,7 @@ function search(query) {
     }
     armSpinnerTimeout();
     searchTerm = query;
-    input.value = query;
+    document.getElementById('search_input').value = query;
     if (!query) {
         console.log('Will not search for empty string');
         return;
@@ -79,7 +65,7 @@ function searchHost(term) {
     armSpinnerTimeout();
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + term);
     searchTerm = term;
-    input.value = '';
+    document.getElementById('search_input').value = '';
     console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
@@ -87,6 +73,14 @@ function searchHost(term) {
         result => onSearchResults(result, true),
         onSearchError
     );
+}
+
+function _faviconUrl() {
+    if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
+        return currentTab.favIconUrl;
+    }
+
+    return 'icons/si-glyph-key-2.svg';
 }
 
 function onSearchResults(response, isHostQuery) {
@@ -100,14 +94,17 @@ function onSearchResults(response, isHostQuery) {
         console.log('Result is not from the same URL as we were searching for, ignoring');
     }
     if (response.length) {
-        setLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url), input.value);
+        setLocalStorageKey(
+            LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url),
+            document.getElementById('search_input').value
+        );
         results.innerHTML = '';
         response.forEach(result => {
             results.appendChild(
                 createButtonWithCallback(
                     'login',
                     result,
-                    `background-image: url('${isHostQuery ? faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
+                    `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
                     resultSelected
                 )
             );
@@ -127,15 +124,6 @@ function onSearchResults(response, isHostQuery) {
     searching = false;
 }
 
-function setStatusText(text) {
-    const results = document.getElementById('results');
-    const element = document.createElement('div');
-    element.textContent = text;
-    element.className = 'status-text';
-    results.innerHTML = '';
-    results.appendChild(element);
-}
-
 function onSearchError(error) {
     setStatusText(error.message);
 }
@@ -144,9 +132,9 @@ function resultSelected(event) {
     const value = event.target.innerText;
     const message = { type: 'getLogin', entry: value };
     if (event.shiftKey) {
-        sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
+        sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, logAndDisplayError);
     } else {
-        sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, onLoginCredentialError);
+        sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, logAndDisplayError);
     }
 }
 
@@ -188,26 +176,14 @@ function onLoginCredentialsDoLogin(response) {
 
     executeOnSetting(
         'submitafterfill',
-        function() {
+        () => {
             browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
             window.close();
         },
-        function() {
+        () => {
             window.close();
         }
     );
 }
 
-function onLoginCredentialError(error) {
-    alert(error.message);
-    window.close();
-}
-
-function switchToCreateNewDialog() {
-    getSettings().then(settings => {
-        document.getElementsByClassName('search')[0].style.display = 'none';
-        document.getElementsByClassName('results')[0].style.display = 'none';
-        document.getElementsByClassName('create')[0].style.display = 'block';
-        document.getElementById('create_name').value = [settings['defaultfolder'], urlDomain(currentTab.url)].join('/');
-    });
-}
+initSearch();
