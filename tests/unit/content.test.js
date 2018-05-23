@@ -132,7 +132,7 @@ describe('on sample login form', () => {
         expectLoginAndPasswordHaveValues('someuser', 'mypassword');
     });
 
-    describe('submit is clicked when', () => {
+    describe('submit', () => {
         beforeEach(() => {
             global.window.requestAnimationFrame = fn => {
                 fn();
@@ -146,17 +146,30 @@ describe('on sample login form', () => {
             element.addEventListener('click', clickCallback);
         });
 
-        test('only one password field is present', () => {
+        test('is clicked whenonly one password field is present', () => {
             content.processMessage({ type: 'TRY_LOGIN' });
             expect(clickCallback.mock.calls.length).toBe(1);
         });
 
-        test('more than one password field is present', () => {
+        test('is not clicked when more than one password field is present', () => {
             document.body.innerHTML = `
                 <html><body><form id='form' action='/session' method='post'>
                     <input id='login' type='text' class='test-login'>
                     <input type='password' class='test-password'>
                     <input type='password' class='another-password'>
+                    <input id='submit' type='submit'>
+                </form></body></html>`;
+            content.processMessage({ type: 'TRY_LOGIN' });
+            expect(clickCallback.mock.calls.length).toBe(0);
+        });
+
+        test('is not clicked when no form but submit in other form is present', () => {
+            document.body.innerHTML = `
+                <html><body>
+                    <input id='login' type='text' class='test-login'>
+                    <input type='password' class='test-password'>
+                    <input type='password' class='another-password'>
+                <form id='form' action='/session' method='post'>                    
                     <input id='submit' type='submit'>
                 </form></body></html>`;
             content.processMessage({ type: 'TRY_LOGIN' });
