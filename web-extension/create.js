@@ -1,8 +1,10 @@
 'use strict';
 
-document.getElementById('create_docreate').addEventListener('click', onDoCreate);
-document.getElementById('create_doabort').addEventListener('click', onDoAbort);
-document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
+function initCreate() {
+    document.getElementById('create_docreate').addEventListener('click', onDoCreate);
+    document.getElementById('create_doabort').addEventListener('click', onDoAbort);
+    document.getElementById('create_generate').addEventListener('change', onGenerateCheckboxChange);
+}
 
 function onDoCreate(event) {
     event.preventDefault();
@@ -16,7 +18,7 @@ function onDoCreate(event) {
         use_symbols: document.getElementById('create_use_symbols').checked,
     };
     armSpinnerTimeout();
-    sendNativeAppMessage(message).then(onCreateResult, logAndDisplayError);
+    return sendNativeAppMessage(message).then(onCreateResult, logAndDisplayError);
 }
 
 function onDoAbort() {
@@ -46,3 +48,15 @@ function onCreateResult(response) {
     searchTerm = urlDomain(currentTab.url);
     searchHost(searchTerm);
 }
+
+initCreate();
+
+window.tests = {
+    create: {
+        onDoCreate,
+        onDoAbort,
+        onGenerateCheckboxChange,
+        onCreateResult,
+        initCreate,
+    },
+};
