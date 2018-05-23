@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-jest.useFakeTimers();
 
 global.armSpinnerTimeout = jest.fn();
 global.sendNativeAppMessage = jest.fn();
@@ -26,7 +25,7 @@ let mockEvent, promise;
 const create = window.tests.create;
 
 describe('create', () => {
-    afterEach(function() {
+    afterEach(() => {
         global.armSpinnerTimeout.mockReset();
         global.sendNativeAppMessage.mockReset();
         global.searchHost.mockReset();
@@ -41,8 +40,8 @@ describe('create', () => {
         global.switchToSearch.mockReset();
     });
 
-    describe('onDoCreate', function() {
-        beforeEach(function() {
+    describe('onDoCreate', () => {
+        beforeEach(() => {
             mockEvent = { preventDefault: jest.fn() };
             global.sendNativeAppMessage.mockResolvedValue({});
             promise = create.onDoCreate(mockEvent);
@@ -80,53 +79,53 @@ describe('create', () => {
         });
     });
 
-    describe('onCreateResult', function() {
-        describe('response without error', function() {
-            beforeEach(function() {
+    describe('onCreateResult', () => {
+        describe('response without error', () => {
+            beforeEach(() => {
                 create.onCreateResult({});
             });
 
-            test('switches to search', function() {
+            test('switches to search', () => {
                 expect(global.switchToSearch).toHaveBeenCalledTimes(1);
             });
 
-            test('triggers host search', function() {
+            test('triggers host search', () => {
                 expect(global.searchHost).toHaveBeenCalledTimes(1);
             });
 
-            test('does not set status text', function() {
+            test('does not set status text', () => {
                 expect(global.setStatusText).toHaveBeenCalledTimes(0);
             });
         });
 
-        describe('response with error', function() {
-            beforeEach(function() {
+        describe('response with error', () => {
+            beforeEach(() => {
                 create.onCreateResult({ error: 'some error' });
             });
 
-            afterEach(function() {
+            afterEach(() => {
                 global.setStatusText.mockClear();
             });
 
-            test('switches to search', function() {
+            test('switches to search', () => {
                 expect(global.switchToSearch).toHaveBeenCalledTimes(1);
             });
 
-            test('does not trigger host search', function() {
+            test('does not trigger host search', () => {
                 expect(global.searchHost).toHaveBeenCalledTimes(0);
             });
 
-            test('sets status text', function() {
+            test('sets status text', () => {
                 expect(global.setStatusText.mock.calls).toEqual([['some error']]);
             });
         });
     });
 
-    describe('onGenerateCheckboxChange', function() {
+    describe('onGenerateCheckboxChange', () => {
         describe('uncheck and check rountrip generate password', () => {
             let password, length, use_symbols;
 
-            beforeEach(function() {
+            beforeEach(() => {
                 password = document.getElementById('create_password');
                 length = document.getElementById('create_generate_length');
                 use_symbols = document.getElementById('create_use_symbols');
@@ -153,7 +152,7 @@ describe('create', () => {
         describe('uncheck generate password', () => {
             let password, length, use_symbols;
 
-            beforeEach(function() {
+            beforeEach(() => {
                 password = document.getElementById('create_password');
                 length = document.getElementById('create_generate_length');
                 use_symbols = document.getElementById('create_use_symbols');
@@ -175,6 +174,17 @@ describe('create', () => {
             test('length and use symbols are disable', () => {
                 expect(length.disabled).toBe(true);
                 expect(use_symbols.disabled).toBe(true);
+            });
+        });
+    });
+
+    describe('initCreate', function() {
+        ['create_docreate', 'create_doabort', 'create_generate'].forEach(id => {
+            test(`registers eventhandler for ${id}`, () => {
+                const element = document.getElementById('create_docreate');
+                spyOn(element, 'addEventListener');
+                create.initCreate();
+                expect(element.addEventListener).toHaveBeenCalledTimes(1);
             });
         });
     });
