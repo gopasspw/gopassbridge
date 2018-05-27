@@ -4,7 +4,6 @@ const fs = require('fs');
 
 let heightMockReturn = 10;
 let widthMockReturn = 50;
-let clickCallback;
 
 global.getSyncStorage = () => null;
 
@@ -133,20 +132,25 @@ describe('on sample login form', () => {
     });
 
     describe('submit', () => {
+        function setupSubmitListener() {
+            const onClick = jest.fn();
+            const element = document.getElementById('submit');
+            element.addEventListener('click', onClick);
+            return onClick;
+        }
+
         beforeEach(() => {
             global.window.requestAnimationFrame = fn => {
                 fn();
             };
-            clickCallback = jest.fn();
             const form = document.getElementById('form');
             form.addEventListener('submit', e => {
                 e.preventDefault();
             });
-            const element = document.getElementById('submit');
-            element.addEventListener('click', clickCallback);
         });
 
-        test('is clicked whenonly one password field is present', () => {
+        test('is clicked when only one password field is present', () => {
+            const clickCallback = setupSubmitListener();
             content.processMessage({ type: 'TRY_LOGIN' });
             expect(clickCallback.mock.calls.length).toBe(1);
         });
@@ -159,19 +163,20 @@ describe('on sample login form', () => {
                     <input type='password' class='another-password'>
                     <input id='submit' type='submit'>
                 </form></body></html>`;
+            const clickCallback = setupSubmitListener();
             content.processMessage({ type: 'TRY_LOGIN' });
             expect(clickCallback.mock.calls.length).toBe(0);
         });
 
-        test('is not clicked when no form but submit in other form is present', () => {
+        test('is not clicked when password input is outside form, but submit in other form is present', () => {
             document.body.innerHTML = `
                 <html><body>
                     <input id='login' type='text' class='test-login'>
                     <input type='password' class='test-password'>
-                    <input type='password' class='another-password'>
-                <form id='form' action='/session' method='post'>                    
+                <form id='form' action='/unrelated' method='post'>                    
                     <input id='submit' type='submit'>
                 </form></body></html>`;
+            const clickCallback = setupSubmitListener();
             content.processMessage({ type: 'TRY_LOGIN' });
             expect(clickCallback.mock.calls.length).toBe(0);
         });

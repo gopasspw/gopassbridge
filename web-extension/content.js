@@ -230,12 +230,10 @@ function tryLogIn() {
     } else {
         window.requestAnimationFrame(() => {
             if (passwortInputs.length === 1 && passwortInputs[0].form) {
-                selectFirstVisibleFormElement(passwortInputs[0].form, '[type=submit]').click();
-                return;
-            }
-            const submitButtons = selectVisibleElements('[type=submit]');
-            if (submitButtons.length) {
-                submitButtons[0].click();
+                const submitButton = selectFirstVisibleFormElement(passwortInputs[0].form, '[type=submit]');
+                if (submitButton) {
+                    submitButton.click();
+                }
             }
         });
     }
