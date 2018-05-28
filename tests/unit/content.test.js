@@ -296,17 +296,62 @@ describe('on sample login form with decoy password inputs with different tabInde
     });
 });
 
-['github', 'aws-console', 'ing-nl', 'rote-liste-iframe'].forEach(page => {
+const pages = {
+    github: {
+        toClickSubmit: true,
+    },
+    'aws-console': {
+        toClickSubmit: false,
+    },
+    'ing-nl': {
+        toClickSubmit: false,
+    },
+    'rote-liste-iframe': {
+        toClickSubmit: true,
+    },
+};
+
+for (const page in pages) {
+    const expected = pages[page];
+
     describe(`on ${page}`, () => {
+        let clickCallback;
+
+        function setupClickListener() {
+            const onClick = jest.fn();
+            document.addEventListener('click', onClick);
+            return onClick;
+        }
+
         beforeEach(() => {
             heightMockReturn = 10;
             widthMockReturn = 50;
             document.body.innerHTML = fs.readFileSync(`${__dirname}/login_pages/${page}.html`);
+            clickCallback = setupClickListener();
         });
 
         test('detects login and password', () => {
             content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
             expectLoginAndPassword();
         });
+
+        describe('on login', () => {
+            beforeEach(() => {
+                content.processMessage({ type: 'TRY_LOGIN' });
+            });
+
+            if (expected.toClickSubmit) {
+                test('clicks submit button', () => {
+                    expect(clickCallback.mock.calls.length).toBe(1);
+                    const element = clickCallback.mock.calls[0][0].target;
+                    expect(element.tagName).toBe('INPUT');
+                    expect(element.type).toBe('submit');
+                });
+            } else {
+                test('does not click submit button', () => {
+                    expect(clickCallback.mock.calls.length).toBe(0);
+                });
+            }
+        });
     });
-});
+}
