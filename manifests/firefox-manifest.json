@@ -35,6 +35,13 @@
     }
   ],
 
+  "background": {
+    "scripts": [
+      "generic.js",
+      "background.js"
+    ]
+  },
+
   "options_ui": {
     "browser_style": true,
     "page": "options.html"
