@@ -40,10 +40,12 @@ function onLoginCredentialsDoLogin(response, tabId, url) {
         'submitafterfill',
         () => {
             browser.tabs.sendMessage(tabId, { type: 'TRY_LOGIN' });
-            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
+            for (const popup of browser.extension.getViews({ type: 'popup' }))
+                popup.close();
         },
         () => {
-            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
+            for (const popup of browser.extension.getViews({ type: 'popup' }))
+                popup.close();
         }
     );
 }
