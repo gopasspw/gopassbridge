@@ -37,6 +37,7 @@
 
   "background": {
     "scripts": [
+      "vendor/browser-polyfill.js",
       "generic.js",
       "background.js"
     ]
