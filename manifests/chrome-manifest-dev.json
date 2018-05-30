@@ -27,6 +27,15 @@
     }
   ],
 
+  "background": {
+    "scripts": [
+      "vendor/browser-polyfill.js",
+      "generic.js",
+      "background.js"
+    ],
+    "persistent": false
+  },
+
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0mHC1MVxHG3X9CZ6b6lp1hCW5j2nP9bRES/Mw6sL1Emkp6HyHXU745HRGv+JD8Q+jvo85IYjGnxrcrgq+K9Op8S4ggzjaZMVL9kmDeluQPRE4247uEu2WCLZR7x00A2unZtErvlwNYiYIRcqhDZ5VQDtxKNdg6CsFr56g7ur2iuF4+RwKSDbdfVY0t9yb++Rsj9aAtarDbPnuR4gWDzR/3AL4SmgU21BQYARjUQHLFmmH1M2YWVz2I9Z3w2m3EfL6oNMSm7qFweRTrBMmVKLwQ9jitvz8To7QX5si6y8L3CRKBNtBIwBF3t8Cm4CIB5Tfjh/6RN5cf/9D7Jci0EXOQIDAQAB",
 
   "options_ui": {
