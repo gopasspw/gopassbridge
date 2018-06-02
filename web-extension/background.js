@@ -40,12 +40,10 @@ function onLoginCredentialsDoLogin(response, tabId, url) {
         'submitafterfill',
         () => {
             browser.tabs.sendMessage(tabId, { type: 'TRY_LOGIN' });
-            for (const popup of browser.extension.getViews({ type: 'popup' }))
-                popup.close();
+            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
         },
         () => {
-            for (const popup of browser.extension.getViews({ type: 'popup' }))
-                popup.close();
+            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
         }
     );
 }
@@ -65,4 +63,14 @@ function processMessage(message, sender, sendResponse) {
     sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(handler, logAndDisplayError2);
 }
 
-browser.runtime.onMessage.addListener(processMessage);
+function initBackground() {
+    browser.runtime.onMessage.addListener(processMessage);
+}
+
+initBackground();
+
+window.tests = {
+    background: {
+        initBackground,
+    },
+};
