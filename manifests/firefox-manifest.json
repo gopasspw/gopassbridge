@@ -65,6 +65,7 @@
     "activeTab",
     "clipboardWrite",
     "storage",
-    "nativeMessaging"
+    "nativeMessaging",
+    "notifications"
   ]
 }

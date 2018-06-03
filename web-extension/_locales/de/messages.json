@@ -96,6 +96,10 @@
     "message": "Felder blau markieren wenn als Login oder Passwort Feld erkannt",
     "description": "label of mark fields checkbox"
   },
+  "optionsSendNotificationsLabel": {
+    "message": "Erlaube Benachrichtigungen anzuzeigen falls nötig",
+    "description": "label of send notifications checkbox"
+  },
   "optionsLoginAfterFillLabel": {
     "message": "Einloggen wenn Logindaten ausgefüllt wurden",
     "description": "label of login after fill checkbox"

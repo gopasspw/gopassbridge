@@ -2,6 +2,7 @@
 
 const DEFAULT_SETTINGS = {
     markfields: true,
+    sendnotifications: true,
     submitafterfill: true,
     defaultfolder: 'Account',
 };
@@ -63,6 +64,17 @@ function getLocalStorageKey(key) {
     }, logError);
 }
 
+function showNotificationOnSetting(message) {
+    return executeOnSetting('sendnotifications', () => {
+        browser.notifications.create({
+            type: 'basic',
+            iconUrl: browser.runtime.getURL('icons/gopassbridge-96.png'),
+            title: 'gopassbridge',
+            message: message,
+        });
+    });
+}
+
 window.tests = {
     generic: {
         sendNativeAppMessage,
@@ -71,5 +83,6 @@ window.tests = {
         setLocalStorageKey,
         getLocalStorageKey,
         createButtonWithCallback,
+        showNotificationOnSetting,
     },
 };
