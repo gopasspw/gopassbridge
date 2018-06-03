@@ -58,6 +58,7 @@
     "storage",
     "nativeMessaging",
     "http://*/*",
-    "https://*/*"
+    "https://*/*",
+    "notifications"
   ]
 }

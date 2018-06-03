@@ -96,6 +96,10 @@
     "message": "Mark fields blue when recognized as user and password input",
     "description": "label of mark fields checkbox"
   },
+  "optionsSendNotificationsLabel": {
+    "message": "Allow to send notifications if necessary",
+    "description": "label of send notifications checkbox"
+  },
   "optionsLoginAfterFillLabel": {
     "message": "Login after filling in credentials",
     "description": "label of login after fill checkbox"

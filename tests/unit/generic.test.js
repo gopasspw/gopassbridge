@@ -140,3 +140,32 @@ describe('createButtonWithCallback', () => {
         expect(buttonCbMock.mock.calls.length).toBe(1);
     });
 });
+
+describe('showNotificationOnSetting', () => {
+    beforeEach(() => {
+        global.browser.runtime.getURL = jest.fn(() => 'some-URL');
+    });
+
+    test('creates notification', () => {
+        expect.assertions(1);
+        global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: true });
+        generic.showNotificationOnSetting('this is just a test!').then(() => {
+            expect(global.browser.notifications.create.mock.calls).toEqual([
+                {
+                    type: 'basic',
+                    iconUrl: 'some-URL',
+                    title: 'gopassbridge',
+                    message: 'this is just a test!',
+                },
+            ]);
+        });
+    });
+
+    test('respects user setting', () => {
+        expect.assertions(1);
+        global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: false });
+        generic.showNotificationOnSetting('this is just a test!').then(() => {
+            expect(global.browser.notifications.create.mock.calls.length).toEqual(0);
+        });
+    });
+});
