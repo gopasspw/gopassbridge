@@ -21,7 +21,7 @@ function init() {
 
         const textinputs = document.querySelectorAll('input[type=text]');
         textinputs.forEach(textinput => {
-            textinput.addEventListener('change', _onTextinputChange);
+            textinput.addEventListener('input', _onTextinputChange);
         });
 
         resetViewState(settings);
