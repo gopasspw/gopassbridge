@@ -24,7 +24,7 @@ function switchToCreateNewDialog() {
         document.getElementsByClassName('results')[0].style.display = 'none';
         document.getElementsByClassName('create')[0].style.display = 'block';
         document.getElementById('create_name').value = `${settings['defaultfolder']}/${urlDomain(currentTab.url)}`;
-    });
+    }, logError);
 }
 
 function switchToSearch() {

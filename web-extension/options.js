@@ -1,14 +1,16 @@
 'use strict';
 
-function resetStorage() {
-    browser.storage.sync.clear();
-    init();
+function resetSettings() {
+    browser.storage.sync
+        .clear()
+        .then(getSettings)
+        .then(resetViewState, logError);
 }
 
 function init() {
     const clearButton = document.getElementById('clear');
     if (clearButton) {
-        clearButton.addEventListener('click', resetStorage);
+        clearButton.addEventListener('click', resetSettings);
     }
 
     return getSettings().then(settings => {
@@ -16,15 +18,21 @@ function init() {
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', _onCheckboxChange);
         });
-        _setCheckboxes(settings);
 
         const textinputs = document.querySelectorAll('input[type=text]');
         textinputs.forEach(textinput => {
             textinput.addEventListener('change', _onTextinputChange);
         });
-        _setTextinputs(settings);
+
+        resetViewState(settings);
         console.log('Options initialized');
     }, logError);
+}
+
+function resetViewState(settings) {
+    _setCheckboxes(settings);
+    _setTextinputs(settings);
+    console.log('Options view set to settings.');
 }
 
 function _setCheckboxes(result) {
@@ -57,7 +65,7 @@ function _onTextinputChange(event) {
     browser.storage.sync.set(update);
 }
 
-init();
+window.addEventListener('load', init);
 
 window.tests = {
     options: {

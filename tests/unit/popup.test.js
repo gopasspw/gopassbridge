@@ -3,6 +3,7 @@
 const fs = require('fs');
 jest.useFakeTimers();
 
+global.logError = jest.fn();
 global.getSettings = jest.fn();
 global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
 global.urlDomain = jest.fn(() => 'some.domain');
