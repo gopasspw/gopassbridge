@@ -30,6 +30,7 @@
       "js": [
         "vendor/browser-polyfill.js",
         "generic.js",
+        "i18n.js",
         "content.js"
       ]
     }
@@ -39,6 +40,7 @@
     "scripts": [
       "vendor/browser-polyfill.js",
       "generic.js",
+      "i18n.js",
       "background.js"
     ]
   },

@@ -1,32 +1,15 @@
 'use strict';
 
-function onLoginCredentialsDoCopyClipboard(message, response) {
-    const content = document.getElementById('content');
-
-    if (response.error) {
-        setStatusText(response.error);
-        return;
-    }
-    const hiddenpass = document.createElement('span');
-    hiddenpass.textContent = response.password;
-    content.appendChild(hiddenpass);
-    const tempinput = document.createElement('input');
-    tempinput.value = response.password;
-    content.appendChild(tempinput);
-    tempinput.select();
-    document.execCommand('copy');
-    content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
-    setTimeout(window.close, 1000);
+function onLoginCredentialsDoCopyClipboard(response, tabId) {
+    browser.tabs.sendMessage(tabId, {
+        type: 'COPY_PASSWORD',
+        password: response.password,
+    });
 }
 
 function onLoginCredentialsDoLogin(response, tabId, url) {
-    if (response.error) {
-        setStatusText(response.error);
-        return;
-    }
-
     if (response.username === urlDomain(url)) {
-        setStatusText(i18n.getMessage('couldNotDetermineUsernameMessage'));
+        logAndDisplayError(i18n.getMessage('couldNotDetermineUsernameMessage'), tabId);
         return;
     }
 
@@ -36,31 +19,31 @@ function onLoginCredentialsDoLogin(response, tabId, url) {
         password: response.password,
     });
 
-    executeOnSetting(
-        'submitafterfill',
-        () => {
-            browser.tabs.sendMessage(tabId, { type: 'TRY_LOGIN' });
-            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
-        },
-        () => {
-            for (const popup of browser.extension.getViews({ type: 'popup' })) popup.close();
-        }
-    );
+    executeOnSetting('submitafterfill', () => {
+        browser.tabs.sendMessage(tabId, { type: 'TRY_LOGIN' });
+    });
 }
 
-function logAndDisplayError2(error) {
-    console.log(error); //FIXME: display error somehow?
+function logAndDisplayError(error, tabId) {
+    console.log(error);
+    browser.tabs.sendMessage(tabId, {
+        type: 'SHOW_ERROR',
+        error: error,
+    });
 }
 
 function processMessage(message, sender, sendResponse) {
     const { entry, tabId, url, copyOnly } = message;
 
-    function handler(response) {
-        if (copyOnly) onLoginCredentialsDoCopyClipboard(response);
-        else onLoginCredentialsDoLogin(response, tabId, url);
-    }
-
-    sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(handler, logAndDisplayError2);
+    sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(
+        response => {
+            if (copyOnly) onLoginCredentialsDoCopyClipboard(response, tabId);
+            else onLoginCredentialsDoLogin(response, tabId, url);
+        },
+        error => {
+            logAndDisplayError(error, tabId);
+        }
+    );
 }
 
 function initBackground() {
