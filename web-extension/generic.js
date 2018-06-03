@@ -8,12 +8,8 @@ const DEFAULT_SETTINGS = {
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
 
-function _withDefaultSettings(response) {
-    return Object.assign(DEFAULT_SETTINGS, response);
-}
-
 function getSettings() {
-    return browser.storage.sync.get({}).then(_withDefaultSettings, logError);
+    return browser.storage.sync.get(DEFAULT_SETTINGS);
 }
 
 function sendNativeAppMessage(message) {
@@ -69,7 +65,6 @@ function getLocalStorageKey(key) {
 
 window.tests = {
     generic: {
-        DEFAULT_SETTINGS,
         sendNativeAppMessage,
         executeOnSetting,
         urlDomain,

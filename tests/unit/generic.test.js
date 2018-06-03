@@ -58,7 +58,7 @@ describe('executeOnSetting', () => {
         expect.assertions(3);
         global.browser.storage.sync.get.mockRejectedValue('some error');
         global.console.log = jest.fn();
-        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).catch(() => {
+        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
             expect(global.console.log.mock.calls).toEqual([['some error']]);
