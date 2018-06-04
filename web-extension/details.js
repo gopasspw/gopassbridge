@@ -11,20 +11,20 @@ function onEntryData(element, message) {
     browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(() => {
         if (alreadyShown) return;
 
-        const newDetailView = detailViewFromMessage(message);
+        const newDetailView = _detailViewFromMessage(message);
         newDetailView.classList.add('detail-view');
         element.insertAdjacentElement('afterend', newDetailView);
         setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url), element.innerText);
     });
 }
 
-function detailViewFromMessage(message) {
+function _detailViewFromMessage(message) {
     const container = document.createElement('div');
-    Object.keys(message).forEach(key => appendEntry(container, key, message[key]));
+    Object.keys(message).forEach(key => _appendEntry(container, key, message[key]));
     return container;
 }
 
-function appendEntry(container, key, value) {
+function _appendEntry(container, key, value) {
     let keyElement, valueElement;
     const entryElement = document.createElement('li');
 
@@ -32,7 +32,7 @@ function appendEntry(container, key, value) {
     if (value !== null && typeof value === 'object') {
         valueElement = document.createElement('div');
         valueElement.classList.add('detail-nested');
-        Object.keys(value).forEach(key => appendEntry(valueElement, key, value[key]));
+        Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
     } else {
         keyElement.innerText = `${key}:`;
         if (typeof value === 'string' && value.match(re_weburl)) {
@@ -40,11 +40,11 @@ function appendEntry(container, key, value) {
             valueElement.href = value.match(re_weburl)[0];
             valueElement.target = '_blank';
             valueElement.innerText = value.match(re_weburl)[0];
-            valueElement.addEventListener('click', openAndLoginURL);
+            valueElement.addEventListener('click', _openAndLoginURL);
         } else {
             valueElement = document.createElement('span');
             valueElement.innerText = value;
-            valueElement.addEventListener('click', copyElementToClipboard);
+            valueElement.addEventListener('click', _copyElementToClipboard);
         }
         valueElement.classList.add('detail-clickable-value');
     }
@@ -54,20 +54,19 @@ function appendEntry(container, key, value) {
     container.appendChild(entryElement);
 }
 
-function copyElementToClipboard(event) {
+function _copyElementToClipboard(event) {
     const element = event.target;
     copyToClipboard(element.innerText);
 }
 
-function openAndLoginURL(event) {
+function _openAndLoginURL(event) {
     event.preventDefault();
     browser.tabs.create({ url: event.target.href, active: false }).then(tab => {
         currentTab = tab;
-        const detailView = getDetailView(event.target);
         if (tab.status !== 'complete') {
             const clickOnComplete = (tabId, changes) => {
                 if (tabId === currentTab.id && changes.status === 'complete') {
-                    setTimeout(() => detailView.previousElementSibling.click(), 100);
+                    setTimeout(() => _getDetailView(event.target).previousElementSibling.click(), 100);
                     setTimeout(() => browser.tabs.update(tab.id, { active: true }), 250);
                 }
             };
@@ -80,12 +79,12 @@ function openAndLoginURL(event) {
     });
 }
 
-function getDetailView(element) {
+function _getDetailView(element) {
     if (element.parentNode) {
         if (element.parentNode.classList.contains('detail-view')) {
             return element.parentNode;
         } else {
-            return getDetailView(element.parentNode);
+            return _getDetailView(element.parentNode);
         }
     }
     return null;
@@ -109,3 +108,10 @@ function restoreDetailView() {
         }
     });
 }
+
+window.tests = {
+    details: {
+        onEntryData,
+        restoreDetailView,
+    },
+};

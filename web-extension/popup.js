@@ -60,5 +60,6 @@ window.tests = {
         switchToCreateNewDialog,
         switchToSearch,
         logAndDisplayError,
+        copyToClipboard,
     },
 };
