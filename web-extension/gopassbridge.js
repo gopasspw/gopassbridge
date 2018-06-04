@@ -17,9 +17,9 @@ function switchTab(tab) {
         if (tabUrl) {
             return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + tabUrl).then(value => {
                 if (value) {
-                    search(value).then(restoreDetailView);
+                    return search(value).then(restoreDetailView);
                 } else {
-                    searchHost(tabUrl).then(restoreDetailView);
+                    return searchHost(tabUrl).then(restoreDetailView);
                 }
             });
         } else {
