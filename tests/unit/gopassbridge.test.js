@@ -33,6 +33,9 @@ describe('on startup', () => {
 });
 
 describe('switchTab', () => {
+    afterEach(() => {
+        global.getLocalStorageKey.mockResolvedValue('previoussearch');
+    });
     test('does nothing if tab has no url', () => {
         const previousTab = gopassbridge.getCurrentTab();
         gopassbridge.switchTab({ id: 'holla' });
@@ -90,7 +93,7 @@ describe('switchTab', () => {
         global.getLocalStorageKey.mockResolvedValue('previoussearch');
         global.search.mockReset();
         global.searchHost.mockReset();
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
             expect(global.search.mock.calls).toEqual([['previoussearch']]);
             expect(global.searchHost.mock.calls).toEqual([]);
         });
@@ -101,10 +104,9 @@ describe('switchTab', () => {
         global.getLocalStorageKey.mockResolvedValue(undefined);
         global.search.mockReset();
         global.searchHost.mockReset();
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
             expect(global.search.mock.calls).toEqual([]);
             expect(global.searchHost.mock.calls).toEqual([['some.url']]);
         });
-        global.getLocalStorageKey.mockResolvedValue('previoussearch');
     });
 });

@@ -14,7 +14,7 @@ describe('executeOnSetting', () => {
     test('executes success callback when setting turned on', () => {
         expect.assertions(2);
         global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
-        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
+        return generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(1);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
         });
@@ -23,7 +23,7 @@ describe('executeOnSetting', () => {
     test('no error if no success callback', () => {
         expect.assertions(1);
         global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
-        generic.executeOnSetting('mysetting', null, mockOnFalse).then(() => {
+        return generic.executeOnSetting('mysetting', null, mockOnFalse).then(() => {
             expect(true).toEqual(true);
         });
     });
@@ -31,7 +31,7 @@ describe('executeOnSetting', () => {
     test('does execute error callback when setting turned off', () => {
         expect.assertions(2);
         global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
-        generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
+        return generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(1);
         });
@@ -40,7 +40,7 @@ describe('executeOnSetting', () => {
     test('no error if no error callback', () => {
         expect.assertions(1);
         global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
-        generic.executeOnSetting('mysetting', mockOnTrue, false).then(() => {
+        return generic.executeOnSetting('mysetting', mockOnTrue, false).then(() => {
             expect(true).toEqual(true);
         });
     });
@@ -48,7 +48,7 @@ describe('executeOnSetting', () => {
     test('does not execute callback when setting does not exist', () => {
         expect.assertions(2);
         global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
-        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
+        return generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(1);
         });
@@ -58,7 +58,7 @@ describe('executeOnSetting', () => {
         expect.assertions(3);
         global.browser.storage.sync.get.mockRejectedValue('some error');
         global.console.log = jest.fn();
-        generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
+        return generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
             expect(global.console.log.mock.calls).toEqual([['some error']]);
@@ -76,7 +76,7 @@ describe('sendNativeMessage', () => {
     test('sends message with response on success', () => {
         expect.assertions(2);
         global.browser.runtime.sendNativeMessage.mockResolvedValue({ maeh: '123' });
-        generic
+        return generic
             .sendNativeAppMessage({ payload: 'muh' })
             .then(mockOnResult, mockOnError)
             .then(() => {
@@ -88,7 +88,7 @@ describe('sendNativeMessage', () => {
     test('calls error handler on failure', () => {
         expect.assertions(2);
         global.browser.runtime.sendNativeMessage.mockRejectedValue('An error');
-        generic
+        return generic
             .sendNativeAppMessage({ payload: 'muh' })
             .then(mockOnResult, mockOnError)
             .then(() => {
@@ -107,15 +107,15 @@ describe('urlDomain', () => {
 describe('localStorage wrappers', () => {
     test('set key', () => {
         expect.assertions(1);
-        generic.setLocalStorageKey('muh', 123).then(() => {
+        return generic.setLocalStorageKey('muh', 123).then(() => {
             expect(global.browser.storage.local.set.mock.calls).toEqual([[{ muh: 123 }]]);
         });
     });
 
     test('get key', () => {
         expect.assertions(1);
-        generic.setLocalStorageKey('muh', 123).then(() => {
-            generic.getLocalStorageKey('muh').then(value => {
+        return generic.setLocalStorageKey('muh', 123).then(() => {
+            return generic.getLocalStorageKey('muh').then(value => {
                 expect(value).toBe(123);
             });
         });
@@ -144,19 +144,22 @@ describe('createButtonWithCallback', () => {
 describe('showNotificationOnSetting', () => {
     beforeEach(() => {
         global.browser.runtime.getURL = jest.fn(() => 'some-URL');
+        global.browser.notifications.create.mockReset();
     });
 
     test('creates notification', () => {
         expect.assertions(1);
         global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: true });
-        generic.showNotificationOnSetting('this is just a test!').then(() => {
+        return generic.showNotificationOnSetting('this is just a test!').then(() => {
             expect(global.browser.notifications.create.mock.calls).toEqual([
-                {
-                    type: 'basic',
-                    iconUrl: 'some-URL',
-                    title: 'gopassbridge',
-                    message: 'this is just a test!',
-                },
+                [
+                    {
+                        type: 'basic',
+                        iconUrl: 'some-URL',
+                        title: 'gopassbridge',
+                        message: 'this is just a test!',
+                    },
+                ],
             ]);
         });
     });
@@ -164,7 +167,7 @@ describe('showNotificationOnSetting', () => {
     test('respects user setting', () => {
         expect.assertions(1);
         global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: false });
-        generic.showNotificationOnSetting('this is just a test!').then(() => {
+        return generic.showNotificationOnSetting('this is just a test!').then(() => {
             expect(global.browser.notifications.create.mock.calls.length).toEqual(0);
         });
     });
