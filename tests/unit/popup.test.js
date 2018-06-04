@@ -60,7 +60,7 @@ describe('popup', () => {
 
             const stateBefore = document.body.innerHTML;
             popup.switchToSearch();
-            popup.switchToCreateNewDialog().then(() => {
+            return popup.switchToCreateNewDialog().then(() => {
                 popup.switchToSearch();
                 expect(document.body.innerHTML).toBe(stateBefore);
             });
@@ -74,7 +74,7 @@ describe('popup', () => {
 
         test('hides search and results and shows create dialog', () => {
             expect.assertions(3);
-            switchToEditPromise.then(() => {
+            return switchToEditPromise.then(() => {
                 expect(document.getElementsByClassName('search')[0].style.display).toBe('none');
                 expect(document.getElementsByClassName('results')[0].style.display).toBe('none');
                 expect(document.getElementsByClassName('create')[0].style.display).toBe('block');
@@ -83,7 +83,7 @@ describe('popup', () => {
 
         test('fills in name from url', () => {
             expect.assertions(1);
-            switchToEditPromise.then(() => {
+            return switchToEditPromise.then(() => {
                 expect(document.getElementById('create_name').value).toBe('myfolder/some.domain');
             });
         });
@@ -97,7 +97,7 @@ describe('popup', () => {
 
         test('switches back to search', () => {
             expect.assertions(3);
-            popup.switchToCreateNewDialog().then(() => {
+            return popup.switchToCreateNewDialog().then(() => {
                 popup.logAndDisplayError({ message: 'sample error messsage' });
                 expect(document.getElementsByClassName('search')[0].style.display).toBe('block');
                 expect(document.getElementsByClassName('results')[0].style.display).toBe('block');

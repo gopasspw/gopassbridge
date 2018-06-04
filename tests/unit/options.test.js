@@ -19,7 +19,7 @@ describe('Init', () => {
 
     test('Fills checkboxes from localstore', () => {
         expect.assertions(2);
-        options.init().then(() => {
+        return options.init().then(() => {
             expect(document.getElementById('submitafterfill').checked).toBe(true);
             expect(document.getElementById('markfields').checked).toBe(false);
         });
@@ -27,7 +27,7 @@ describe('Init', () => {
 
     test('Fills input fields from localstore', () => {
         expect.assertions(1);
-        options.init().then(() => {
+        return options.init().then(() => {
             const textinput = document.getElementById('defaultfolder');
             expect(textinput.value).toBe('Muh');
         });
@@ -35,7 +35,7 @@ describe('Init', () => {
 
     test('Initializes clear button listener', () => {
         expect.assertions(1);
-        options.init().then(() => {
+        return options.init().then(() => {
             document.getElementById('clear').click();
             expect(global.browser.storage.sync.clear.mock.calls.length).toBe(1);
         });
@@ -43,7 +43,7 @@ describe('Init', () => {
 
     test('Initializes checkbox listener', () => {
         expect.assertions(1);
-        options.init().then(() => {
+        return options.init().then(() => {
             document.getElementById('markfields').click();
             expect(global.browser.storage.sync.set.mock.calls).toEqual([[{ markfields: true }]]);
         });
