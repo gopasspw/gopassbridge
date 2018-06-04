@@ -13,13 +13,13 @@ function switchTab(tab) {
         executeOnSetting('markfields', () => {
             browser.tabs.sendMessage(currentTab.id, { type: 'MARK_LOGIN_FIELDS' });
         });
-        const term = urlDomain(currentTab.url);
-        if (term) {
-            return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + term).then(value => {
+        const tabUrl = urlDomain(currentTab.url);
+        if (tabUrl) {
+            return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + tabUrl).then(value => {
                 if (value) {
-                    search(value);
+                    search(value).then(restoreDetailView);
                 } else {
-                    searchHost(term);
+                    searchHost(tabUrl).then(restoreDetailView);
                 }
             });
         } else {

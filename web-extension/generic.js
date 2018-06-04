@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
 };
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
+const LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
 
 function getSettings() {
     return browser.storage.sync.get(DEFAULT_SETTINGS);

@@ -17,13 +17,7 @@ function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
         const elements = document.getElementsByClassName('login');
         if (elements.length === 1) {
-            const value = elements[0].innerText;
-            const message = { type: 'getLogin', entry: value };
-            if (event.shiftKey) {
-                sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, onLoginCredentialError);
-            } else {
-                sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, onLoginCredentialError);
-            }
+            resultSelected(event, elements[0]);
         }
         event.preventDefault();
     }
@@ -54,7 +48,10 @@ function search(query) {
     console.log('Searching for string ' + query);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeAppMessage({ type: 'query', query: query }).then(result => onSearchResults(result, false), onSearchError);
+    return sendNativeAppMessage({ type: 'query', query: query }).then(
+        result => onSearchResults(result, false),
+        logAndDisplayError
+    );
 }
 
 function searchHost(term) {
@@ -69,9 +66,9 @@ function searchHost(term) {
     console.log('Searching for host ' + term);
     searching = true;
     searchedUrl = currentTab.url;
-    sendNativeAppMessage({ type: 'queryHost', host: term }).then(
+    return sendNativeAppMessage({ type: 'queryHost', host: term }).then(
         result => onSearchResults(result, true),
-        onSearchError
+        logAndDisplayError
     );
 }
 
@@ -124,35 +121,32 @@ function onSearchResults(response, isHostQuery) {
     searching = false;
 }
 
-function onSearchError(error) {
-    setStatusText(error.message);
-}
-
-function resultSelected(event) {
-    const value = event.target.innerText;
-    const message = { type: 'getLogin', entry: value };
-    if (event.shiftKey) {
-        sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, logAndDisplayError);
+function resultSelected(event, element) {
+    element = element || event.target;
+    const value = element.innerText;
+    if (event.altKey) {
+        sendNativeAppMessage({ type: 'getData', entry: value }).then(
+            message => onEntryData(element, message),
+            logAndDisplayError
+        );
     } else {
-        sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, logAndDisplayError);
+        const message = { type: 'getLogin', entry: value };
+        if (event.shiftKey) {
+            sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, logAndDisplayError);
+        } else {
+            sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, logAndDisplayError);
+        }
     }
 }
 
 function onLoginCredentialsDoCopyClipboard(response) {
-    const content = document.getElementById('content');
-
     if (response.error) {
         setStatusText(response.error);
         return;
     }
-    const hiddenpass = document.createElement('span');
-    hiddenpass.textContent = response.password;
-    content.appendChild(hiddenpass);
-    const tempinput = document.createElement('input');
-    tempinput.value = response.password;
-    content.appendChild(tempinput);
-    tempinput.select();
-    document.execCommand('copy');
+
+    copyToClipboard(response.password);
+
     content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
     setTimeout(window.close, 1000);
 }
