@@ -1,5 +1,7 @@
 'use strict';
 
+jest.useFakeTimers();
+
 global.browser.tabs.query.mockResolvedValue([{ url: 'http://some.url', id: 'someid' }]);
 global.browser.tabs.onActivated = {
     addListener: jest.fn(),
@@ -14,9 +16,16 @@ global.getLocalStorageKey.mockResolvedValue('previoussearch');
 global.urlDomain = jest.fn(() => {
     return 'some.url';
 });
+
 global.LAST_DOMAIN_SEARCH_PREFIX = 'last_search_';
+
 global.search = jest.fn();
+global.search.mockResolvedValue();
+
 global.searchHost = jest.fn();
+global.searchHost.mockResolvedValue();
+
+global.restoreDetailView = jest.fn();
 
 require('gopassbridge.js');
 
@@ -33,9 +42,19 @@ describe('on startup', () => {
 });
 
 describe('switchTab', () => {
+    beforeEach(() => {
+        global.browser.tabs.sendMessage.mockReset();
+        global.search.mockReset();
+        global.searchHost.mockReset();
+        global.search.mockResolvedValue();
+        global.searchHost.mockResolvedValue();
+    });
+
     afterEach(() => {
+        jest.runAllTimers();
         global.getLocalStorageKey.mockResolvedValue('previoussearch');
     });
+
     test('does nothing if tab has no url', () => {
         const previousTab = gopassbridge.getCurrentTab();
         gopassbridge.switchTab({ id: 'holla' });
@@ -49,7 +68,6 @@ describe('switchTab', () => {
     });
 
     test('sends message to mark fields if setting is true', () => {
-        global.browser.tabs.sendMessage.mockReset();
         gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
         expect(global.browser.tabs.sendMessage.mock.calls).toEqual([['someid', { type: 'MARK_LOGIN_FIELDS' }]]);
     });
@@ -91,8 +109,6 @@ describe('switchTab', () => {
     test('if search term in local storage, call search', () => {
         expect.assertions(2);
         global.getLocalStorageKey.mockResolvedValue('previoussearch');
-        global.search.mockReset();
-        global.searchHost.mockReset();
         return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
             expect(global.search.mock.calls).toEqual([['previoussearch']]);
             expect(global.searchHost.mock.calls).toEqual([]);
@@ -102,8 +118,6 @@ describe('switchTab', () => {
     test('if no search term in local storage, call searchHost', () => {
         expect.assertions(2);
         global.getLocalStorageKey.mockResolvedValue(undefined);
-        global.search.mockReset();
-        global.searchHost.mockReset();
         return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
             expect(global.search.mock.calls).toEqual([]);
             expect(global.searchHost.mock.calls).toEqual([['some.url']]);
