@@ -105,4 +105,12 @@ describe('popup', () => {
             });
         });
     });
+
+    describe('copyToClipboard', () => {
+        test('basic test - functionality will be removed in #49', () => {
+            document.execCommand = jest.fn();
+            popup.copyToClipboard('muh');
+            expect(document.execCommand).toHaveBeenCalledTimes(1);
+        });
+    });
 });
