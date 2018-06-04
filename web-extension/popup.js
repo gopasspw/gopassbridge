@@ -39,6 +39,20 @@ function logAndDisplayError(error) {
     setStatusText(error.message);
 }
 
+function copyToClipboard(text) {
+    const element = document.getElementById('hidden_clipboard');
+    const hiddenpass = document.createElement('span');
+    hiddenpass.textContent = text;
+    element.appendChild(hiddenpass);
+    const tempinput = document.createElement('input');
+    tempinput.value = text;
+    element.appendChild(tempinput);
+    tempinput.select();
+    document.execCommand('copy');
+    tempinput.remove();
+    hiddenpass.remove();
+}
+
 window.tests = {
     popup: {
         armSpinnerTimeout,
