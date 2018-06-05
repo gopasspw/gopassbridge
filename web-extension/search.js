@@ -130,11 +130,15 @@ function resultSelected(event, element) {
             logAndDisplayError
         );
     } else {
-        const message = { type: 'getLogin', entry: value };
         if (event.shiftKey) {
-            sendNativeAppMessage(message).then(onLoginCredentialsDoCopyClipboard, logAndDisplayError);
+            sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
+                onLoginCredentialsDoCopyClipboard,
+                logAndDisplayError
+            );
         } else {
-            sendNativeAppMessage(message).then(onLoginCredentialsDoLogin, logAndDisplayError);
+            browser.runtime
+                .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
+                .then(onLoginCredentialsDidLogin, logAndDisplayError);
         }
     }
 }
@@ -151,33 +155,12 @@ function onLoginCredentialsDoCopyClipboard(response) {
     setTimeout(window.close, 1000);
 }
 
-function onLoginCredentialsDoLogin(response) {
-    if (response.error) {
+function onLoginCredentialsDidLogin(response) {
+    if (response && response.error) {
         setStatusText(response.error);
         return;
     }
-
-    if (response.username === urlDomain(currentTab.url)) {
-        setStatusText(i18n.getMessage('couldNotDetermineUsernameMessage'));
-        return;
-    }
-
-    browser.tabs.sendMessage(currentTab.id, {
-        type: 'FILL_LOGIN_FIELDS',
-        login: response.username,
-        password: response.password,
-    });
-
-    executeOnSetting(
-        'submitafterfill',
-        () => {
-            browser.tabs.sendMessage(currentTab.id, { type: 'TRY_LOGIN' });
-            window.close();
-        },
-        () => {
-            window.close();
-        }
-    );
+    window.close();
 }
 
 initSearch();
