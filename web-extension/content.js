@@ -239,56 +239,6 @@ function tryLogIn() {
     }
 }
 
-function copyPasswordToClipboard(password) {
-    const content = document.createElement('div');
-
-    const tempinput = document.createElement('input');
-    tempinput.value = password;
-    content.appendChild(tempinput);
-
-    document.body.appendChild(content);
-    try {
-        tempinput.select();
-        document.execCommand('copy');
-    } finally {
-        content.remove();
-    }
-
-    showStatusMessage(i18n.getMessage('copiedToClipboardMessage'));
-}
-
-function showStatusMessage(message, isError = false) {
-    const div = document.createElement('div');
-    const style = {
-        'background-color': isError ? 'rgba(100%, 80%, 80%, 80%)' : 'rgba(80%, 100%, 80%, 80%)',
-        'border-radius': '0.2em',
-        'border-bottom': '0.1em solid',
-        'border-color': isError ? 'red' : 'green',
-        color: 'black',
-        'font-family': 'sans-serif',
-        'font-size': '12pt',
-        left: '0',
-        opacity: '0',
-        padding: '0.5em 0',
-        position: 'fixed',
-        'text-align': 'center',
-        top: '0',
-        transition: 'opacity 0.5s ease-in-out',
-        width: '100%',
-    };
-    for (const [key, value] of Object.entries(style)) div.style.setProperty(key, value);
-
-    div.textContent = 'gopass: ' + message;
-    document.body.appendChild(div);
-    div.style.opacity = '1';
-    setTimeout(function() {
-        div.style.opacity = '0';
-        setTimeout(function() {
-            div.remove();
-        }, 500);
-    }, 2000);
-}
-
 function processMessage(message) {
     switch (message.type) {
         case 'MARK_LOGIN_FIELDS':
@@ -299,12 +249,6 @@ function processMessage(message) {
             break;
         case 'TRY_LOGIN':
             tryLogIn();
-            break;
-        case 'COPY_PASSWORD':
-            copyPasswordToClipboard(message.password);
-            break;
-        case 'SHOW_ERROR':
-            showStatusMessage(message.error, true);
             break;
     }
 }

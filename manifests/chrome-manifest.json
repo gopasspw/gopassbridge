@@ -22,7 +22,6 @@
       "js": [
         "vendor/browser-polyfill.js",
         "generic.js",
-        "i18n.js",
         "content.js"
       ]
     }
