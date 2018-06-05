@@ -8,14 +8,18 @@ function onEntryData(element, message) {
         }
         oldDetailView.remove();
     });
-    browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(() => {
+    return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(() => {
         if (alreadyShown) return;
 
         const newDetailView = _detailViewFromMessage(message);
         newDetailView.classList.add('detail-view');
-        element.insertAdjacentElement('afterend', newDetailView);
+        _insertAfter(newDetailView, element);
         setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url), element.innerText);
     });
+}
+
+function _insertAfter(newNode, referenceNode) {
+    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 function _detailViewFromMessage(message) {
@@ -29,18 +33,19 @@ function _appendEntry(container, key, value) {
     const entryElement = document.createElement('li');
 
     keyElement = document.createElement('span');
+    keyElement.innerText = `${key}:`;
+    keyElement.classList.add('detail-key');
     if (value !== null && typeof value === 'object') {
         valueElement = document.createElement('div');
         valueElement.classList.add('detail-nested');
         Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
     } else {
-        keyElement.innerText = `${key}:`;
         if (typeof value === 'string' && value.match(re_weburl)) {
             valueElement = document.createElement('a');
             valueElement.href = value.match(re_weburl)[0];
             valueElement.target = '_blank';
             valueElement.innerText = value.match(re_weburl)[0];
-            valueElement.addEventListener('click', _openAndLoginURL);
+            valueElement.addEventListener('click', _openURL);
         } else {
             valueElement = document.createElement('span');
             valueElement.innerText = value;
@@ -48,7 +53,6 @@ function _appendEntry(container, key, value) {
         }
         valueElement.classList.add('detail-clickable-value');
     }
-    keyElement.classList.add('detail-key');
     entryElement.appendChild(keyElement);
     entryElement.appendChild(valueElement);
     container.appendChild(entryElement);
@@ -59,41 +63,15 @@ function _copyElementToClipboard(event) {
     copyToClipboard(element.innerText);
 }
 
-function _openAndLoginURL(event) {
+function _openURL(event) {
     event.preventDefault();
-    browser.tabs.create({ url: event.target.href, active: false }).then(tab => {
-        currentTab = tab;
-        if (tab.status !== 'complete') {
-            const clickOnComplete = (tabId, changes) => {
-                if (tabId === currentTab.id && changes.status === 'complete') {
-                    setTimeout(() => _getDetailView(event.target).previousElementSibling.click(), 100);
-                    setTimeout(() => browser.tabs.update(tab.id, { active: true }), 250);
-                }
-            };
-            browser.tabs.onUpdated.addListener(clickOnComplete);
-        }
-        setTimeout(() => {
-            browser.tabs.update(tab.id, { active: true });
-            browser.tabs.onUpdated.removeListener(clickOnComplete);
-        }, 1000);
-    });
-}
-
-function _getDetailView(element) {
-    if (element.parentNode) {
-        if (element.parentNode.classList.contains('detail-view')) {
-            return element.parentNode;
-        } else {
-            return _getDetailView(element.parentNode);
-        }
-    }
-    return null;
+    browser.tabs.create({ url: event.target.href });
 }
 
 function restoreDetailView() {
     let element;
-    getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(value => {
-        if (!value) return;
+    return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(value => {
+        if (!value) return Promise.resolve();
 
         Array.from(document.getElementsByClassName('login')).forEach(loginElement => {
             if (loginElement.innerText === value) {
@@ -101,11 +79,12 @@ function restoreDetailView() {
             }
         });
         if (element) {
-            sendNativeAppMessage({ type: 'getData', entry: value }).then(
+            return sendNativeAppMessage({ type: 'getData', entry: value }).then(
                 message => onEntryData(element, message),
                 logAndDisplayError
             );
         }
+        return Promise.resolve();
     });
 }
 
