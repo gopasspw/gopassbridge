@@ -1,6 +1,6 @@
 'use strict';
 
-function _processMessage(message, sender, sendResponse) {
+function _processMessage(message, sender, _) {
     if (sender.tab) {
         throw new Error(
             `Background script received unexpected message ${JSON.stringify(message)} from content script.`
@@ -28,7 +28,7 @@ function _processMessage(message, sender, sendResponse) {
                     })
                     .then(() => {
                         return executeOnSetting('submitafterfill', () => {
-                            browser.tabs.sendMessage(tab.id, { type: 'TRY_LOGIN' });
+                            return browser.tabs.sendMessage(tab.id, { type: 'TRY_LOGIN' });
                         });
                     });
             });
@@ -38,12 +38,23 @@ function _processMessage(message, sender, sendResponse) {
     }
 }
 
+function _showNotificationIfNoPopup(message) {
+    const popups = browser.extension.getViews({ type: 'popup' });
+    if (popups.length === 0) {
+        showNotificationOnSetting(message);
+    }
+}
+
 function processMessageAndCatch(message, sender, sendResponse) {
-    return _processMessage(message, sender, sendResponse).catch(error => {
-        const popups = browser.extension.getViews({ type: 'popup' });
-        if (popups.length === 0) showNotificationOnSetting(error.message);
-        throw error;
-    });
+    try {
+        return _processMessage(message, sender, sendResponse).catch(error => {
+            _showNotificationIfNoPopup(error.message);
+            throw error;
+        });
+    } catch (e) {
+        _showNotificationIfNoPopup(e.message);
+        return Promise.reject(e);
+    }
 }
 
 function initBackground() {
