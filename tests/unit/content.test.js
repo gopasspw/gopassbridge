@@ -318,7 +318,9 @@ for (const page in pages) {
         let clickCallback;
 
         function setupClickListener() {
-            const onClick = jest.fn();
+            const onClick = jest.fn(event => {
+                event.preventDefault();
+            });
             document.addEventListener('click', onClick);
             return onClick;
         }
