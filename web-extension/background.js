@@ -10,13 +10,11 @@ function _processMessage(message, sender, sendResponse) {
         case 'LOGIN_TAB':
             return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
                 if (response.error) {
-                    sendResponse(response);
                     throw new Error(response.error);
                 }
 
                 if (response.username === urlDomain(tab.url)) {
                     const msg = i18n.getMessage('couldNotDetermineUsernameMessage');
-                    sendResponse({ error: msg });
                     throw new Error(msg);
                 }
 
@@ -40,7 +38,8 @@ function _processMessage(message, sender, sendResponse) {
 
 function processMessageAndCatch(message, sender, sendResponse) {
     return _processMessage(message, sender, sendResponse).catch(error => {
-        showNotificationOnSetting(error.message);
+        const popups = browser.extension.getViews({ type: 'popup' });
+        if (popups.length === 0) showNotificationOnSetting(error.message);
         throw error;
     });
 }
