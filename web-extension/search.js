@@ -17,7 +17,7 @@ function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
         const elements = document.getElementsByClassName('login');
         if (elements.length === 1) {
-            resultSelected(event, elements[0]);
+            _onResultSelected(event, elements[0]);
         }
         event.preventDefault();
     }
@@ -49,7 +49,7 @@ function search(query) {
     searching = true;
     searchedUrl = currentTab.url;
     return sendNativeAppMessage({ type: 'query', query: query }).then(
-        result => onSearchResults(result, false),
+        result => _onSearchResults(result, false),
         logAndDisplayError
     );
 }
@@ -67,7 +67,7 @@ function searchHost(term) {
     searching = true;
     searchedUrl = currentTab.url;
     return sendNativeAppMessage({ type: 'queryHost', host: term }).then(
-        result => onSearchResults(result, true),
+        result => _onSearchResults(result, true),
         logAndDisplayError
     );
 }
@@ -80,7 +80,7 @@ function _faviconUrl() {
     return 'icons/si-glyph-key-2.svg';
 }
 
-function onSearchResults(response, isHostQuery) {
+function _onSearchResults(response, isHostQuery) {
     const results = document.getElementById('results');
     clearTimeout(spinnerTimeout);
     if (response.error) {
@@ -102,7 +102,7 @@ function onSearchResults(response, isHostQuery) {
                     'login',
                     result,
                     `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-                    resultSelected
+                    _onResultSelected
                 )
             );
         });
@@ -121,7 +121,7 @@ function onSearchResults(response, isHostQuery) {
     searching = false;
 }
 
-function resultSelected(event, element) {
+function _onResultSelected(event, element) {
     element = element || event.target;
     const value = element.innerText;
     if (event.altKey) {
@@ -129,21 +129,19 @@ function resultSelected(event, element) {
             message => onEntryData(element, message),
             logAndDisplayError
         );
+    } else if (event.shiftKey) {
+        sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
+            _onLoginCredentialsDoCopyClipboard,
+            logAndDisplayError
+        );
     } else {
-        if (event.shiftKey) {
-            sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
-                onLoginCredentialsDoCopyClipboard,
-                logAndDisplayError
-            );
-        } else {
-            browser.runtime
-                .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
-                .then(onLoginCredentialsDidLogin, logAndDisplayError);
-        }
+        browser.runtime
+            .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
+            .then(_onLoginCredentialsDidLogin, logAndDisplayError);
     }
 }
 
-function onLoginCredentialsDoCopyClipboard(response) {
+function _onLoginCredentialsDoCopyClipboard(response) {
     if (response.error) {
         setStatusText(response.error);
         return;
@@ -156,7 +154,7 @@ function onLoginCredentialsDoCopyClipboard(response) {
     setTimeout(window.close, 1000);
 }
 
-function onLoginCredentialsDidLogin(response) {
+function _onLoginCredentialsDidLogin(response) {
     if (response && response.error) {
         setStatusText(response.error);
         return;
