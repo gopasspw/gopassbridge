@@ -11,7 +11,7 @@
     global.browser = mod.exports;
   }
 })(this, function (module) {
-  /* webextension-polyfill - v0.2.1 - Wed May 23 2018 08:07:19 */
+  /* webextension-polyfill - v0.2.1 - Wed Jun 06 2018 22:11:32 */
   /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
   /* vim: set sts=2 sw=2 et tw=80: */
   /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -20,6 +20,13 @@
   "use strict";
 
   if (typeof browser === "undefined") {
+    const SEND_RESPONSE_DEPRECATION_WARNING = `
+      Returning a Promise is the preferred way to send a reply from an
+      onMessage/onMessageExternal listener, as the sendResponse will be
+      removed from the specs (See
+      https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/onMessage)
+    `.replace(/\s+/g, " ").trim();
+
     // Wrapping the bulk of this polyfill in a one-time-use function is a minor
     // optimization for Firefox. Since Spidermonkey does not fully parse the
     // contents of a function until the first time it's called, and since it will
@@ -658,6 +665,8 @@
         };
       };
 
+      const pluralizeArguments = numArgs => numArgs == 1 ? "argument" : "arguments";
+
       /**
        * Creates a wrapper function for a method with the given name and metadata.
        *
@@ -681,8 +690,6 @@
        *       The generated wrapper function.
        */
       const wrapAsyncFunction = (name, metadata) => {
-        const pluralizeArguments = numArgs => numArgs == 1 ? "argument" : "arguments";
-
         return function asyncFunctionWrapper(target, ...args) {
           if (args.length < metadata.minArgs) {
             throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
@@ -896,6 +903,9 @@
         }
       });
 
+      // Keep track if the deprecation warning has been logged at least once.
+      let loggedSendResponseDeprecationWarning = false;
+
       const onMessageWrappers = new DefaultWeakMap(listener => {
         if (typeof listener !== "function") {
           return listener;
@@ -924,12 +934,21 @@
           let wrappedSendResponse;
           let sendResponsePromise = new Promise(resolve => {
             wrappedSendResponse = function (response) {
+              if (!loggedSendResponseDeprecationWarning) {
+                console.warn(SEND_RESPONSE_DEPRECATION_WARNING, new Error().stack);
+                loggedSendResponseDeprecationWarning = true;
+              }
               didCallSendResponse = true;
               resolve(response);
             };
           });
 
-          let result = listener(message, sender, wrappedSendResponse);
+          let result;
+          try {
+            result = listener(message, sender, wrappedSendResponse);
+          } catch (err) {
+            result = Promise.reject(err);
+          }
 
           const isResultThenable = result !== true && isThenable(result);
 
@@ -940,26 +959,41 @@
             return false;
           }
 
+          // A small helper to send the message if the promise resolves
+          // and an error if the promise rejects (a wrapped sendMessage has
+          // to translate the message into a resolved promise or a rejected
+          // promise).
+          const sendPromisedResult = promise => {
+            promise.then(msg => {
+              // send the message value.
+              sendResponse(msg);
+            }, error => {
+              // Send a JSON representation of the error if the rejected value
+              // is an instance of error, or the object itself otherwise.
+              let message;
+              if (error && (error instanceof Error || typeof error.message === "string")) {
+                message = error.message;
+              } else {
+                message = "An unexpected error occurred";
+              }
+
+              sendResponse({
+                __mozWebExtensionPolyfillReject__: true,
+                message
+              });
+            }).catch(err => {
+              // Print an error on the console if unable to send the response.
+              console.error("Failed to send onMessage rejected reply", err);
+            });
+          };
+
           // If the listener returned a Promise, send the resolved value as a
           // result, otherwise wait the promise related to the wrappedSendResponse
           // callback to resolve and send it as a response.
           if (isResultThenable) {
-            result.then(sendResponse, error => {
-              console.error(error);
-              // TODO: the error object is not serializable and so for now we just send
-              // `undefined`. Nevertheless, as being discussed in #97, this is not yet
-              // providing the expected behavior (the promise received from the sender should
-              // be rejected when the promise returned by the listener is being rejected).
-              sendResponse(undefined);
-            });
+            sendPromisedResult(result);
           } else {
-            sendResponsePromise.then(sendResponse, error => {
-              console.error(error);
-              // TODO: same as above, we are currently sending `undefined` in this scenario
-              // because the error oject is not serializable, but it is not yet the behavior
-              // that this scenario should present.
-              sendResponse(undefined);
-            });
+            sendPromisedResult(sendResponsePromise);
           }
 
           // Let Chrome know that the listener is replying.
@@ -967,9 +1001,42 @@
         };
       });
 
+      const wrappedSendMessageCallback = ({ reject, resolve }, reply) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
+          // Convert back the JSON representation of the error into
+          // an Error instance.
+          reject(new Error(reply.message));
+        } else {
+          resolve(reply);
+        }
+      };
+
+      const wrappedSendMessage = (name, metadata, apiNamespaceObj, ...args) => {
+        if (args.length < metadata.minArgs) {
+          throw new Error(`Expected at least ${metadata.minArgs} ${pluralizeArguments(metadata.minArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        if (args.length > metadata.maxArgs) {
+          throw new Error(`Expected at most ${metadata.maxArgs} ${pluralizeArguments(metadata.maxArgs)} for ${name}(), got ${args.length}`);
+        }
+
+        return new Promise((resolve, reject) => {
+          const wrappedCb = wrappedSendMessageCallback.bind(null, { resolve, reject });
+          args.push(wrappedCb);
+          apiNamespaceObj.sendMessage(...args);
+        });
+      };
+
       const staticWrappers = {
         runtime: {
-          onMessage: wrapEvent(onMessageWrappers)
+          onMessage: wrapEvent(onMessageWrappers),
+          onMessageExternal: wrapEvent(onMessageWrappers),
+          sendMessage: wrappedSendMessage.bind(null, "sendMessage", { minArgs: 1, maxArgs: 3 })
+        },
+        tabs: {
+          sendMessage: wrappedSendMessage.bind(null, "sendMessage", { minArgs: 2, maxArgs: 3 })
         }
       };
 
