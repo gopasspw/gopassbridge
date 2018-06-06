@@ -2,7 +2,9 @@
 
 function _processMessage(message, sender, sendResponse) {
     if (sender.tab) {
-        throw new Error(`Background script received unexpected message ${JSON.dumps(message)} from content script.`);
+        throw new Error(
+            `Background script received unexpected message ${JSON.stringify(message)} from content script.`
+        );
     }
 
     const { entry, tab } = message;
@@ -32,7 +34,7 @@ function _processMessage(message, sender, sendResponse) {
             });
 
         default:
-            throw new Error(`Background script received unexpected message ${JSON.dumps(message)} from extension`);
+            throw new Error(`Background script received unexpected message ${JSON.stringify(message)} from extension`);
     }
 }
 
