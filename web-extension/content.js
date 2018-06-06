@@ -251,6 +251,8 @@ function processMessage(message) {
             tryLogIn();
             break;
     }
+
+    return Promise.resolve(true);
 }
 
 browser.runtime.onMessage.addListener(processMessage);
