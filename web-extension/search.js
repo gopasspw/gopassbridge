@@ -151,6 +151,7 @@ function onLoginCredentialsDoCopyClipboard(response) {
 
     copyToClipboard(response.password);
 
+    const content = document.getElementById('content');
     content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
     setTimeout(window.close, 1000);
 }
