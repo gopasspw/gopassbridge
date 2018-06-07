@@ -33,41 +33,42 @@ function _onSearchInputEvent() {
     }
 }
 
-function search(query) {
-    if (searching) {
-        console.log('Search still in progress, skipping query ' + query);
-        return;
-    }
-    armSpinnerTimeout();
-    searchTerm = query;
-    document.getElementById('search_input').value = query;
-    if (!query) {
-        console.log('Will not search for empty string');
-        return;
-    }
-    console.log('Searching for string ' + query);
-    searching = true;
-    searchedUrl = currentTab.url;
-    return sendNativeAppMessage({ type: 'query', query: query }).then(
-        result => _onSearchResults(result, false),
-        logAndDisplayError
-    );
-}
-
-function searchHost(term) {
+function search(term) {
     if (searching) {
         console.log('Search still in progress, skipping query ' + term);
         return;
     }
-    armSpinnerTimeout();
-    browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + term);
-    searchTerm = term;
+
+    document.getElementById('search_input').value = term;
+    if (!term) {
+        console.log('Will not search for empty string');
+        return;
+    }
+
+    console.log('Searching for string ' + term);
+    return _doSearch(term);
+}
+
+function searchHost(host) {
+    if (searching) {
+        console.log('Search still in progress, skipping query ' + host);
+        return;
+    }
+
+    browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
     document.getElementById('search_input').value = '';
-    console.log('Searching for host ' + term);
+
+    console.log('Searching for host ' + host);
+    return _doSearch(host, true);
+}
+
+function _doSearch(term, queryHost) {
+    searchTerm = term;
+    armSpinnerTimeout();
     searching = true;
     searchedUrl = currentTab.url;
-    return sendNativeAppMessage({ type: 'queryHost', host: term }).then(
-        result => _onSearchResults(result, true),
+    return sendNativeAppMessage({ type: queryHost ? 'queryHost' : 'query', query: term }).then(
+        result => _onSearchResults(result, false),
         logAndDisplayError
     );
 }
