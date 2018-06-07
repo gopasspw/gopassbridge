@@ -48,6 +48,14 @@ body {
     min-height: 32px;
 }
 
+.detail-clickable-value:hover {
+    background: rgba(96, 109, 197, 0.41);
+}
+
+.detail-clickable-value:active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 .entry {
     position: relative;
 }
@@ -117,6 +125,13 @@ body {
 .entry .details:hover {
     opacity: 0.6;
     background-color: #0a4178;
+    background-blend-mode: screen;
+}
+
+.entry .copy:active,
+.entry .details:active {
+    opacity: 0.6;
+    background-color: #2c5f96;
     background-blend-mode: screen;
 }
 
