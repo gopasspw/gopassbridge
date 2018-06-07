@@ -108,8 +108,10 @@ function _onSearchResults(response, isHostQuery) {
                     _onEntryAction
                 )
             );
-            entry.appendChild(createButtonWithCallback('copy', result, null, _onEntryCopy));
-            entry.appendChild(createButtonWithCallback('details', result, null, _onEntryDetails));
+            entry.appendChild(createButtonWithCallback('copy', result, null, event => _onEntryCopy(event.target)));
+            entry.appendChild(
+                createButtonWithCallback('details', result, null, event => _onEntryDetails(event.target))
+            );
             results.appendChild(entry);
         });
     } else {
