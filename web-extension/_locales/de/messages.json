@@ -89,7 +89,7 @@
     "description": "Clipboard hint text"
   },
   "optionsUsageHintsDetailsText": {
-    "message": "Um die Metadaten des Eintrages anzuzeigen, Alt Taste halten während man auf den Eintrag klickt",
+    "message": "Um den vollen Eintrag anzuzeigen, Alt Taste halten während man auf den Eintrag klickt",
     "description": "Details hint text"
   },
   "optionsSettingsTitle": {

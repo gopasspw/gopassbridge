@@ -89,7 +89,7 @@
     "description": "Clipboard hint text"
   },
   "optionsUsageHintsDetailsText": {
-    "message": "To open the metadate for an entry, hold alt key while clicking on the secret.",
+    "message": "To show the full entry, hold alt key while clicking on the secret.",
     "description": "Details hint text"
   },
   "optionsSettingsTitle": {

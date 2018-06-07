@@ -128,34 +128,28 @@ function _onSearchResults(response, isHostQuery) {
 }
 
 function _onEntryAction(event, element) {
-    if (element) {
-        event.target = element;
-    }
-
     if (event.altKey) {
-        _onEntryDetails(event);
+        _onEntryDetails(element || event.target);
     } else if (event.shiftKey) {
-        _onEntryCopy(event);
+        _onEntryCopy(element || event.target);
     } else {
-        const value = element.innerText;
+        const value = (element || event.target).innerText;
         browser.runtime
             .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
             .then(_onLoginCredentialsDidLogin, logAndDisplayError);
     }
 }
 
-function _onEntryCopy(event) {
-    const value = event.target.innerText;
-    sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
+function _onEntryCopy(element) {
+    sendNativeAppMessage({ type: 'getLogin', entry: element.innerText }).then(
         _onLoginCredentialsDoCopyClipboard,
         logAndDisplayError
     );
 }
 
-function _onEntryDetails(event) {
-    const value = event.target.innerText;
-    sendNativeAppMessage({ type: 'getData', entry: value }).then(
-        message => onEntryData(event.target, message),
+function _onEntryDetails(element) {
+    sendNativeAppMessage({ type: 'getData', entry: element.innerText }).then(
+        message => onEntryData(element, message),
         logAndDisplayError
     );
 }
