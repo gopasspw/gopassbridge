@@ -85,8 +85,12 @@
     "description": "Title of UsageHints"
   },
   "optionsUsageHintsClipboardText": {
-    "message": "Um ein Passwort in die Zwischenablage zu kopieren, Großstelltaste halten während man auf den Eintrag klickt..",
+    "message": "Um ein Passwort in die Zwischenablage zu kopieren, Großstelltaste halten während man auf den Eintrag klickt",
     "description": "Clipboard hint text"
+  },
+  "optionsUsageHintsDetailsText": {
+    "message": "Um die Metadaten des Eintrages anzuzeigen, Alt Taste halten während man auf den Eintrag klickt",
+    "description": "Details hint text"
   },
   "optionsSettingsTitle": {
     "message": "Einstellungen",

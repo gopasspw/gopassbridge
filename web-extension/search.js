@@ -17,7 +17,7 @@ function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
         const elements = document.getElementsByClassName('login');
         if (elements.length === 1) {
-            _onResultSelected(event, elements[0]);
+            _onEntryAction(event, elements[0]);
         }
         event.preventDefault();
     }
@@ -97,14 +97,19 @@ function _onSearchResults(response, isHostQuery) {
         );
         results.innerHTML = '';
         response.forEach(result => {
-            results.appendChild(
+            const entry = document.createElement('div');
+            entry.classList.add('entry');
+            entry.appendChild(
                 createButtonWithCallback(
                     'login',
                     result,
                     `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-                    _onResultSelected
+                    _onEntryAction
                 )
             );
+            entry.appendChild(createButtonWithCallback('copy', result, null, _onEntryCopy));
+            entry.appendChild(createButtonWithCallback('details', result, null, _onEntryDetails));
+            results.appendChild(entry);
         });
     } else {
         browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
@@ -121,24 +126,37 @@ function _onSearchResults(response, isHostQuery) {
     searching = false;
 }
 
-function _onResultSelected(event, element) {
-    element = element || event.target;
-    const value = element.innerText;
+function _onEntryAction(event, element) {
+    if (element) {
+        event.target = element;
+    }
+
     if (event.altKey) {
-        sendNativeAppMessage({ type: 'getData', entry: value }).then(
-            message => onEntryData(element, message),
-            logAndDisplayError
-        );
+        _onEntryDetails(event);
     } else if (event.shiftKey) {
-        sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
-            _onLoginCredentialsDoCopyClipboard,
-            logAndDisplayError
-        );
+        _onEntryCopy(event);
     } else {
+        const value = element.innerText;
         browser.runtime
             .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
             .then(_onLoginCredentialsDidLogin, logAndDisplayError);
     }
+}
+
+function _onEntryCopy(event) {
+    const value = event.target.innerText;
+    sendNativeAppMessage({ type: 'getLogin', entry: value }).then(
+        _onLoginCredentialsDoCopyClipboard,
+        logAndDisplayError
+    );
+}
+
+function _onEntryDetails(event) {
+    const value = event.target.innerText;
+    sendNativeAppMessage({ type: 'getData', entry: value }).then(
+        message => onEntryData(event.target, message),
+        logAndDisplayError
+    );
 }
 
 function _onLoginCredentialsDoCopyClipboard(response) {

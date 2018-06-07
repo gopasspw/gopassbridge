@@ -88,6 +88,10 @@
     "message": "To copy the secret to clipboard, hold shift key while clicking on the secret.",
     "description": "Clipboard hint text"
   },
+  "optionsUsageHintsDetailsText": {
+    "message": "To open the metadate for an entry, hold alt key while clicking on the secret.",
+    "description": "Details hint text"
+  },
   "optionsSettingsTitle": {
     "message": "Settings",
     "description": "Title of Settings"

@@ -48,14 +48,18 @@ body {
     min-height: 32px;
 }
 
+.entry {
+    position: relative;
+}
+
 .detail-view {
     display: block;
     box-sizing: border-box;
-    width: 100%;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding: 10px 7px 10px 32px;
     border: 0;
+    width: 100%;
+    padding: 10px 7px 10px 32px;
     border-bottom: 1px dotted #6bd6e4;
     text-align: left;
     line-height: 1.2;
@@ -85,6 +89,45 @@ body {
 .login:focus {
     outline: 0;
     background-color: #b6dee3;
+}
+
+.entry:hover .copy,
+.entry:hover .details {
+    display: block;
+}
+
+.entry .copy,
+.entry .details {
+    display: none;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    font-size: 0;
+    top: 5px;
+    background-repeat: no-repeat;
+    background-size: 19px;
+    background-position: 3px;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border: 0;
+}
+
+.entry .copy:hover,
+.entry .details:hover {
+    opacity: 0.6;
+    background-color: #0a4178;
+    background-blend-mode: screen;
+}
+
+.entry .details {
+    right: 5px;
+    background-image: url('icons/si-glyph-arrow-thick-thin-down.svg');
+}
+
+.entry .copy {
+    right: 35px;
+    background-image: url('icons/si-glyph-document-copy.svg');
 }
 
 .loader {
