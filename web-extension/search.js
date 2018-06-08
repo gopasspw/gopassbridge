@@ -40,10 +40,6 @@ function search(term) {
     }
 
     document.getElementById('search_input').value = term;
-    if (!term) {
-        console.log('Will not search for empty string');
-        return;
-    }
 
     console.log('Searching for string ' + term);
     return _doSearch(term);
@@ -63,12 +59,17 @@ function searchHost(host) {
 }
 
 function _doSearch(term, queryHost) {
+    if (!term) {
+        console.log('Will not search for empty string');
+        return Promise.resolve([]);
+    }
+
     searchTerm = term;
     armSpinnerTimeout();
     searching = true;
     searchedUrl = currentTab.url;
     return sendNativeAppMessage({ type: queryHost ? 'queryHost' : 'query', query: term }).then(
-        result => _onSearchResults(result, false),
+        result => _onSearchResults(result, queryHost),
         logAndDisplayError
     );
 }
@@ -184,5 +185,7 @@ window.tests = {
         initSearch,
         _onSearchInputEvent,
         _onSearchKeypressEvent,
+        search,
+        searchHost,
     },
 };
