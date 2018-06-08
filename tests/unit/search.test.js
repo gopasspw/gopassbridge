@@ -31,8 +31,11 @@ describe('search method', function() {
     beforeEach(function() {
         browser.storage.local.remove.mockClear();
         global.armSpinnerTimeout.mockClear();
-        global.sendNativeAppMessage.mockClear();
+        global.sendNativeAppMessage = jest.fn();
         global.sendNativeAppMessage.mockResolvedValue([]);
+        global.createButtonWithCallback.mockClear();
+        global.setStatusText.mockClear();
+        global.currentTab = { id: 42, url: 'http://some.host' };
     });
 
     describe('initSearch', function() {
@@ -115,7 +118,7 @@ describe('search method', function() {
             });
         });
 
-        test('clears storage before only once if results', () => {
+        test('clears storage before only once if results not empty', () => {
             expect.assertions(1);
             global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry', 'other/entry']);
 
@@ -136,6 +139,75 @@ describe('search method', function() {
             return search.searchHost('').then(() => {
                 expect(global.sendNativeAppMessage.mock.calls.length).toBe(0);
             });
+        });
+
+        test('does not set favicon if matching for normal query', () => {
+            expect.assertions(1);
+            global.currentTab.favIconUrl = 'http://some.host/fav.ico';
+            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+            return search.search('mih').then(() => {
+                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                    'login',
+                    'some/entry',
+                    "background-image: url('icons/si-glyph-key-2.svg')",
+                    search._onEntryAction,
+                ]);
+            });
+        });
+    });
+
+    describe('search results', () => {
+        test('shows message and create for empty response', () => {
+            expect.assertions(2);
+            return search.searchHost('mih').then(() => {
+                expect(global.setStatusText.mock.calls).toEqual([['__KEY_noResultsForMessage__ mih']]);
+                expect(global.createButtonWithCallback.mock.calls).toEqual([
+                    ['login', '__KEY_createNewEntryButtonText__', null, global.switchToCreateNewDialog],
+                ]);
+            });
+        });
+
+        test('creates entry with two additional buttons for non empty response', () => {
+            expect.assertions(2);
+            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+            return search.searchHost('mih').then(() => {
+                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                    'login',
+                    'some/entry',
+                    "background-image: url('icons/si-glyph-key-2.svg')",
+                    search._onEntryAction,
+                ]);
+                expect(global.createButtonWithCallback.mock.calls.length).toBe(3);
+            });
+        });
+
+        test('sets favicon if matching', () => {
+            expect.assertions(1);
+            global.currentTab.favIconUrl = 'http://some.host/fav.ico';
+            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+            return search.searchHost('mih').then(() => {
+                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                    'login',
+                    'some/entry',
+                    "background-image: url('http://some.host/fav.ico')",
+                    search._onEntryAction,
+                ]);
+            });
+        });
+
+        test('sets status on error', () => {
+            expect.assertions(1);
+            global.sendNativeAppMessage.mockResolvedValueOnce({ error: 'something went wrong' });
+            return search.searchHost('mih').then(() => {
+                expect(global.setStatusText.mock.calls).toEqual([['something went wrong']]);
+            });
+        });
+
+        test('break if tab has changed', () => {
+            global.currentTab.url = 'http://evil.host';
+            global.searchedUrl = 'muh';
+            search._onSearchResults([], false);
+            expect(global.createButtonWithCallback.mock.calls.length).toBe(0);
         });
     });
 });

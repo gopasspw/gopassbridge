@@ -91,6 +91,7 @@ function _onSearchResults(response, isHostQuery) {
     }
     if (currentTab.url !== searchedUrl) {
         console.log('Result is not from the same URL as we were searching for, ignoring');
+        return;
     }
     if (response.length) {
         setLocalStorageKey(
@@ -187,5 +188,7 @@ window.tests = {
         _onSearchKeypressEvent,
         search,
         searchHost,
+        _onEntryAction,
+        _onSearchResults,
     },
 };
