@@ -4,13 +4,10 @@ const fs = require('fs');
 
 jest.useFakeTimers();
 
-document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
+const documentHtml = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
 
 global.LAST_DOMAIN_SEARCH_PREFIX = 'PREFIX_';
 global.armSpinnerTimeout = jest.fn();
-global.currentTab = { id: 42, url: 'http://some.host' };
-global.sendNativeAppMessage = jest.fn();
-global.sendNativeAppMessage.mockResolvedValue([]);
 global.logAndDisplayError = jest.fn();
 global.setStatusText = jest.fn();
 global.i18n = {
@@ -22,26 +19,30 @@ global.createButtonWithCallback = jest.fn(() => document.createElement('div'));
 global.switchToCreateNewDialog = jest.fn();
 global.setLocalStorageKey = jest.fn();
 global.setLocalStorageKey.mockResolvedValue({});
+global.browser.tabs.sendMessage = jest.fn();
+global.browser.tabs.sendMessage.mockResolvedValue({});
+global.sendNativeAppMessage = jest.fn();
+global.sendNativeAppMessage.mockResolvedValue([]);
+global.window.close = jest.fn();
+
+resetSearchState();
 
 require('search.js');
 
 const search = window.tests.search;
 
+function resetSearchState() {
+    document.body.innerHTML = documentHtml;
+    jest.clearAllMocks();
+    global.currentTab = { id: 42, url: 'http://some.host' };
+}
+
 describe('search method', function() {
-    beforeEach(function() {
-        browser.storage.local.remove.mockClear();
-        global.armSpinnerTimeout.mockClear();
-        global.sendNativeAppMessage = jest.fn();
-        global.sendNativeAppMessage.mockResolvedValue([]);
-        global.createButtonWithCallback.mockClear();
-        global.setStatusText.mockClear();
-        global.currentTab = { id: 42, url: 'http://some.host' };
-    });
+    beforeEach(resetSearchState);
 
     describe('initSearch', function() {
-        const input = document.getElementById('search_input');
         test('focuses input', () => {
-            jest.runAllTimers();
+            const input = document.getElementById('search_input');
             spyOn(input, 'focus');
             search.initSearch();
             expect(input.focus).toHaveBeenCalledTimes(0);
@@ -50,6 +51,7 @@ describe('search method', function() {
         });
 
         test(`registers eventhandlers for input`, () => {
+            const input = document.getElementById('search_input');
             spyOn(input, 'addEventListener');
             search.initSearch();
             expect(input.addEventListener.calls.allArgs()).toEqual([
@@ -61,15 +63,6 @@ describe('search method', function() {
     });
 
     describe('search for term', () => {
-        test('sets search input', () => {
-            expect.assertions(2);
-            document.getElementById('search_input').value = '';
-            expect(document.getElementById('search_input').value).toEqual('');
-            return search.search('muh').then(() => {
-                expect(document.getElementById('search_input').value).toEqual('muh');
-            });
-        });
-
         test('sets search input', () => {
             expect.assertions(2);
             document.getElementById('search_input').value = '';
@@ -98,6 +91,26 @@ describe('search method', function() {
             return search.search('').then(() => {
                 expect(global.sendNativeAppMessage.mock.calls.length).toBe(0);
             });
+        });
+
+        test('does not send search queries concurrently', () => {
+            expect.assertions(1);
+            return Promise.all([search.search('a'), search.search('b')]).then(() => {
+                expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
+            });
+        });
+
+        test('sends search queries sequentially', () => {
+            expect.assertions(1);
+            return search
+                .search('a')
+                .then(() => search.search('b'))
+                .then(() => {
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        [{ query: 'a', type: 'query' }],
+                        [{ query: 'b', type: 'query' }],
+                    ]);
+                });
         });
     });
 
@@ -129,8 +142,8 @@ describe('search method', function() {
 
         test('sends search message for host', () => {
             expect.assertions(1);
-            return search.search('muh').then(() => {
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'muh', type: 'query' }]]);
+            return search.searchHost('muh').then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'muh', type: 'queryHost' }]]);
             });
         });
 
@@ -141,18 +154,24 @@ describe('search method', function() {
             });
         });
 
-        test('does not set favicon if matching for normal query', () => {
+        test('does not send search queries concurrently', () => {
             expect.assertions(1);
-            global.currentTab.favIconUrl = 'http://some.host/fav.ico';
-            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
-            return search.search('mih').then(() => {
-                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                    'login',
-                    'some/entry',
-                    "background-image: url('icons/si-glyph-key-2.svg')",
-                    search._onEntryAction,
-                ]);
+            return Promise.all([search.searchHost('a'), search.searchHost('b')]).then(() => {
+                expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
             });
+        });
+
+        test('sends search queries sequentially', () => {
+            expect.assertions(1);
+            return search
+                .searchHost('a')
+                .then(() => search.searchHost('b'))
+                .then(() => {
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        [{ query: 'a', type: 'queryHost' }],
+                        [{ query: 'b', type: 'queryHost' }],
+                    ]);
+                });
         });
     });
 
@@ -181,20 +200,6 @@ describe('search method', function() {
             });
         });
 
-        test('sets favicon if matching', () => {
-            expect.assertions(1);
-            global.currentTab.favIconUrl = 'http://some.host/fav.ico';
-            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
-            return search.searchHost('mih').then(() => {
-                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                    'login',
-                    'some/entry',
-                    "background-image: url('http://some.host/fav.ico')",
-                    search._onEntryAction,
-                ]);
-            });
-        });
-
         test('sets status on error', () => {
             expect.assertions(1);
             global.sendNativeAppMessage.mockResolvedValueOnce({ error: 'something went wrong' });
@@ -209,5 +214,90 @@ describe('search method', function() {
             search._onSearchResults([], false);
             expect(global.createButtonWithCallback.mock.calls.length).toBe(0);
         });
+
+        describe('favicon', () => {
+            beforeEach(() => {
+                global.currentTab.favIconUrl = 'http://some.host/fav.ico';
+            });
+
+            test('sets favicon if matching', () => {
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.searchHost('mih').then(() => {
+                    expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                        'login',
+                        'some/entry',
+                        "background-image: url('http://some.host/fav.ico')",
+                        search._onEntryAction,
+                    ]);
+                });
+            });
+
+            test('does not set favicon if matching for normal query', () => {
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.search('mih').then(() => {
+                    expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                        'login',
+                        'some/entry',
+                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        search._onEntryAction,
+                    ]);
+                });
+            });
+        });
+    });
+});
+
+describe('search input', function() {
+    let input;
+
+    beforeEach(() => {
+        resetSearchState();
+        search.initSearch();
+        input = document.getElementById('search_input');
+        input.value = '';
+    });
+
+    function simulateKeyPress(keyCode) {
+        const event = new KeyboardEvent('keypress', { keyCode });
+        event.preventDefault = jest.fn();
+        input.dispatchEvent(event);
+        return event;
+    }
+
+    function addDummySearchResult() {
+        const result = document.createElement('div');
+        result.innerText = 'some text';
+        result.classList.add('login');
+        document.getElementById('results').appendChild(result);
+    }
+
+    test('on keypress non-ENTER is ignored', () => {
+        const event = simulateKeyPress(32);
+        expect(event.preventDefault.mock.calls.length).toBe(0);
+    });
+
+    test('on keypress ENTER without result does nothing', () => {
+        const event = simulateKeyPress(13);
+        expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
+        expect(event.preventDefault.mock.calls.length).toBe(1);
+    });
+
+    test('on keypress ENTER with multiple results does nothing', () => {
+        addDummySearchResult();
+        addDummySearchResult();
+        const event = simulateKeyPress(13);
+        expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
+        expect(event.preventDefault.mock.calls.length).toBe(1);
+    });
+
+    test('on keypress ENTER with one result triggers login', () => {
+        addDummySearchResult();
+        const event = simulateKeyPress(13);
+        expect(global.browser.runtime.sendMessage.mock.calls).toEqual([
+            [{ entry: 'some text', tab: { id: 42, url: 'http://some.host' }, type: 'LOGIN_TAB' }],
+        ]);
+        expect(event.preventDefault.mock.calls.length).toBe(1);
     });
 });
