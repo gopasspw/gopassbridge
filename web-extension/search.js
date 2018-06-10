@@ -36,7 +36,7 @@ function _onSearchInputEvent() {
 function search(term) {
     if (searching) {
         console.log('Search still in progress, skipping query ' + term);
-        return;
+        return Promise.resolve();
     }
 
     document.getElementById('search_input').value = term;
@@ -48,7 +48,7 @@ function search(term) {
 function searchHost(host) {
     if (searching) {
         console.log('Search still in progress, skipping query ' + host);
-        return;
+        return Promise.resolve();
     }
 
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
@@ -61,7 +61,7 @@ function searchHost(host) {
 function _doSearch(term, queryHost) {
     if (!term) {
         console.log('Will not search for empty string');
-        return Promise.resolve([]);
+        return Promise.resolve();
     }
 
     searchTerm = term;
@@ -83,52 +83,58 @@ function _faviconUrl() {
 }
 
 function _onSearchResults(response, isHostQuery) {
-    const results = document.getElementById('results');
-    clearTimeout(spinnerTimeout);
-    if (response.error) {
-        setStatusText(response.error);
-        return;
-    }
-    if (currentTab.url !== searchedUrl) {
-        console.log('Result is not from the same URL as we were searching for, ignoring');
-        return;
-    }
-    if (response.length) {
-        setLocalStorageKey(
-            LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url),
-            document.getElementById('search_input').value
-        );
-        results.innerHTML = '';
-        response.forEach(result => {
-            const entry = document.createElement('div');
-            entry.classList.add('entry');
-            entry.appendChild(
+    try {
+        if (response.error) {
+            setStatusText(response.error);
+            return;
+        }
+        if (currentTab.url !== searchedUrl) {
+            console.log('Result is not from the same URL as we were searching for, ignoring');
+            return;
+        }
+
+        const results = document.getElementById('results');
+
+        if (response.length) {
+            setLocalStorageKey(
+                LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url),
+                document.getElementById('search_input').value
+            );
+            results.innerHTML = '';
+            response.forEach(result => {
+                const entry = document.createElement('div');
+                entry.classList.add('entry');
+                entry.appendChild(
+                    createButtonWithCallback(
+                        'login',
+                        result,
+                        `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
+                        _onEntryAction
+                    )
+                );
+                entry.appendChild(createButtonWithCallback('copy', result, null, event => _onEntryCopy(event.target)));
+                entry.appendChild(
+                    createButtonWithCallback('details', result, null, event => _onEntryDetails(event.target))
+                );
+                results.appendChild(entry);
+            });
+        } else {
+            browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
+            setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
+            results.appendChild(
                 createButtonWithCallback(
                     'login',
-                    result,
-                    `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-                    _onEntryAction
+                    i18n.getMessage('createNewEntryButtonText'),
+                    null,
+                    switchToCreateNewDialog
                 )
             );
-            entry.appendChild(createButtonWithCallback('copy', result, null, event => _onEntryCopy(event.target)));
-            entry.appendChild(
-                createButtonWithCallback('details', result, null, event => _onEntryDetails(event.target))
-            );
-            results.appendChild(entry);
-        });
-    } else {
-        browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
-        setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
-        results.appendChild(
-            createButtonWithCallback(
-                'login',
-                i18n.getMessage('createNewEntryButtonText'),
-                null,
-                switchToCreateNewDialog
-            )
-        );
+        }
+    } finally {
+        // As long as everything in the try block happens synchronously, we can just reset the search state here.
+        clearTimeout(spinnerTimeout);
+        searching = false;
     }
-    searching = false;
 }
 
 function _onEntryAction(event, element) {
