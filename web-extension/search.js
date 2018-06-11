@@ -25,10 +25,10 @@ function _onSearchKeypressEvent(event) {
 
 function _onSearchInputEvent() {
     const input = document.getElementById('search_input');
-    const currentHost = urlDomain(currentTab.url);
     if (input.value.length) {
         search(input.value);
     } else {
+        const currentHost = urlDomain(currentTab.url);
         searchHost(currentHost);
     }
 }
