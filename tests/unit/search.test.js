@@ -10,6 +10,8 @@ global.LAST_DOMAIN_SEARCH_PREFIX = 'PREFIX_';
 global.armSpinnerTimeout = jest.fn();
 global.logAndDisplayError = jest.fn();
 global.setStatusText = jest.fn();
+global.onEntryData = jest.fn();
+global.copyToClipboard = jest.fn();
 global.i18n = {
     getMessage: jest.fn(messagekey => `__KEY_${messagekey}__`),
 };
@@ -187,16 +189,21 @@ describe('search method', function() {
         });
 
         test('creates entry with two additional buttons for non empty response', () => {
-            expect.assertions(2);
+            expect.assertions(3);
             global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
             return search.searchHost('mih').then(() => {
-                expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                    'login',
-                    'some/entry',
-                    "background-image: url('icons/si-glyph-key-2.svg')",
-                    search._onEntryAction,
+                expect(global.createButtonWithCallback.mock.calls).toEqual([
+                    ['login', 'some/entry', "background-image: url('icons/si-glyph-key-2.svg')", search._onEntryAction],
+                    ['copy', 'some/entry', null, expect.any(Function)],
+                    ['details', 'some/entry', null, expect.any(Function)],
                 ]);
-                expect(global.createButtonWithCallback.mock.calls.length).toBe(3);
+
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'mih', type: 'queryHost' }]]);
+                global.sendNativeAppMessage.mockClear();
+                global.createButtonWithCallback.mock.calls[2][3]({
+                    target: { innerText: 'text' },
+                });
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'text', type: 'getData' }]]);
             });
         });
 
@@ -259,45 +266,131 @@ describe('search input', function() {
         input.value = '';
     });
 
-    function simulateKeyPress(keyCode) {
-        const event = new KeyboardEvent('keypress', { keyCode });
-        event.preventDefault = jest.fn();
-        input.dispatchEvent(event);
-        return event;
-    }
+    describe('keypress event', () => {
+        function simulateKeyPress(options) {
+            const event = new KeyboardEvent('keypress', options);
+            event.preventDefault = jest.fn();
+            input.dispatchEvent(event);
+            return event;
+        }
 
-    function addDummySearchResult() {
-        const result = document.createElement('div');
-        result.innerText = 'some text';
-        result.classList.add('login');
-        document.getElementById('results').appendChild(result);
-    }
+        function addDummySearchResult() {
+            const result = document.createElement('div');
+            result.innerText = 'some text';
+            result.classList.add('login');
+            document.getElementById('results').appendChild(result);
+        }
 
-    test('on keypress non-ENTER is ignored', () => {
-        const event = simulateKeyPress(32);
-        expect(event.preventDefault.mock.calls.length).toBe(0);
+        test('on keypress non-ENTER is ignored', () => {
+            const event = simulateKeyPress({ keyCode: 32 });
+            expect(event.preventDefault.mock.calls.length).toBe(0);
+        });
+
+        test('on keypress ENTER without result does nothing', () => {
+            const event = simulateKeyPress({ keyCode: 13 });
+            expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+        });
+
+        test('on keypress ENTER with multiple results does nothing', () => {
+            addDummySearchResult();
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13 });
+            expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+        });
+
+        test('on keypress ENTER with one result triggers login', () => {
+            expect.assertions(3);
+            const sendPromise = Promise.resolve({});
+            global.browser.runtime.sendMessage = jest.fn(() => sendPromise);
+
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13 });
+            expect(global.browser.runtime.sendMessage.mock.calls).toEqual([
+                [{ entry: 'some text', tab: { id: 42, url: 'http://some.host' }, type: 'LOGIN_TAB' }],
+            ]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+            return sendPromise.then(() => {
+                expect(global.window.close.mock.calls.length).toBe(1);
+            });
+        });
+
+        test('on keypress ENTER with error shows status', () => {
+            expect.assertions(4);
+            const sendPromise = Promise.resolve({ error: 'Broken!' });
+            global.browser.runtime.sendMessage = jest.fn(() => sendPromise);
+
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13 });
+            expect(global.browser.runtime.sendMessage.mock.calls).toEqual([
+                [{ entry: 'some text', tab: { id: 42, url: 'http://some.host' }, type: 'LOGIN_TAB' }],
+            ]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+            return sendPromise.then(() => {
+                expect(global.setStatusText.mock.calls).toEqual([['Broken!']]);
+                expect(global.window.close.mock.calls.length).toBe(0);
+            });
+        });
+
+        test('on keypress ALT-ENTER with one result triggers details view', () => {
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13, altKey: true });
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getData' }]]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+        });
+
+        test('on keypress SHIFT-ENTER with one result triggers copy to clipboard', () => {
+            expect.assertions(4);
+            const messagePromise = Promise.resolve({ password: '1234' });
+            global.sendNativeAppMessage = jest.fn(() => messagePromise);
+
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13, shiftKey: true });
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getLogin' }]]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+
+            return messagePromise.then(() => {
+                expect(global.copyToClipboard.mock.calls).toEqual([['1234']]);
+                jest.runAllTimers();
+                expect(global.window.close.mock.calls.length).toBe(1);
+            });
+        });
+
+        test('on keypress SHIFT-ENTER with error shows status', () => {
+            expect.assertions(4);
+            const messagePromise = Promise.resolve({ error: 'Broken!' });
+            global.sendNativeAppMessage = jest.fn(() => messagePromise);
+
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13, shiftKey: true });
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getLogin' }]]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+
+            return messagePromise.then(() => {
+                expect(global.setStatusText.mock.calls).toEqual([['Broken!']]);
+                jest.runAllTimers();
+                expect(global.window.close.mock.calls.length).toBe(0);
+            });
+        });
     });
 
-    test('on keypress ENTER without result does nothing', () => {
-        const event = simulateKeyPress(13);
-        expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
-        expect(event.preventDefault.mock.calls.length).toBe(1);
-    });
+    describe('input event', () => {
+        function simulateInput(value) {
+            const event = new Event('input');
+            input.value = value;
+            input.dispatchEvent(event);
+            return event;
+        }
 
-    test('on keypress ENTER with multiple results does nothing', () => {
-        addDummySearchResult();
-        addDummySearchResult();
-        const event = simulateKeyPress(13);
-        expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
-        expect(event.preventDefault.mock.calls.length).toBe(1);
-    });
+        test('searches non-empty value', () => {
+            simulateInput('search text');
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'search text', type: 'query' }]]);
+        });
 
-    test('on keypress ENTER with one result triggers login', () => {
-        addDummySearchResult();
-        const event = simulateKeyPress(13);
-        expect(global.browser.runtime.sendMessage.mock.calls).toEqual([
-            [{ entry: 'some text', tab: { id: 42, url: 'http://some.host' }, type: 'LOGIN_TAB' }],
-        ]);
-        expect(event.preventDefault.mock.calls.length).toBe(1);
+        test('searches host for empty value', () => {
+            simulateInput('');
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'some.host', type: 'queryHost' }]]);
+        });
     });
 });
