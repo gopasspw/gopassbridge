@@ -168,7 +168,7 @@ function getInputFieldsFromFocus() {
     };
 }
 
-function getInputFieldsFromPasswordInput(passwordInput) {
+function _getInputFieldsFromPasswordInput(passwordInput) {
     const loginInput = getLoginInputFromPasswordInputForm(passwordInput.form);
     if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
         const matchingPasswordInput = selectFirstVisibleFormElement(
@@ -187,7 +187,7 @@ function getInputFields() {
     let passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
 
     if (passwordInput && passwordInput.form && !focusedInputs.loginInput) {
-        return getInputFieldsFromPasswordInput(passwordInput);
+        return _getInputFieldsFromPasswordInput(passwordInput);
     }
 
     return {
