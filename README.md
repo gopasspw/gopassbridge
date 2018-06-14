@@ -1,7 +1,16 @@
 [![Build Status](https://travis-ci.org/gopasspw/gopassbridge.svg?branch=master)](https://travis-ci.org/gopasspw/gopassbridge)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gopasspw/gopass/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/gopasspw/gopassbridge/branch/master/graph/badge.svg)](https://codecov.io/gh/gopasspw/gopassbridge)
 [![Maintainability](https://api.codeclimate.com/v1/badges/2dc6eded0845ab008be7/maintainability)](https://codeclimate.com/github/gopasspw/gopassbridge/maintainability)
 
+### Firefox:
+![Mozilla Add-on](https://img.shields.io/amo/d/gopass-bridge.svg)
+![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg)
+
+
+### Chrome:
+![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)
+![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)
 
 # gopassbridge
 
