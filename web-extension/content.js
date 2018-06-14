@@ -99,9 +99,7 @@ function selectVisibleElements(selector) {
 }
 
 function selectFirstVisiblePasswordElement(selector) {
-    const visibleElements = selectVisibleElements(selector);
-    for (let i = 0; i < visibleElements.length; i++) {
-        const element = visibleElements[i];
+    for (let element of selectVisibleElements(selector)) {
         if (
             ignorePasswordIds.every(ignore => {
                 return element.id !== ignore;
@@ -115,10 +113,7 @@ function selectFirstVisiblePasswordElement(selector) {
 }
 
 function selectFirstVisibleFormElement(form, selector, afterTabInd) {
-    const visibleElements = selectVisibleElements(selector);
-
-    for (let i = 0; i < visibleElements.length; i++) {
-        const element = visibleElements[i];
+    for (let element of selectVisibleElements(selector)) {
         if (element && form === element.form) {
             if (afterTabInd === undefined) {
                 return element;

@@ -51,6 +51,20 @@ function _createSimpleValueElement(value) {
     return valueElement;
 }
 
+function _isNested(value) {
+    return value !== null && typeof value === 'object';
+}
+
+function _isURL(value) {
+    return typeof value === 'string' && value.match(re_weburl);
+}
+
+function _createFlatValueElement(value) {
+    const valueElement = _isURL(value) ? _createURLValueElement(value) : _createSimpleValueElement(value);
+    valueElement.classList.add('detail-clickable-value');
+    return valueElement;
+}
+
 function _appendEntry(container, key, value) {
     let keyElement, valueElement;
     const entryElement = document.createElement('li');
@@ -58,16 +72,8 @@ function _appendEntry(container, key, value) {
     keyElement = document.createElement('span');
     keyElement.innerText = `${key}:`;
     keyElement.classList.add('detail-key');
-    if (value !== null && typeof value === 'object') {
-        valueElement = _createNestedValueElement(value);
-    } else {
-        if (typeof value === 'string' && value.match(re_weburl)) {
-            valueElement = _createURLValueElement(value);
-        } else {
-            valueElement = _createSimpleValueElement(value);
-        }
-        valueElement.classList.add('detail-clickable-value');
-    }
+    valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
+
     entryElement.appendChild(keyElement);
     entryElement.appendChild(valueElement);
     container.appendChild(entryElement);
