@@ -37,7 +37,15 @@ function partialMatch(property, string) {
 const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
     partialLoginInputIdString = loginInputIds.map(partialMatch.bind(null, 'id')).join(','),
     exactLoginInputNameString = loginInputIds.map(exactMatch.bind(null, 'name')).join(','),
-    partialLoginInputNameString = loginInputIds.map(partialMatch.bind(null, 'name')).join(',');
+    partialLoginInputNameString = loginInputIds.map(partialMatch.bind(null, 'name')).join(','),
+    allLoginInputStrings = [
+        exactLoginInputIdString,
+        partialLoginInputIdString,
+        exactLoginInputNameString,
+        partialLoginInputNameString,
+        loginInputTypesString,
+    ],
+    allLoginInputStringsJoined = allLoginInputStrings.join('|');
 
 function isVisible(element) {
     const elementStyle = window.getComputedStyle(element);
@@ -137,13 +145,10 @@ function updateElement(element, newValue) {
 }
 
 function getLoginInputFromPasswordInputForm(passwordInputForm) {
-    return (
-        selectFirstVisibleFormElement(passwordInputForm, exactLoginInputIdString) ||
-        selectFirstVisibleFormElement(passwordInputForm, partialLoginInputIdString) ||
-        selectFirstVisibleFormElement(passwordInputForm, exactLoginInputNameString) ||
-        selectFirstVisibleFormElement(passwordInputForm, partialLoginInputNameString) ||
-        selectFirstVisibleFormElement(passwordInputForm, loginInputTypesString)
-    );
+    for (let loginInput of allLoginInputStrings) {
+        const element = selectFirstVisibleFormElement(passwordInputForm, loginInput);
+        if (element) return element;
+    }
 }
 
 function getInputFieldsFromFocus() {
@@ -153,13 +158,7 @@ function getInputFieldsFromFocus() {
     if (focusedInput && focusedInput.tagName === 'INPUT') {
         if (focusedInput.type === 'password') {
             passwordInput = focusedInput;
-        } else if (
-            focusedInput.matches(exactLoginInputIdString) ||
-            focusedInput.matches(partialLoginInputIdString) ||
-            focusedInput.matches(exactLoginInputNameString) ||
-            focusedInput.matches(partialLoginInputNameString) ||
-            focusedInput.matches(loginInputTypesString)
-        ) {
+        } else if (focusedInput.matches(allLoginInputStringsJoined)) {
             passwordInput =
                 selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]', focusedInput.tabIndex) ||
                 selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
