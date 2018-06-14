@@ -1,6 +1,6 @@
 'use strict';
 
-let searching, searchedUrl, searchTerm;
+let searching, searchedUrl, searchTerm, queuedSearch;
 
 function initSearch() {
     const input = document.getElementById('search_input');
@@ -33,12 +33,45 @@ function _onSearchInputEvent() {
     }
 }
 
-function search(term) {
-    if (searching) {
-        console.log('Search still in progress, skipping query ' + term);
+function _doSearch(term, queryHost) {
+    if (!term) {
+        console.log('Will not search for empty string');
         return Promise.resolve();
     }
 
+    if (searching) {
+        console.log('You type fast, queuing search for ' + term);
+        queuedSearch = () => {
+            console.log('Starting search for ' + term);
+            return _doSearch(term, queryHost);
+        };
+        return searching.then(() => {
+            if (queuedSearch) {
+                console.log('Running queued search for ' + term);
+                const searchToExecute = queuedSearch;
+                queuedSearch = false;
+                return searchToExecute();
+            }
+            console.log(`Queued search ${term} already started`);
+        });
+    }
+
+    searchTerm = term;
+    armSpinnerTimeout();
+    searching = new Promise((resolve, reject) => {
+        searchedUrl = currentTab.url;
+        const message = {
+            type: queryHost ? 'queryHost' : 'query',
+        };
+        message[queryHost ? 'host' : 'query'] = term;
+        return sendNativeAppMessage(message)
+            .then(result => _onSearchResults(result, queryHost), logAndDisplayError)
+            .then(resolve, reject);
+    });
+    return searching;
+}
+
+function search(term) {
     document.getElementById('search_input').value = term;
 
     console.log('Searching for string ' + term);
@@ -46,33 +79,11 @@ function search(term) {
 }
 
 function searchHost(host) {
-    if (searching) {
-        console.log('Search still in progress, skipping query ' + host);
-        return Promise.resolve();
-    }
-
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
     document.getElementById('search_input').value = '';
 
     console.log('Searching for host ' + host);
     return _doSearch(host, true);
-}
-
-function _doSearch(term, queryHost) {
-    if (!term) {
-        console.log('Will not search for empty string');
-        return Promise.resolve();
-    }
-
-    searchTerm = term;
-    armSpinnerTimeout();
-    searching = true;
-    searchedUrl = currentTab.url;
-    const message = {
-        type: queryHost ? 'queryHost' : 'query',
-    };
-    message[queryHost ? 'host' : 'query'] = term;
-    return sendNativeAppMessage(message).then(result => _onSearchResults(result, queryHost), logAndDisplayError);
 }
 
 function _faviconUrl() {

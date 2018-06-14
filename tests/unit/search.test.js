@@ -95,13 +95,6 @@ describe('search method', function() {
             });
         });
 
-        test('does not send search queries concurrently', () => {
-            expect.assertions(1);
-            return Promise.all([search.search('a'), search.search('b')]).then(() => {
-                expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
-            });
-        });
-
         test('sends search queries sequentially', () => {
             expect.assertions(1);
             return search
@@ -113,6 +106,26 @@ describe('search method', function() {
                         [{ query: 'b', type: 'query' }],
                     ]);
                 });
+        });
+
+        test('queues search queries', () => {
+            expect.assertions(1);
+            return Promise.all([search.search('a'), search.search('b'), search.search('c')]).then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                    [{ query: 'a', type: 'query' }],
+                    [{ query: 'c', type: 'query' }],
+                ]);
+            });
+        });
+
+        test('queues search queries mixed with host queries', () => {
+            expect.assertions(1);
+            return Promise.all([search.searchHost('a'), search.search('b'), search.search('c')]).then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                    [{ host: 'a', type: 'queryHost' }],
+                    [{ query: 'c', type: 'query' }],
+                ]);
+            });
         });
     });
 
@@ -156,13 +169,6 @@ describe('search method', function() {
             });
         });
 
-        test('does not send search queries concurrently', () => {
-            expect.assertions(1);
-            return Promise.all([search.searchHost('a'), search.searchHost('b')]).then(() => {
-                expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
-            });
-        });
-
         test('sends search queries sequentially', () => {
             expect.assertions(1);
             return search
@@ -174,6 +180,16 @@ describe('search method', function() {
                         [{ host: 'b', type: 'queryHost' }],
                     ]);
                 });
+        });
+
+        test('queues search queries', () => {
+            expect.assertions(1);
+            return Promise.all([search.searchHost('a'), search.searchHost('b'), search.searchHost('c')]).then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                    [{ host: 'a', type: 'queryHost' }],
+                    [{ host: 'c', type: 'queryHost' }],
+                ]);
+            });
         });
     });
 
@@ -198,7 +214,7 @@ describe('search method', function() {
                     ['details', 'some/entry', null, expect.any(Function)],
                 ]);
 
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'mih', type: 'queryHost' }]]);
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'mih', type: 'queryHost' }]]);
                 global.sendNativeAppMessage.mockClear();
                 global.createButtonWithCallback.mock.calls[2][3]({
                     target: { innerText: 'text' },
@@ -390,7 +406,7 @@ describe('search input', function() {
 
         test('searches host for empty value', () => {
             simulateInput('');
-            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'some.host', type: 'queryHost' }]]);
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'some.host', type: 'queryHost' }]]);
         });
     });
 });
