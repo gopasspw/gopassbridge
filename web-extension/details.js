@@ -28,6 +28,29 @@ function _detailViewFromMessage(message) {
     return container;
 }
 
+function _createNestedValueElement(value) {
+    const valueElement = document.createElement('div');
+    valueElement.classList.add('detail-nested');
+    Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
+    return valueElement;
+}
+
+function _createURLValueElement(value) {
+    const valueElement = document.createElement('a');
+    valueElement.href = value.match(re_weburl)[0];
+    valueElement.target = '_blank';
+    valueElement.innerText = value.match(re_weburl)[0];
+    valueElement.addEventListener('click', _openURL);
+    return valueElement;
+}
+
+function _createSimpleValueElement(value) {
+    const valueElement = document.createElement('span');
+    valueElement.innerText = value;
+    valueElement.addEventListener('click', _copyElementToClipboard);
+    return valueElement;
+}
+
 function _appendEntry(container, key, value) {
     let keyElement, valueElement;
     const entryElement = document.createElement('li');
@@ -36,20 +59,12 @@ function _appendEntry(container, key, value) {
     keyElement.innerText = `${key}:`;
     keyElement.classList.add('detail-key');
     if (value !== null && typeof value === 'object') {
-        valueElement = document.createElement('div');
-        valueElement.classList.add('detail-nested');
-        Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
+        valueElement = _createNestedValueElement(value);
     } else {
         if (typeof value === 'string' && value.match(re_weburl)) {
-            valueElement = document.createElement('a');
-            valueElement.href = value.match(re_weburl)[0];
-            valueElement.target = '_blank';
-            valueElement.innerText = value.match(re_weburl)[0];
-            valueElement.addEventListener('click', _openURL);
+            valueElement = _createURLValueElement(value);
         } else {
-            valueElement = document.createElement('span');
-            valueElement.innerText = value;
-            valueElement.addEventListener('click', _copyElementToClipboard);
+            valueElement = _createSimpleValueElement(value);
         }
         valueElement.classList.add('detail-clickable-value');
     }

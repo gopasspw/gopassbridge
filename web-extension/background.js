@@ -1,5 +1,30 @@
 'use strict';
 
+function _processLoginTabMessage(entry, tab) {
+    return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
+        if (response.error) {
+            throw new Error(response.error);
+        }
+
+        if (response.username === urlDomain(tab.url)) {
+            const msg = i18n.getMessage('couldNotDetermineUsernameMessage');
+            throw new Error(msg);
+        }
+
+        return browser.tabs
+            .sendMessage(tab.id, {
+                type: 'FILL_LOGIN_FIELDS',
+                login: response.username,
+                password: response.password,
+            })
+            .then(() => {
+                return executeOnSetting('submitafterfill', () => {
+                    return browser.tabs.sendMessage(tab.id, { type: 'TRY_LOGIN' });
+                });
+            });
+    });
+}
+
 function _processMessage(message, sender, _) {
     if (sender.tab) {
         throw new Error(
@@ -10,28 +35,7 @@ function _processMessage(message, sender, _) {
     const { entry, tab } = message;
     switch (message.type) {
         case 'LOGIN_TAB':
-            return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
-                if (response.error) {
-                    throw new Error(response.error);
-                }
-
-                if (response.username === urlDomain(tab.url)) {
-                    const msg = i18n.getMessage('couldNotDetermineUsernameMessage');
-                    throw new Error(msg);
-                }
-
-                return browser.tabs
-                    .sendMessage(tab.id, {
-                        type: 'FILL_LOGIN_FIELDS',
-                        login: response.username,
-                        password: response.password,
-                    })
-                    .then(() => {
-                        return executeOnSetting('submitafterfill', () => {
-                            return browser.tabs.sendMessage(tab.id, { type: 'TRY_LOGIN' });
-                        });
-                    });
-            });
+            return _processLoginTabMessage(entry, tab);
 
         default:
             throw new Error(`Background script received unexpected message ${JSON.stringify(message)} from extension`);

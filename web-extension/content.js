@@ -114,10 +114,8 @@ function selectFirstVisibleFormElement(form, selector, afterTabInd) {
         if (element && form === element.form) {
             if (afterTabInd === undefined) {
                 return element;
-            } else {
-                if (element.tabIndex > afterTabInd) {
-                    return element;
-                }
+            } else if (element.tabIndex > afterTabInd) {
+                return element;
             }
         }
     }
