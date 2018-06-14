@@ -168,21 +168,26 @@ function getInputFieldsFromFocus() {
     };
 }
 
+function getInputFieldsFromPasswordInput(passwordInput) {
+    const loginInput = getLoginInputFromPasswordInputForm(passwordInput.form);
+    if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
+        const matchingPasswordInput = selectFirstVisibleFormElement(
+            loginInput.form,
+            'input[type=password]',
+            loginInput.tabIndex
+        );
+        passwordInput = matchingPasswordInput || passwordInput;
+    }
+    return { login: loginInput, password: passwordInput };
+}
+
 function getInputFields() {
     const focusedInputs = getInputFieldsFromFocus();
     let loginInput = focusedInputs.loginInput;
     let passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
 
     if (passwordInput && passwordInput.form && !focusedInputs.loginInput) {
-        loginInput = getLoginInputFromPasswordInputForm(passwordInput.form);
-        if (loginInput && loginInput.tabIndex > passwordInput.tabIndex) {
-            const matchingPasswordInput = selectFirstVisibleFormElement(
-                loginInput.form,
-                'input[type=password]',
-                loginInput.tabIndex
-            );
-            passwordInput = matchingPasswordInput || passwordInput;
-        }
+        return getInputFieldsFromPasswordInput(passwordInput);
     }
 
     return {
