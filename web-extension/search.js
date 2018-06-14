@@ -68,10 +68,11 @@ function _doSearch(term, queryHost) {
     armSpinnerTimeout();
     searching = true;
     searchedUrl = currentTab.url;
-    return sendNativeAppMessage({ type: queryHost ? 'queryHost' : 'query', query: term }).then(
-        result => _onSearchResults(result, queryHost),
-        logAndDisplayError
-    );
+    const message = {
+        type: queryHost ? 'queryHost' : 'query',
+    };
+    message[queryHost ? 'host' : 'query'] = term;
+    return sendNativeAppMessage(message).then(result => _onSearchResults(result, queryHost), logAndDisplayError);
 }
 
 function _faviconUrl() {

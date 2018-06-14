@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/gopasspw/gopassbridge.svg?branch=master)](https://travis-ci.org/gopasspw/gopassbridge)
 [![codecov](https://codecov.io/gh/gopasspw/gopassbridge/branch/master/graph/badge.svg)](https://codecov.io/gh/gopasspw/gopassbridge)
-
+[![Maintainability](https://api.codeclimate.com/v1/badges/2dc6eded0845ab008be7/maintainability)](https://codeclimate.com/github/gopasspw/gopassbridge/maintainability)
 
 
 # gopassbridge

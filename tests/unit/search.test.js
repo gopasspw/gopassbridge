@@ -144,8 +144,8 @@ describe('search method', function() {
 
         test('sends search message for host', () => {
             expect.assertions(1);
-            return search.searchHost('muh').then(() => {
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ query: 'muh', type: 'queryHost' }]]);
+            return search.searchHost('muh.com').then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'muh.com', type: 'queryHost' }]]);
             });
         });
 
@@ -170,8 +170,8 @@ describe('search method', function() {
                 .then(() => search.searchHost('b'))
                 .then(() => {
                     expect(global.sendNativeAppMessage.mock.calls).toEqual([
-                        [{ query: 'a', type: 'queryHost' }],
-                        [{ query: 'b', type: 'queryHost' }],
+                        [{ host: 'a', type: 'queryHost' }],
+                        [{ host: 'b', type: 'queryHost' }],
                     ]);
                 });
         });
