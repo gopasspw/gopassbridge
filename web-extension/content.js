@@ -114,12 +114,8 @@ function selectFirstVisiblePasswordElement(selector) {
 
 function selectFirstVisibleFormElement(form, selector, afterTabInd) {
     for (let element of selectVisibleElements(selector)) {
-        if (element && form === element.form) {
-            if (afterTabInd === undefined) {
-                return element;
-            } else if (element.tabIndex > afterTabInd) {
-                return element;
-            }
+        if (element && form === element.form && (afterTabInd === undefined || element.tabIndex > afterTabInd)) {
+            return element;
         }
     }
 
@@ -146,25 +142,29 @@ function getLoginInputFromPasswordInputForm(passwordInputForm) {
     }
 }
 
-function getInputFieldsFromFocus() {
-    let passwordInput;
-    let loginInput;
-    let focusedInput = selectFocusedElement(document);
-    if (focusedInput && focusedInput.tagName === 'INPUT') {
-        if (focusedInput.type === 'password') {
-            passwordInput = focusedInput;
-        } else if (focusedInput.matches(allLoginInputStringsJoined)) {
-            passwordInput =
-                selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]', focusedInput.tabIndex) ||
-                selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
-            if (passwordInput) {
-                loginInput = focusedInput;
-            }
+function _determineFieldsFromFocusedInput(focusedInput) {
+    let passwordInput, loginInput;
+    if (focusedInput.type === 'password') {
+        passwordInput = focusedInput;
+    } else if (focusedInput.matches(allLoginInputStringsJoined)) {
+        passwordInput =
+            selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]', focusedInput.tabIndex) ||
+            selectFirstVisibleFormElement(focusedInput.form, 'input[type=password]');
+        if (passwordInput) {
+            loginInput = focusedInput;
         }
     }
+    return { passwordInput, loginInput };
+}
+
+function getInputFieldsFromFocus() {
+    let focusedInput = selectFocusedElement(document);
+    if (focusedInput && focusedInput.tagName === 'INPUT') {
+        return _determineFieldsFromFocusedInput(focusedInput);
+    }
     return {
-        loginInput,
-        passwordInput,
+        loginInput: undefined,
+        passwordInput: undefined,
     };
 }
 
