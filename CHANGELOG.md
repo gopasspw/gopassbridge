@@ -1,3 +1,9 @@
+## 0.4.0 / 2018-06-16
+
+* Detail view and buttons for copy
+* Credentials are now inserted via background script to prevent closing via pinentry
+* Tests added for most parts of the code
+
 ## 0.3.0 / 2018-05-3
 
 * Fix focused case for iframes

@@ -45,7 +45,7 @@ const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).j
         partialLoginInputNameString,
         loginInputTypesString,
     ],
-    allLoginInputStringsJoined = allLoginInputStrings.join('|');
+    allLoginInputStringsJoined = allLoginInputStrings.join(',');
 
 function isVisible(element) {
     const elementStyle = window.getComputedStyle(element);
