@@ -69,7 +69,6 @@ function _processMessage(message, sender, _) {
         case 'LOGIN_TAB':
             return _processLoginTabMessage(entry, tab);
 
-        // Does not work on first invocation in firefox due to bug https://bugzilla.mozilla.org/show_bug.cgi?id=1466092
         case 'OPEN_TAB':
             return _openEntry(entry);
 
