@@ -84,7 +84,7 @@ describe('background', () => {
 
             test('opens tab and immediately loads credentials if tab is loaded', () => {
                 expect.assertions(1);
-                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
+                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete', url: 'http://www.some.host' });
                 return openTabMessage().then(() => {
                     expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
                         [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],

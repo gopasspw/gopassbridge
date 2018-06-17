@@ -26,7 +26,7 @@ function _processLoginTabMessage(entry, tab) {
 
 function _waitForTabLoaded(tab) {
     return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => reject('Loading timed out'), 10000);
+        let timeout;
         const waitForCreated = (tabId, changeInfo) => {
             console.log('Tab ' + tab.id + ' changed ' + changeInfo);
             if (tabId === tab.id && changeInfo.status === 'complete') {
@@ -37,9 +37,9 @@ function _waitForTabLoaded(tab) {
         };
         console.log('Status on initial tab load ' + tab.status + ' ' + tab.url);
         if (tab.status === 'complete' && tab.url && tab.url !== 'about:blank') {
-            clearTimeout(timeout);
             resolve(tab);
         } else {
+            timeout = setTimeout(() => reject('Loading timed out'), 10000);
             browser.tabs.onUpdated.addListener(waitForCreated);
         }
     });
