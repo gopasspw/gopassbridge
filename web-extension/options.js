@@ -1,10 +1,13 @@
 'use strict';
 
+let savingIndicatorTimeout;
+
 function resetSettings() {
     browser.storage.sync
         .clear()
         .then(getSettings)
-        .then(resetViewState, logError);
+        .then(resetViewState, logError)
+        .then(_showSavingIndicator);
 }
 
 function init() {
@@ -47,7 +50,7 @@ function _setCheckboxes(result) {
 function _onCheckboxChange(event) {
     const update = {};
     update[event.target.id] = event.target.checked;
-    browser.storage.sync.set(update);
+    browser.storage.sync.set(update).then(_showSavingIndicator);
 }
 
 function _setTextinputs(result) {
@@ -62,7 +65,18 @@ function _setTextinputs(result) {
 function _onTextinputChange(event) {
     const update = {};
     update[event.target.id] = event.target.value;
-    browser.storage.sync.set(update);
+    browser.storage.sync.set(update).then(_showSavingIndicator);
+}
+
+function _showSavingIndicator() {
+    const indicator = document.getElementById('savingindicator');
+    indicator.classList.add('saved');
+    if (savingIndicatorTimeout) {
+        clearTimeout(savingIndicatorTimeout);
+    }
+    savingIndicatorTimeout = setTimeout(() => {
+        indicator.classList.remove('saved');
+    }, 1000);
 }
 
 window.addEventListener('load', init);
@@ -71,5 +85,6 @@ window.tests = {
     options: {
         init,
         _onTextinputChange,
+        _showSavingIndicator,
     },
 };

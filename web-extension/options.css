@@ -1,3 +1,20 @@
 .container > label {
     display: block;
 }
+
+#savingindicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 20px;
+    mask-image: url('icons/si-glyph-checked.svg');
+    -webkit-mask-image: url('icons/si-glyph-checked.svg');
+    background-color: limegreen;
+    opacity: 0;
+    transition: all ease-out 1s;
+}
+
+#savingindicator.saved {
+    opacity: 1;
+    transition: none;
+}
