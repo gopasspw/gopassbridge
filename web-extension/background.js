@@ -39,7 +39,10 @@ function _waitForTabLoaded(tab) {
         if (tab.status === 'complete' && tab.url && tab.url !== 'about:blank') {
             resolve(tab);
         } else {
-            timeout = setTimeout(() => reject('Loading timed out'), 10000);
+            timeout = setTimeout(() => {
+                browser.tabs.onUpdated.removeListener(waitForCreated);
+                reject('Loading timed out');
+            }, 10000);
             browser.tabs.onUpdated.addListener(waitForCreated);
         }
     });
