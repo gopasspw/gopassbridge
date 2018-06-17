@@ -119,6 +119,17 @@ describe('background', () => {
 
                 return promise;
             });
+
+            test('times out if tab cannot be loaded in time', () => {
+                expect.assertions(2);
+                global.browser.tabs.onUpdated.addListener = jest.fn();
+                const promise = background._waitForTabLoaded({ id: 42, url: undefined }).catch(error => {
+                    expect(global.browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
+                    expect(error).toBe('Loading timed out');
+                });
+                jest.advanceTimersByTime(11000);
+                return promise;
+            });
         });
 
         describe('message LOGIN_TAB', () => {

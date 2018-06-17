@@ -109,5 +109,6 @@ window.tests = {
     background: {
         initBackground,
         processMessageAndCatch,
+        _waitForTabLoaded,
     },
 };
