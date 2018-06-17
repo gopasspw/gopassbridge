@@ -28,13 +28,15 @@ function _waitForTabLoaded(tab) {
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => reject('Loading timed out'), 10000);
         const waitForCreated = (tabId, changeInfo) => {
+            console.log('Tab ' + tab.id + ' changed ' + changeInfo);
             if (tabId === tab.id && changeInfo.status === 'complete') {
                 browser.tabs.onUpdated.removeListener(waitForCreated);
                 resolve(tab);
                 clearTimeout(timeout);
             }
         };
-        if (tab.status === 'complete') {
+        console.log('Status on initial tab load ' + tab.status + ' ' + tab.url);
+        if (tab.status === 'complete' && tab.url && tab.url !== 'about:blank') {
             clearTimeout(timeout);
             resolve(tab);
         } else {
@@ -52,9 +54,7 @@ function _openEntry(entry) {
             return browser.tabs.create({ url: message.url });
         })
         .then(_waitForTabLoaded)
-        .then(tab => {
-            return _processLoginTabMessage(entry, tab);
-        });
+        .then(tab => _processLoginTabMessage(entry, tab));
 }
 
 function _processMessage(message, sender, _) {

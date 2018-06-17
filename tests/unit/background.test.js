@@ -63,11 +63,12 @@ describe('background', () => {
             });
         });
 
-        describe('message OPEN_TAB', function() {
+        describe('message OPEN_TAB', () => {
             function openTabMessage() {
                 return background.processMessageAndCatch({ type: 'OPEN_TAB', entry: 'some/entry' }, {});
             }
-            beforeEach(function() {
+
+            beforeEach(() => {
                 global.browser.tabs.create.mockResolvedValue();
                 global.sendNativeAppMessage.mockResolvedValue({
                     url: 'https://www.some.host',
@@ -81,7 +82,7 @@ describe('background', () => {
                 };
             });
 
-            test('opens tab and immediately loads credentials if tab is loaded', function() {
+            test('opens tab and immediately loads credentials if tab is loaded', () => {
                 expect.assertions(1);
                 global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
                 return openTabMessage().then(() => {
@@ -91,7 +92,7 @@ describe('background', () => {
                 });
             });
 
-            test('raises error if no url in entry', function() {
+            test('raises error if no url in entry', () => {
                 global.sendNativeAppMessage.mockResolvedValue({});
                 expect.assertions(1);
                 global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
@@ -100,7 +101,7 @@ describe('background', () => {
                 });
             });
 
-            test('opens tab and loads credentials when tab is ready', function() {
+            test('opens tab and loads credentials when tab is ready', () => {
                 expect.assertions(1);
                 global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'loading' });
 
