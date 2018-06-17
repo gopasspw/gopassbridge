@@ -7,8 +7,7 @@ function _processLoginTabMessage(entry, tab) {
         }
 
         if (response.username === urlDomain(tab.url)) {
-            const msg = i18n.getMessage('couldNotDetermineUsernameMessage');
-            throw new Error(msg);
+            throw new Error(i18n.getMessage('couldNotDetermineUsernameMessage'));
         }
 
         return browser.tabs
@@ -25,6 +24,39 @@ function _processLoginTabMessage(entry, tab) {
     });
 }
 
+function _waitForTabLoaded(tab) {
+    return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject('Loading timed out'), 10000);
+        const waitForCreated = (tabId, changeInfo) => {
+            if (tabId === tab.id && changeInfo.status === 'complete') {
+                browser.tabs.onUpdated.removeListener(waitForCreated);
+                resolve(tab);
+                clearTimeout(timeout);
+            }
+        };
+        if (tab.status === 'complete') {
+            clearTimeout(timeout);
+            resolve(tab);
+        } else {
+            browser.tabs.onUpdated.addListener(waitForCreated);
+        }
+    });
+}
+
+function _openEntry(entry) {
+    return sendNativeAppMessage({ type: 'getData', entry })
+        .then(message => {
+            if (!message.url) {
+                throw new Error(i18n.getMessage('noURLInEntry'));
+            }
+            return browser.tabs.create({ url: message.url });
+        })
+        .then(_waitForTabLoaded)
+        .then(tab => {
+            return _processLoginTabMessage(entry, tab);
+        });
+}
+
 function _processMessage(message, sender, _) {
     if (sender.tab) {
         throw new Error(
@@ -36,6 +68,10 @@ function _processMessage(message, sender, _) {
     switch (message.type) {
         case 'LOGIN_TAB':
             return _processLoginTabMessage(entry, tab);
+
+        // Does not work on first invocation in firefox due to bug https://bugzilla.mozilla.org/show_bug.cgi?id=1466092
+        case 'OPEN_TAB':
+            return _openEntry(entry);
 
         default:
             throw new Error(`Background script received unexpected message ${JSON.stringify(message)} from extension`);

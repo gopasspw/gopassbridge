@@ -112,6 +112,7 @@ function _displaySearchResults(response, isHostQuery) {
                 _onEntryAction
             )
         );
+        entry.appendChild(createButtonWithCallback('open', result, null, event => _onEntryOpen(event.target)));
         entry.appendChild(createButtonWithCallback('copy', result, null, event => _onEntryCopy(event.target)));
         entry.appendChild(createButtonWithCallback('details', result, null, event => _onEntryDetails(event.target)));
         results.appendChild(entry);
@@ -154,6 +155,8 @@ function _onEntryAction(event, element) {
         _onEntryDetails(element || event.target);
     } else if (event.shiftKey) {
         _onEntryCopy(element || event.target);
+    } else if (event.ctrlKey) {
+        _onEntryOpen(element || event.target);
     } else {
         const value = (element || event.target).innerText;
         browser.runtime
@@ -167,6 +170,12 @@ function _onEntryCopy(element) {
         _onLoginCredentialsDoCopyClipboard,
         logAndDisplayError
     );
+}
+
+function _onEntryOpen(element) {
+    browser.runtime
+        .sendMessage({ type: 'OPEN_TAB', entry: element.innerText })
+        .then(_onLoginCredentialsDidLogin, logAndDisplayError);
 }
 
 function _onEntryDetails(element) {

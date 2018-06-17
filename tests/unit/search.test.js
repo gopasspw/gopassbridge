@@ -39,10 +39,10 @@ function resetSearchState() {
     global.currentTab = { id: 42, url: 'http://some.host' };
 }
 
-describe('search method', function() {
+describe('search method', () => {
     beforeEach(resetSearchState);
 
-    describe('initSearch', function() {
+    describe('initSearch', () => {
         test('focuses input', () => {
             const input = document.getElementById('search_input');
             spyOn(input, 'focus');
@@ -204,19 +204,20 @@ describe('search method', function() {
             });
         });
 
-        test('creates entry with two additional buttons for non empty response', () => {
+        test('creates entry with three additional buttons for non empty response', () => {
             expect.assertions(3);
             global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
             return search.searchHost('mih').then(() => {
                 expect(global.createButtonWithCallback.mock.calls).toEqual([
                     ['login', 'some/entry', "background-image: url('icons/si-glyph-key-2.svg')", search._onEntryAction],
+                    ['open', 'some/entry', null, expect.any(Function)],
                     ['copy', 'some/entry', null, expect.any(Function)],
                     ['details', 'some/entry', null, expect.any(Function)],
                 ]);
 
                 expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'mih', type: 'queryHost' }]]);
                 global.sendNativeAppMessage.mockClear();
-                global.createButtonWithCallback.mock.calls[2][3]({
+                global.createButtonWithCallback.mock.calls[3][3]({
                     target: { innerText: 'text' },
                 });
                 expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'text', type: 'getData' }]]);
@@ -272,7 +273,7 @@ describe('search method', function() {
     });
 });
 
-describe('search input', function() {
+describe('search input', () => {
     let input;
 
     beforeEach(() => {
@@ -353,6 +354,13 @@ describe('search input', function() {
             addDummySearchResult();
             const event = simulateKeyPress({ keyCode: 13, altKey: true });
             expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getData' }]]);
+            expect(event.preventDefault.mock.calls.length).toBe(1);
+        });
+
+        test('on keypress CTRL-ENTER with one result triggers login in new tab', () => {
+            addDummySearchResult();
+            const event = simulateKeyPress({ keyCode: 13, ctrlKey: true });
+            expect(global.browser.runtime.sendMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'OPEN_TAB' }]]);
             expect(event.preventDefault.mock.calls.length).toBe(1);
         });
 

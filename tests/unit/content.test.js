@@ -184,7 +184,7 @@ describe('on sample login form', () => {
 });
 
 describe('on sample login form with multiple inputs', () => {
-    beforeEach(function() {
+    beforeEach(() => {
         heightMockReturn = 10;
         widthMockReturn = 50;
         document.body.innerHTML = `

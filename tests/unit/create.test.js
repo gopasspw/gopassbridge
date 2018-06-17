@@ -178,7 +178,7 @@ describe('create', () => {
         });
     });
 
-    describe('initCreate', function() {
+    describe('initCreate', () => {
         ['create_docreate', 'create_doabort', 'create_generate'].forEach(id => {
             test(`registers eventhandler for ${id}`, () => {
                 const element = document.getElementById('create_docreate');

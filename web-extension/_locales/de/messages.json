@@ -119,5 +119,9 @@
   "noResultsForMessage": {
     "message": "keine Suchergebnisse für",
     "description": "Message shown if no results are found"
+  },
+  "noURLInEntry": {
+    "message": "Eintrag hat kein URL Attribut",
+    "description": "Shown when no url attribute in entry and page is loaded"
   }
 }
