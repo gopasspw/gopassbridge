@@ -4,13 +4,12 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/2dc6eded0845ab008be7/maintainability)](https://codeclimate.com/github/gopasspw/gopassbridge/maintainability)
 
 ### Firefox:
-![Mozilla Add-on](https://img.shields.io/amo/d/gopass-bridge.svg)
-![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg)
-
+[![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg?colorB=45bf1e)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
+[![Mozilla Add-on](https://img.shields.io/amo/d/gopass-bridge.svg)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
 
 ### Chrome:
-![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)
-![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kkhfnlkhiapbiehimabddjbimfaijdhk.svg?colorB=45bf1e)](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
 
 # gopassbridge
 
