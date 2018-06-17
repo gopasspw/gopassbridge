@@ -120,14 +120,20 @@ describe('background', () => {
                 return promise;
             });
 
-            test('times out if tab cannot be loaded in time', () => {
+            test('raises error on timeout when waiting for new tab to be ready', () => {
+                global.sendNativeAppMessage.mockResolvedValue({ url: 'some.url' });
                 expect.assertions(2);
-                global.browser.tabs.onUpdated.addListener = jest.fn();
-                const promise = background._waitForTabLoaded({ id: 42, url: undefined }).catch(error => {
+                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'loading' });
+
+                const promise = openTabMessage().catch(error => {
                     expect(global.browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
                     expect(error).toBe('Loading timed out');
                 });
-                jest.advanceTimersByTime(11000);
+
+                browser.tabs.onUpdated.addListener = jest.fn(() => {
+                    jest.advanceTimersByTime(11000);
+                });
+
                 return promise;
             });
         });
