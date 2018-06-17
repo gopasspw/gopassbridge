@@ -48,8 +48,12 @@ function _setCheckboxes(result) {
 }
 
 function _onCheckboxChange(event) {
+    _saveSetting(event.target.id, event.target.checked);
+}
+
+function _saveSetting(id, value) {
     const update = {};
-    update[event.target.id] = event.target.checked;
+    update[id] = value;
     browser.storage.sync.set(update).then(_showSavingIndicator);
 }
 
@@ -63,9 +67,7 @@ function _setTextinputs(result) {
 }
 
 function _onTextinputChange(event) {
-    const update = {};
-    update[event.target.id] = event.target.value;
-    browser.storage.sync.set(update).then(_showSavingIndicator);
+    _saveSetting(event.target.id, event.target.value);
 }
 
 function _showSavingIndicator() {
