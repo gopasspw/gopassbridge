@@ -100,11 +100,13 @@ body {
 }
 
 .entry:hover .copy,
+.entry:hover .open,
 .entry:hover .details {
     display: block;
 }
 
 .entry .copy,
+.entry .open,
 .entry .details {
     display: none;
     width: 25px;
@@ -122,6 +124,7 @@ body {
 }
 
 .entry .copy:hover,
+.entry .open:hover,
 .entry .details:hover {
     opacity: 0.6;
     background-color: #0a4178;
@@ -129,6 +132,7 @@ body {
 }
 
 .entry .copy:active,
+.entry .open:active,
 .entry .details:active {
     opacity: 0.6;
     background-color: #2c5f96;
@@ -143,6 +147,11 @@ body {
 .entry .copy {
     right: 35px;
     background-image: url('icons/si-glyph-document-copy.svg');
+}
+
+.entry .open {
+    right: 65px;
+    background-image: url('icons/si-glyph-arrow-forward.svg');
 }
 
 .loader {

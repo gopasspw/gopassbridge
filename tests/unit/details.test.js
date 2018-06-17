@@ -32,7 +32,7 @@ describe('onEntryData', () => {
         global.getLocalStorageKey.mockClear();
     });
 
-    describe('with already opened detail view', function() {
+    describe('with already opened detail view', () => {
         beforeEach(() => {
             const detailView = document.createElement('div');
             detailView.classList.add('detail-view');
@@ -49,7 +49,7 @@ describe('onEntryData', () => {
         });
     });
 
-    describe('with closed detail view', function() {
+    describe('with closed detail view', () => {
         test('creates new detail view', () => {
             expect.assertions(3);
             return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
@@ -85,7 +85,7 @@ describe('onEntryData', () => {
         });
     });
 
-    describe('click handlers', function() {
+    describe('click handlers', () => {
         beforeEach(() => {
             global.browser.tabs.onUpdated = {
                 addListener: jest.fn(),
@@ -105,7 +105,7 @@ describe('onEntryData', () => {
         });
     });
 
-    describe('restoreDetailView', function() {
+    describe('restoreDetailView', () => {
         test('does nothing if no matching login found', () => {
             expect.assertions(2);
             global.getLocalStorageKey.mockResolvedValue('another/key');

@@ -1,5 +1,7 @@
 'use strict';
 
+jest.useFakeTimers();
+
 global.showNotificationOnSetting = jest.fn();
 global.sendNativeAppMessage = jest.fn();
 global.browser.extension = {
@@ -18,8 +20,8 @@ require('background.js');
 
 const background = window.tests.background;
 
-describe('background', function() {
-    beforeEach(function() {
+describe('background', () => {
+    beforeEach(() => {
         global.sendNativeAppMessage.mockReset();
         global.showNotificationOnSetting.mockClear();
         global.browser.extension.getViews.mockClear();
@@ -60,12 +62,67 @@ describe('background', function() {
                 expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
             });
         });
-        describe('message LOGIN_TAB', function() {
+
+        describe('message OPEN_TAB', function() {
+            function openTabMessage() {
+                return background.processMessageAndCatch({ type: 'OPEN_TAB', entry: 'some/entry' }, {});
+            }
             beforeEach(function() {
+                global.browser.tabs.create.mockResolvedValue();
+                global.sendNativeAppMessage.mockResolvedValue({
+                    url: 'https://www.some.host',
+                    username: 'username',
+                    password: 'somepass',
+                });
+                global.browser.tabs.sendMessage.mockResolvedValue();
+                global.browser.tabs.onUpdated = {
+                    addListener: jest.fn(callback => callback(42, { status: 'complete' })),
+                    removeListener: jest.fn(),
+                };
+            });
+
+            test('opens tab and immediately loads credentials if tab is loaded', function() {
+                expect.assertions(1);
+                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
+                return openTabMessage().then(() => {
+                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                        [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
+                    ]);
+                });
+            });
+
+            test('raises error if no url in entry', function() {
+                global.sendNativeAppMessage.mockResolvedValue({});
+                expect.assertions(1);
+                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
+                return openTabMessage().catch(error => {
+                    expect(error.message).toBe('__i18n_noURLInEntry__');
+                });
+            });
+
+            test('opens tab and loads credentials when tab is ready', function() {
+                expect.assertions(1);
+                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'loading' });
+
+                const promise = openTabMessage().then(() => {
+                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                        [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
+                    ]);
+                });
+
+                jest.advanceTimersByTime(1000);
+
+                return promise;
+            });
+        });
+
+        describe('message LOGIN_TAB', () => {
+            beforeEach(() => {
                 global.sendNativeAppMessage.mockResolvedValue({ login: 'holla', password: 'waldfee' });
                 global.browser.extension.getViews.mockReturnValueOnce({ length: 1 });
                 global.browser.tabs.sendMessage.mockResolvedValue();
             });
+
             function loginTabMessage() {
                 return background.processMessageAndCatch(
                     { type: 'LOGIN_TAB', entry: 'some/entry', tab: { id: 42, url: 'https://some.url' } },
