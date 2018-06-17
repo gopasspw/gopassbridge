@@ -1,6 +1,8 @@
 'use strict';
 const fs = require('fs');
 
+jest.useFakeTimers();
+
 global.getSettings = () => Promise.resolve(Promise.resolve({ submitafterfill: true, defaultfolder: 'Muh' }));
 global.logError = jest.fn();
 
@@ -59,5 +61,30 @@ describe('onTextInputChange', () => {
         options.init();
         options._onTextinputChange({ target: { id: 'muh', value: 'maeh' } });
         expect(global.browser.storage.sync.set.mock.calls).toEqual([[{ muh: 'maeh' }]]);
+    });
+
+    test('shows saving indicator', () => {
+        expect.assertions(1);
+        options.init();
+        options._onTextinputChange({ target: { id: 'muh', value: 'maeh' } });
+        return Promise.resolve().then(() => {
+            expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(true);
+        });
+    });
+});
+
+describe('savingindicator', () => {
+    beforeEach(() => {
+        document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/options.html`);
+    });
+
+    test('is shown and hidden', () => {
+        expect.assertions(2);
+        options._showSavingIndicator();
+        return Promise.resolve().then(() => {
+            expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(true);
+            jest.advanceTimersByTime(1000);
+            expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(false);
+        });
     });
 });
