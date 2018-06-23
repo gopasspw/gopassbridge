@@ -4,6 +4,6 @@ chrome
 firefox
 chrome-release
 firefox-release
-test-client
+test-client/test-client
 node_modules
 coverage
