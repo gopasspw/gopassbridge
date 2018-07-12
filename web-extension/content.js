@@ -60,9 +60,13 @@ function isVisible(element) {
 
 function selectFocusedElement(parent) {
     parent = parent || document;
-    if (parent.body === parent.activeElement || parent.activeElement.tagName === 'IFRAME') {
+    if (
+        parent.body === parent.activeElement ||
+        parent.activeElement.tagName === 'IFRAME' ||
+        parent.activeElement.tagName === 'FRAME'
+    ) {
         let focusedElement = null;
-        parent.querySelectorAll('iframe').forEach(iframe => {
+        parent.querySelectorAll('iframe,frame').forEach(iframe => {
             if (iframe.src.startsWith(window.location.origin)) {
                 const focused = selectFocusedElement(iframe.contentWindow.document);
                 if (focused) {
@@ -85,7 +89,7 @@ function selectVisibleElements(selector) {
         }
     });
 
-    document.querySelectorAll('iframe').forEach(iframe => {
+    document.querySelectorAll('iframe,frame').forEach(iframe => {
         if (iframe.src.startsWith(window.location.origin)) {
             iframe.contentWindow.document.body.querySelectorAll(selector).forEach(element => {
                 if (isVisible(element)) {
