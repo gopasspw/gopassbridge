@@ -10,6 +10,6 @@
 The gopassbridge code must be fully reviewable also when installed as extension. 
 Therefore, no 3rd party libraries and plain JavaScript must be used. Also keep your code as simple as possible. 
 
-Modern JavaScript features can be used if they are supported by newer versions of Chrome and Firefox.
+Modern JavaScript features can be used if they are supported by current LTS version of Firefox and Chrome.
 
-Also note in your pull request if you want the maintainer to prepare a new release of the Chrome and Firefox plugins.
+Also add a comment to your pull request if you want the maintainer to prepare a new release of the Chrome and Firefox plugins.
