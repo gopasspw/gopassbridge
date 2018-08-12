@@ -92,6 +92,10 @@
     "message": "Um den vollen Eintrag anzuzeigen, Alt Taste halten während man auf den Eintrag klickt",
     "description": "Details hint text"
   },
+  "optionsUsageHintsKeyboardShortcutText": {
+    "message": "Strg+Großstelltaste+U oder Cmd+Großstelltaste+U kann als Tastenkombination benutzt werden",
+    "description": "Keyboard shortcut to trigger popup"
+  },
   "optionsSettingsTitle": {
     "message": "Einstellungen",
     "description": "Title of Settings"

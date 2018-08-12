@@ -89,8 +89,12 @@
     "description": "Clipboard hint text"
   },
   "optionsUsageHintsDetailsText": {
-    "message": "To show the full entry, hold alt key while clicking on the secret.",
+    "message": "To show the full entry, hold Alt key while clicking on the secret.",
     "description": "Details hint text"
+  },
+  "optionsUsageHintsKeyboardShortcutText": {
+    "message": "Ctrl+Shift+U or Cmd+Shift+U can be used as a keyboard shortcut.",
+    "description": "Keyboard shortcut to trigger popup"
   },
   "optionsSettingsTitle": {
     "message": "Settings",
