@@ -11,7 +11,7 @@
     global.browser = mod.exports;
   }
 })(this, function (module) {
-  /* webextension-polyfill - v0.2.1 - Wed Jun 06 2018 22:11:32 */
+  /* webextension-polyfill - v0.3.0 - Sun Aug 12 2018 21:38:04 */
   /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
   /* vim: set sts=2 sw=2 et tw=80: */
   /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -20,12 +20,8 @@
   "use strict";
 
   if (typeof browser === "undefined") {
-    const SEND_RESPONSE_DEPRECATION_WARNING = `
-      Returning a Promise is the preferred way to send a reply from an
-      onMessage/onMessageExternal listener, as the sendResponse will be
-      removed from the specs (See
-      https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/runtime/onMessage)
-    `.replace(/\s+/g, " ").trim();
+    const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
+    const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
     // Wrapping the bulk of this polyfill in a one-time-use function is a minor
     // optimization for Firefox. Since Spidermonkey does not fully parse the
@@ -60,10 +56,6 @@
             "minArgs": 1,
             "maxArgs": 1
           },
-          "export": {
-            "minArgs": 0,
-            "maxArgs": 0
-          },
           "get": {
             "minArgs": 1,
             "maxArgs": 1
@@ -76,15 +68,11 @@
             "minArgs": 1,
             "maxArgs": 1
           },
-          "getTree": {
-            "minArgs": 0,
-            "maxArgs": 0
-          },
           "getSubTree": {
             "minArgs": 1,
             "maxArgs": 1
           },
-          "import": {
+          "getTree": {
             "minArgs": 0,
             "maxArgs": 0
           },
@@ -110,6 +98,16 @@
           }
         },
         "browserAction": {
+          "disable": {
+            "minArgs": 0,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
+          "enable": {
+            "minArgs": 0,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
           "getBadgeBackgroundColor": {
             "minArgs": 1,
             "maxArgs": 1
@@ -126,9 +124,75 @@
             "minArgs": 1,
             "maxArgs": 1
           },
+          "openPopup": {
+            "minArgs": 0,
+            "maxArgs": 0
+          },
+          "setBadgeBackgroundColor": {
+            "minArgs": 1,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
+          "setBadgeText": {
+            "minArgs": 1,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
           "setIcon": {
             "minArgs": 1,
             "maxArgs": 1
+          },
+          "setPopup": {
+            "minArgs": 1,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
+          "setTitle": {
+            "minArgs": 1,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          }
+        },
+        "browsingData": {
+          "remove": {
+            "minArgs": 2,
+            "maxArgs": 2
+          },
+          "removeCache": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removeCookies": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removeDownloads": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removeFormData": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removeHistory": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removeLocalStorage": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removePasswords": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "removePluginData": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "settings": {
+            "minArgs": 0,
+            "maxArgs": 0
           }
         },
         "commands": {
@@ -138,10 +202,6 @@
           }
         },
         "contextMenus": {
-          "update": {
-            "minArgs": 2,
-            "maxArgs": 2
-          },
           "remove": {
             "minArgs": 1,
             "maxArgs": 1
@@ -149,6 +209,10 @@
           "removeAll": {
             "minArgs": 0,
             "maxArgs": 0
+          },
+          "update": {
+            "minArgs": 2,
+            "maxArgs": 2
           }
         },
         "cookies": {
@@ -189,11 +253,11 @@
           }
         },
         "downloads": {
-          "download": {
+          "cancel": {
             "minArgs": 1,
             "maxArgs": 1
           },
-          "cancel": {
+          "download": {
             "minArgs": 1,
             "maxArgs": 1
           },
@@ -207,7 +271,8 @@
           },
           "open": {
             "minArgs": 1,
-            "maxArgs": 1
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
           },
           "pause": {
             "minArgs": 1,
@@ -227,7 +292,8 @@
           },
           "show": {
             "minArgs": 1,
-            "maxArgs": 1
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
           }
         },
         "extension": {
@@ -245,10 +311,6 @@
             "minArgs": 1,
             "maxArgs": 1
           },
-          "getVisits": {
-            "minArgs": 1,
-            "maxArgs": 1
-          },
           "deleteAll": {
             "minArgs": 0,
             "maxArgs": 0
@@ -258,6 +320,10 @@
             "maxArgs": 1
           },
           "deleteUrl": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "getVisits": {
             "minArgs": 1,
             "maxArgs": 1
           },
@@ -301,6 +367,10 @@
             "minArgs": 0,
             "maxArgs": 0
           },
+          "setEnabled": {
+            "minArgs": 2,
+            "maxArgs": 2
+          },
           "uninstallSelf": {
             "minArgs": 0,
             "maxArgs": 1
@@ -333,19 +403,9 @@
             "minArgs": 1,
             "maxArgs": 1
           },
-          "setPopup": {
-            "minArgs": 1,
-            "maxArgs": 1,
-            "fallbackToNoCallback": true
-          },
           "getTitle": {
             "minArgs": 1,
             "maxArgs": 1
-          },
-          "setTitle": {
-            "minArgs": 1,
-            "maxArgs": 1,
-            "fallbackToNoCallback": true
           },
           "hide": {
             "minArgs": 1,
@@ -356,14 +416,38 @@
             "minArgs": 1,
             "maxArgs": 1
           },
-          "getIcon": {
+          "setPopup": {
             "minArgs": 1,
-            "maxArgs": 1
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
+          },
+          "setTitle": {
+            "minArgs": 1,
+            "maxArgs": 1,
+            "fallbackToNoCallback": true
           },
           "show": {
             "minArgs": 1,
             "maxArgs": 1,
             "fallbackToNoCallback": true
+          }
+        },
+        "permissions": {
+          "contains": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "getAll": {
+            "minArgs": 0,
+            "maxArgs": 0
+          },
+          "remove": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
+          "request": {
+            "minArgs": 1,
+            "maxArgs": 1
           }
         },
         "runtime": {
@@ -397,6 +481,20 @@
           },
           "setUninstallURL": {
             "minArgs": 1,
+            "maxArgs": 1
+          }
+        },
+        "sessions": {
+          "getDevices": {
+            "minArgs": 0,
+            "maxArgs": 1
+          },
+          "getRecentlyClosed": {
+            "minArgs": 0,
+            "maxArgs": 1
+          },
+          "restore": {
+            "minArgs": 0,
             "maxArgs": 1
           }
         },
@@ -457,15 +555,19 @@
           }
         },
         "tabs": {
-          "create": {
-            "minArgs": 1,
-            "maxArgs": 1
-          },
           "captureVisibleTab": {
             "minArgs": 0,
             "maxArgs": 2
           },
+          "create": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
           "detectLanguage": {
+            "minArgs": 0,
+            "maxArgs": 1
+          },
+          "discard": {
             "minArgs": 0,
             "maxArgs": 1
           },
@@ -505,15 +607,15 @@
             "minArgs": 2,
             "maxArgs": 2
           },
+          "query": {
+            "minArgs": 1,
+            "maxArgs": 1
+          },
           "reload": {
             "minArgs": 0,
             "maxArgs": 2
           },
           "remove": {
-            "minArgs": 1,
-            "maxArgs": 1
-          },
-          "query": {
             "minArgs": 1,
             "maxArgs": 1
           },
@@ -536,6 +638,12 @@
           "update": {
             "minArgs": 1,
             "maxArgs": 2
+          }
+        },
+        "topSites": {
+          "get": {
+            "minArgs": 0,
+            "maxArgs": 0
           }
         },
         "webNavigation": {
@@ -657,7 +765,7 @@
         return (...callbackArgs) => {
           if (chrome.runtime.lastError) {
             promise.reject(chrome.runtime.lastError);
-          } else if (metadata.singleCallbackArg || callbackArgs.length === 1) {
+          } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
             promise.resolve(callbackArgs[0]);
           } else {
             promise.resolve(callbackArgs);
@@ -732,7 +840,7 @@
        * Wraps an existing method of the target object, so that calls to it are
        * intercepted by the given wrapper function. The wrapper function receives,
        * as its first argument, the original `target` object, followed by each of
-       * the arguments passed to the orginal method.
+       * the arguments passed to the original method.
        *
        * @param {object} target
        *        The original target object that the wrapped method belongs to.
@@ -1003,7 +1111,14 @@
 
       const wrappedSendMessageCallback = ({ reject, resolve }, reply) => {
         if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
+          // Detect when none of the listeners replied to the sendMessage call and resolve
+          // the promise to undefined as in Firefox.
+          // See https://github.com/mozilla/webextension-polyfill/issues/130
+          if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+            resolve();
+          } else {
+            reject(chrome.runtime.lastError);
+          }
         } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
           // Convert back the JSON representation of the error into
           // an Error instance.
@@ -1037,6 +1152,24 @@
         },
         tabs: {
           sendMessage: wrappedSendMessage.bind(null, "sendMessage", { minArgs: 2, maxArgs: 3 })
+        }
+      };
+      const settingMetadata = {
+        clear: { minArgs: 1, maxArgs: 1 },
+        get: { minArgs: 1, maxArgs: 1 },
+        set: { minArgs: 1, maxArgs: 1 }
+      };
+      apiMetadata.privacy = {
+        network: {
+          networkPredictionEnabled: settingMetadata,
+          webRTCIPHandlingPolicy: settingMetadata
+        },
+        services: {
+          passwordSavingEnabled: settingMetadata
+        },
+        websites: {
+          hyperlinkAuditingEnabled: settingMetadata,
+          referrersEnabled: settingMetadata
         }
       };
 
