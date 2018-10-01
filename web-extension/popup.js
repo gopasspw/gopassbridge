@@ -24,6 +24,9 @@ function switchToCreateNewDialog() {
         document.getElementsByClassName('results')[0].style.display = 'none';
         document.getElementsByClassName('create')[0].style.display = 'block';
         document.getElementById('create_name').value = `${settings['defaultfolder']}/${urlDomain(currentTab.url)}`;
+        document.getElementById('create_docreate').style.display = 'block';
+        document.getElementById('create_doabort').style.display = 'block';
+        document.getElementById('creating').style.display = 'none';
     }, logError);
 }
 
@@ -31,6 +34,9 @@ function switchToSearch() {
     document.getElementsByClassName('search')[0].style.display = 'block';
     document.getElementsByClassName('results')[0].style.display = 'block';
     document.getElementsByClassName('create')[0].style.display = 'none';
+    document.getElementById('create_docreate').style.display = 'none';
+    document.getElementById('create_doabort').style.display = 'none';
+    document.getElementById('creating').style.display = 'none';
 }
 
 function logAndDisplayError(error) {

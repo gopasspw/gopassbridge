@@ -18,6 +18,9 @@ function onDoCreate(event) {
         use_symbols: document.getElementById('create_use_symbols').checked,
     };
     armSpinnerTimeout();
+    document.getElementById('create_docreate').style.display = 'none';
+    document.getElementById('create_doabort').style.display = 'none';
+    document.getElementById('creating').style.display = 'block';
     return sendNativeAppMessage(message).then(onCreateResult, logAndDisplayError);
 }
 
