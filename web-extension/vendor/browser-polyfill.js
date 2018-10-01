@@ -11,7 +11,7 @@
     global.browser = mod.exports;
   }
 })(this, function (module) {
-  /* webextension-polyfill - v0.3.0 - Sun Aug 12 2018 21:38:04 */
+  /* webextension-polyfill - v0.3.1 - Mon Oct 01 2018 21:59:19 */
   /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
   /* vim: set sts=2 sw=2 et tw=80: */
   /* This Source Code Form is subject to the terms of the Mozilla Public
@@ -19,7 +19,7 @@
    * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
   "use strict";
 
-  if (typeof browser === "undefined") {
+  if (typeof browser === "undefined" || Object.getPrototypeOf(browser) !== Object.prototype) {
     const CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE = "The message port closed before a response was received.";
     const SEND_RESPONSE_DEPRECATION_WARNING = "Returning a Promise is the preferred way to send a reply from an onMessage/onMessageExternal listener, as the sendResponse will be removed from the specs (See https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage)";
 
@@ -28,7 +28,7 @@
     // contents of a function until the first time it's called, and since it will
     // never actually need to be called, this allows the polyfill to be included
     // in Firefox nearly for free.
-    const wrapAPIs = () => {
+    const wrapAPIs = extensionAPIs => {
       // NOTE: apiMetadata is associated to the content of the api-metadata.json file
       // at build time by replacing the following "include" with the content of the
       // JSON file.
@@ -763,8 +763,8 @@
        */
       const makeCallback = (promise, metadata) => {
         return (...callbackArgs) => {
-          if (chrome.runtime.lastError) {
-            promise.reject(chrome.runtime.lastError);
+          if (extensionAPIs.runtime.lastError) {
+            promise.reject(extensionAPIs.runtime.lastError);
           } else if (metadata.singleCallbackArg || callbackArgs.length <= 1) {
             promise.resolve(callbackArgs[0]);
           } else {
@@ -1110,14 +1110,14 @@
       });
 
       const wrappedSendMessageCallback = ({ reject, resolve }, reply) => {
-        if (chrome.runtime.lastError) {
+        if (extensionAPIs.runtime.lastError) {
           // Detect when none of the listeners replied to the sendMessage call and resolve
           // the promise to undefined as in Firefox.
           // See https://github.com/mozilla/webextension-polyfill/issues/130
-          if (chrome.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
+          if (extensionAPIs.runtime.lastError.message === CHROME_SEND_MESSAGE_CALLBACK_NO_RESPONSE_MESSAGE) {
             resolve();
           } else {
-            reject(chrome.runtime.lastError);
+            reject(extensionAPIs.runtime.lastError);
           }
         } else if (reply && reply.__mozWebExtensionPolyfillReject__) {
           // Convert back the JSON representation of the error into
@@ -1173,12 +1173,12 @@
         }
       };
 
-      return wrapObject(chrome, staticWrappers, apiMetadata);
+      return wrapObject(extensionAPIs, staticWrappers, apiMetadata);
     };
 
     // The build process adds a UMD wrapper around this file, which makes the
     // `module` variable available.
-    module.exports = wrapAPIs(); // eslint-disable-line no-undef
+    module.exports = wrapAPIs(chrome); // eslint-disable-line no-undef
   } else {
     module.exports = browser; // eslint-disable-line no-undef
   }
