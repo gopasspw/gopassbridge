@@ -154,7 +154,8 @@ body {
     background-image: url('icons/si-glyph-arrow-forward.svg');
 }
 
-.loader {
+.loader,
+#creating {
     margin: 12px auto;
     display: block;
     text-indent: -9999999px;
