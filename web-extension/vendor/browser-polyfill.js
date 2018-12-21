@@ -11,7 +11,7 @@
     global.browser = mod.exports;
   }
 })(this, function (module) {
-  /* webextension-polyfill - v0.3.1 - Mon Oct 01 2018 21:59:19 */
+  /* webextension-polyfill - v0.3.1 - Sat Dec 22 2018 00:35:58 */
   /* -*- Mode: indent-tabs-mode: nil; js-indent-level: 2 -*- */
   /* vim: set sts=2 sw=2 et tw=80: */
   /* This Source Code Form is subject to the terms of the Mozilla Public
