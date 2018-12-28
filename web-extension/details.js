@@ -8,13 +8,13 @@ function onEntryData(element, message) {
         }
         oldDetailView.remove();
     });
-    return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(() => {
+    return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(() => {
         if (alreadyShown) return;
 
         const newDetailView = _detailViewFromMessage(message);
         newDetailView.classList.add('detail-view');
         _insertAfter(newDetailView, element);
-        setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url), element.innerText);
+        setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl), element.innerText);
     });
 }
 
@@ -91,7 +91,7 @@ function _openURL(event) {
 
 function restoreDetailView() {
     let element;
-    return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentTab.url)).then(value => {
+    return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(value => {
         if (!value) return Promise.resolve();
 
         Array.from(document.getElementsByClassName('login')).forEach(loginElement => {
