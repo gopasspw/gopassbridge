@@ -4,6 +4,7 @@ const DEFAULT_SETTINGS = {
     markfields: true,
     sendnotifications: true,
     submitafterfill: true,
+    handleauthrequests: true,
     defaultfolder: 'Account',
 };
 
@@ -74,6 +75,14 @@ function showNotificationOnSetting(message) {
             message: message,
         });
     });
+}
+
+function getPopupUrl() {
+    return browser.extension.getURL('gopassbridge.html');
+}
+
+function isChrome() {
+    return browser.extension.getURL('/').startsWith('chrome');
 }
 
 window.tests = {

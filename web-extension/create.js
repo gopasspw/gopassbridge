@@ -48,7 +48,7 @@ function onCreateResult(response) {
         return;
     }
     console.log('created');
-    searchTerm = urlDomain(currentTab.url);
+    searchTerm = urlDomain(currentPageUrl);
     searchHost(searchTerm);
 }
 

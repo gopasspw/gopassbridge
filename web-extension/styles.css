@@ -250,3 +250,19 @@ body {
     outline: 0;
     background-color: #ff8080;
 }
+
+#auth_login {
+    padding: 10px;
+    background-color: #6bd6e4;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+#auth_login_url {
+    font-weight: bold;
+}
+
+#auth_login_options_info {
+    font-size: 12px;
+    font-style: italic;
+}

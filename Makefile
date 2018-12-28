@@ -1,7 +1,9 @@
 LOCAL_PRETTIER=node_modules/.bin/prettier
+LOCAL_WEB_EXT=node_modules/.bin/web-ext
 
 run-firefox: develop
-		web-ext run -v --browser-console -s $(CURDIR)/firefox
+		WEB_EXT_CMD=web-ext; if [ -e $(LOCAL_WEB_EXT) ]; then WEB_EXT_CMD=$(LOCAL_WEB_EXT); fi; \
+		$$WEB_EXT_CMD run -v --browser-console -s $(CURDIR)/firefox -u https://github.com/login
 
 develop: format
 		rm -rf chrome firefox
