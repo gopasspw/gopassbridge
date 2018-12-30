@@ -131,6 +131,22 @@ describe('on sample login form', () => {
         expectLoginAndPasswordHaveValues('someuser', 'mypassword');
     });
 
+    describe('event dispatch', () => {
+        function setupFocusListener() {
+            function onClick(e) {
+                e.target.value = '';
+            }
+            const element = document.getElementById('login');
+            element.addEventListener('focus', onClick);
+        }
+
+        test('is filled even if field clears on focus event', () => {
+            setupFocusListener();
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'someuser', password: 'mypassword' });
+            expectLoginAndPasswordHaveValues('someuser', 'mypassword');
+        });
+    });
+
     describe('submit', () => {
         function setupSubmitListener() {
             const onClick = jest.fn();

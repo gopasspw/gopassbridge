@@ -135,6 +135,9 @@ function updateElement(element, newValue) {
 
     inputEventNames.forEach(name => {
         element.dispatchEvent(new Event(name, { bubbles: true }));
+        // Some sites clear the fields on certain events, refill to make sure that values are in the field are set
+        element.setAttribute('value', newValue);
+        element.value = newValue;
     });
     return true;
 }
