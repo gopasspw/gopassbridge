@@ -10,7 +10,7 @@ global.setStatusText = jest.fn();
 global.urlDomain = jest.fn(() => 'some.domain');
 global.searchHost = jest.fn();
 global.logAndDisplayError = jest.fn();
-global.currentTab = { url: 'http://some.domain' };
+global.currentPageUrl = 'http://some.domain';
 global.searchTerm = '';
 global.i18n = {
     getMessage: jest.fn(key => {

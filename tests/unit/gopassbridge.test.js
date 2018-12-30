@@ -2,7 +2,9 @@
 
 jest.useFakeTimers();
 
-global.browser.tabs.query.mockResolvedValue([{ url: 'http://some.url', id: 'someid' }]);
+global.browser.tabs.query.mockResolvedValue([
+    { url: 'http://some.url', id: 'someid', favIconUrl: 'http://some.fav/icon' },
+]);
 global.browser.tabs.onActivated = {
     addListener: jest.fn(),
 };
@@ -13,9 +15,8 @@ global.executeOnSetting = jest.fn((_, cb) => cb());
 global.getLocalStorageKey = jest.fn();
 global.getLocalStorageKey.mockResolvedValue('previoussearch');
 
-global.urlDomain = jest.fn(() => {
-    return 'some.url';
-});
+global.urlDomain = jest.fn(() => 'some.url');
+global.getPopupUrl = jest.fn(() => 'popup.url');
 
 global.LAST_DOMAIN_SEARCH_PREFIX = 'last_search_';
 
@@ -36,8 +37,12 @@ describe('on startup', () => {
         expect(global.browser.tabs.onActivated.addListener.mock.calls).toEqual([[gopassbridge.switchTab]]);
     });
 
-    test('currentTab is set', () => {
-        expect(gopassbridge.getCurrentTab()).toEqual({ id: 'someid', url: 'http://some.url' });
+    test('global state is set to current tab', () => {
+        expect(gopassbridge.getCurrentTab()).toEqual({
+            currentTabId: 'someid',
+            currentTabFavIconUrl: 'http://some.fav/icon',
+            currentPageUrl: 'http://some.url',
+        });
     });
 });
 
@@ -58,13 +63,13 @@ describe('switchTab', () => {
     test('does nothing if tab has no url', () => {
         const previousTab = gopassbridge.getCurrentTab();
         gopassbridge.switchTab({ id: 'holla' });
-        expect(gopassbridge.getCurrentTab()).toBe(previousTab);
+        expect(gopassbridge.getCurrentTab()).toEqual(previousTab);
     });
 
     test('does nothing if tab has no id', () => {
         const previousTab = gopassbridge.getCurrentTab();
         gopassbridge.switchTab({ url: 'holla' });
-        expect(gopassbridge.getCurrentTab()).toBe(previousTab);
+        expect(gopassbridge.getCurrentTab()).toEqual(previousTab);
     });
 
     test('sends message to mark fields if setting is true', () => {

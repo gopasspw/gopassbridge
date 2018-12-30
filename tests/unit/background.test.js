@@ -14,7 +14,9 @@ global.i18n = {
     getMessage: jest.fn(key => `__i18n_${key}__`),
 };
 global.browser.tabs.sendMessage = jest.fn();
+global.browser.webRequest = { onAuthRequired: { addListener: jest.fn() } };
 global.executeOnSetting = jest.fn();
+global.isChrome = jest.fn();
 
 require('background.js');
 
@@ -30,16 +32,18 @@ describe('background', () => {
         global.executeOnSetting.mockClear();
     });
 
-    test('registers message processor on init', () => {
+    test('registers message processors on init', () => {
         browser.runtime.onMessage.addListener.mockClear();
+        browser.webRequest.onAuthRequired.addListener.mockClear();
         background.initBackground();
         expect(browser.runtime.onMessage.addListener).toHaveBeenCalledTimes(1);
+        expect(browser.webRequest.onAuthRequired.addListener).toHaveBeenCalledTimes(1);
     });
 
     describe('processMessageAndCatch', () => {
         test('raises on content script messages', () => {
             expect.assertions(2);
-            const msg = 'Background script received unexpected message {} from content script.';
+            const msg = 'Background script received unexpected message {} from content script or popup window.';
             return background.processMessageAndCatch({}, { tab: 42 }).catch(error => {
                 expect(global.showNotificationOnSetting.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
