@@ -172,3 +172,25 @@ describe('showNotificationOnSetting', () => {
         });
     });
 });
+
+describe('getPopupUrl', () => {
+    beforeEach(() => {
+        global.browser.runtime.getURL = jest.fn(() => 'some-popup');
+    });
+
+    test('returns URL', () => {
+        expect(generic.getPopupUrl()).toBe('some-popup');
+    });
+});
+
+describe('isChrome', () => {
+    test('for Chrome', () => {
+        global.browser.runtime.getURL = jest.fn(() => 'chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/');
+        expect(generic.isChrome()).toBe(true);
+    });
+
+    test('for Firefox', () => {
+        global.browser.runtime.getURL = jest.fn(() => 'moz-extension://eec37db0-22ad-4bf1-9068-5ae08df8c7e9/');
+        expect(generic.isChrome()).toBe(false);
+    });
+});
