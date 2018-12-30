@@ -66,32 +66,38 @@ function _processMessage(message, sender, _) {
     console.log('Processing message', message.type, sender);
 
     if (sender.tab) {
-        const { entry } = message;
-
-        switch (message.type) {
-            case 'LOGIN_TAB':
-                return _handleAuthRequest(entry, sender.url);
-            default:
-                throw new Error(
-                    `Background script received unexpected message ${JSON.stringify(
-                        message
-                    )} from content script or popup window.`
-                );
-        }
+        return _processTabMessage(message, sender.url);
     } else {
-        const { entry, tab } = message;
-        switch (message.type) {
-            case 'LOGIN_TAB':
-                return _processLoginTabMessage(entry, tab);
+        return _processExtensionMessage(message);
+    }
+}
 
-            case 'OPEN_TAB':
-                return _openEntry(entry);
+function _processTabMessage(message, senderUrl) {
+    const { entry } = message;
 
-            default:
-                throw new Error(
-                    `Background script received unexpected message ${JSON.stringify(message)} from extension`
-                );
-        }
+    switch (message.type) {
+        case 'LOGIN_TAB':
+            return _tryToResolveCurrentAuthRequest(entry, senderUrl);
+        default:
+            throw new Error(
+                `Background script received unexpected message ${JSON.stringify(
+                    message
+                )} from content script or popup window.`
+            );
+    }
+}
+
+function _processExtensionMessage(message) {
+    const { entry, tab } = message;
+    switch (message.type) {
+        case 'LOGIN_TAB':
+            return _processLoginTabMessage(entry, tab);
+
+        case 'OPEN_TAB':
+            return _openEntry(entry);
+
+        default:
+            throw new Error(`Background script received unexpected message ${JSON.stringify(message)} from extension`);
     }
 }
 
@@ -135,28 +141,7 @@ function _onAuthRequired(details, chromeOnlyAsyncCallback) {
                     console.warn('Another authentication request is already in progress.');
                     resolve({});
                 } else {
-                    browser.windows
-                        .create({
-                            url: popupUrl,
-                            width: 450,
-                            left: 450,
-                            height: 280,
-                            top: 280,
-                            type: 'popup',
-                        })
-                        .then(popupWindow => {
-                            console.log('Opened popup for auth request', popupWindow);
-
-                            function onPopupClose(windowId) {
-                                if (popupWindow.id === windowId) {
-                                    console.log('Fall back to native browser dialog after popup close.');
-                                    _resolveCurrentAuthRequest({ cancel: false }, popupUrl);
-                                }
-                            }
-
-                            currentAuthRequest = { resolve, popupUrl, onPopupClose };
-                            browser.windows.onRemoved.addListener(onPopupClose);
-                        });
+                    _openAuthRequestPopup(popupUrl, resolve);
                 }
             },
             () => {
@@ -168,7 +153,32 @@ function _onAuthRequired(details, chromeOnlyAsyncCallback) {
     });
 }
 
-function _handleAuthRequest(entry, senderUrl) {
+function _openAuthRequestPopup(popupUrl, resolutionCallback) {
+    browser.windows
+        .create({
+            url: popupUrl,
+            width: 450,
+            left: 450,
+            height: 280,
+            top: 280,
+            type: 'popup',
+        })
+        .then(popupWindow => {
+            console.log('Opened popup for auth request', popupWindow);
+
+            function onPopupClose(windowId) {
+                if (popupWindow.id === windowId) {
+                    console.log('Fall back to native browser dialog after popup close.');
+                    _resolveCurrentAuthRequest({ cancel: false }, popupUrl);
+                }
+            }
+
+            currentAuthRequest = { resolve: resolutionCallback, popupUrl, onPopupClose };
+            browser.windows.onRemoved.addListener(onPopupClose);
+        });
+}
+
+function _tryToResolveCurrentAuthRequest(entry, senderUrl) {
     return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
         if (response.error) {
             throw new Error(response.error);

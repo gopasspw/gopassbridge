@@ -10,22 +10,22 @@ browser.tabs.onActivated.addListener(switchTab);
 
 function switchTab(tab) {
     console.log('Switching to tab', tab);
-    if (tab && tab.url && tab.id) {
+
+    const isContentTab = tab && tab.url && tab.id;
+
+    if (isContentTab) {
         currentTabId = tab.id;
         currentTabFavIconUrl = tab.favIconUrl;
     }
 
-    if (window && window.location.origin + window.location.pathname === getPopupUrl()) {
-        const authUrlEncoded = new URLSearchParams(window.location.search).get('authUrl');
-        if (authUrlEncoded) {
-            const authUrl = decodeURIComponent(authUrlEncoded);
-            document.getElementById('auth_login').style.display = 'block';
-            document.getElementById('auth_login_url').textContent = authUrl;
-            return _handleUrlSearch(authUrl);
-        }
+    const authUrl = _parseAuthUrl();
+    if (authUrl) {
+        document.getElementById('auth_login').style.display = 'block';
+        document.getElementById('auth_login_url').textContent = authUrl;
+        return _handleUrlSearch(authUrl);
     }
 
-    if (tab && tab.url && tab.id) {
+    if (isContentTab) {
         executeOnSetting('markfields', () => {
             browser.tabs.sendMessage(currentTabId, { type: 'MARK_LOGIN_FIELDS' });
         });
@@ -33,6 +33,16 @@ function switchTab(tab) {
     }
 
     return Promise.resolve();
+}
+
+function _parseAuthUrl() {
+    if (window && window.location.origin + window.location.pathname === getPopupUrl()) {
+        const authUrlEncoded = new URLSearchParams(window.location.search).get('authUrl');
+        if (authUrlEncoded) {
+            return decodeURIComponent(authUrlEncoded);
+        }
+    }
+    return null;
 }
 
 function _handleUrlSearch(url) {
