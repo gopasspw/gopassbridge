@@ -78,11 +78,11 @@ function showNotificationOnSetting(message) {
 }
 
 function getPopupUrl() {
-    return browser.extension.getURL('gopassbridge.html');
+    return browser.runtime.getURL('gopassbridge.html');
 }
 
 function isChrome() {
-    return browser.extension.getURL('/').startsWith('chrome');
+    return browser.runtime.getURL('/').startsWith('chrome');
 }
 
 window.tests = {
@@ -94,5 +94,7 @@ window.tests = {
         getLocalStorageKey,
         createButtonWithCallback,
         showNotificationOnSetting,
+        getPopupUrl,
+        isChrome,
     },
 };
