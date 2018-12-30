@@ -1,6 +1,10 @@
 'use strict';
 
+const fs = require('fs');
+
 jest.useFakeTimers();
+
+const documentHtml = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
 
 global.browser.tabs.query.mockResolvedValue([
     { url: 'http://some.url', id: 'someid', favIconUrl: 'http://some.fav/icon' },
@@ -91,14 +95,10 @@ describe('switchTab', () => {
                 <div></div>
             </div>`;
         document.body.innerHTML = start;
-        global.urlDomain = jest.fn(() => {
-            return null;
-        });
+        global.urlDomain = jest.fn(() => null);
         gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
         expect(document.body.innerHTML).not.toEqual(start);
-        global.urlDomain = jest.fn(() => {
-            return 'some.url';
-        });
+        global.urlDomain = jest.fn(() => 'some.url');
     });
 
     test('if search term could be derived, do not clear results', () => {
@@ -126,6 +126,59 @@ describe('switchTab', () => {
         return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
             expect(global.search.mock.calls).toEqual([]);
             expect(global.searchHost.mock.calls).toEqual([['some.url']]);
+        });
+    });
+
+    describe('handles authUrl query parameter', () => {
+        beforeEach(() => {
+            global.getLocalStorageKey.mockResolvedValue(undefined);
+            global.urlDomain = jest.fn(url => url);
+            global.getPopupUrl = jest.fn(() => 'http://localhost/');
+            jsdom.reconfigure({ url: 'http://localhost/?authUrl=' + encodeURIComponent('https://example.com') });
+            document.body.innerHTML = documentHtml;
+        });
+
+        test('by showing auth login info and calling search', () => {
+            expect.assertions(6);
+
+            expect(document.getElementById('auth_login').style.display).toEqual('none');
+            expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
+
+            return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+                expect(document.getElementById('auth_login').style.display).toEqual('block');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('https://example.com');
+
+                expect(global.search.mock.calls).toEqual([]);
+                expect(global.searchHost.mock.calls).toEqual([['https://example.com']]);
+            });
+        });
+
+        test('ignores authUrl if window location does not match the popup url of gopassbridge', () => {
+            expect.assertions(4);
+
+            global.getPopupUrl = jest.fn(() => 'http://localhost.evil/');
+
+            return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+                expect(document.getElementById('auth_login').style.display).toEqual('none');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
+
+                expect(global.search.mock.calls).toEqual([]);
+                expect(global.searchHost.mock.calls).toEqual([['http://some.url']]);
+            });
+        });
+
+        test('ignores any other search parameter when authUrl is missing', () => {
+            expect.assertions(4);
+
+            jsdom.reconfigure({ url: 'http://localhost/?otherUrl=https://not.authUrl' });
+
+            return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+                expect(document.getElementById('auth_login').style.display).toEqual('none');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
+
+                expect(global.search.mock.calls).toEqual([]);
+                expect(global.searchHost.mock.calls).toEqual([['http://some.url']]);
+            });
         });
     });
 });
