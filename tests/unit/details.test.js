@@ -10,7 +10,8 @@ global.sendNativeAppMessage = jest.fn();
 global.getLocalStorageKey = jest.fn();
 global.setLocalStorageKey = jest.fn();
 global.urlDomain = jest.fn(() => 'some.domain');
-global.currentTab = { url: 'http://other.domain', id: 42 };
+global.currentTabId = 42;
+global.currentPageUrl = 'http://other.domain';
 global.re_weburl = new RegExp('https://.*');
 global.logAndDisplayError = jest.fn();
 

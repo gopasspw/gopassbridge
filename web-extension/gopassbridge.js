@@ -10,7 +10,7 @@ browser.tabs.onActivated.addListener(switchTab);
 
 function switchTab(tab) {
     console.log('Switching to tab', tab);
-    if (tab) {
+    if (tab && tab.url && tab.id) {
         currentTabId = tab.id;
         currentTabFavIconUrl = tab.favIconUrl;
     }
@@ -55,8 +55,6 @@ function _handleUrlSearch(url) {
 window.tests = {
     gopassbridge: {
         switchTab,
-        getCurrentTab: () => {
-            return currentTab;
-        },
+        getCurrentTab: () => ({ currentPageUrl, currentTabId, currentTabFavIconUrl }),
     },
 };
