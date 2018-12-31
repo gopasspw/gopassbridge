@@ -27,6 +27,8 @@
     }
   ],
 
+  "minimum_chrome_version": "63",
+
   "background": {
     "scripts": [
       "vendor/browser-polyfill.js",
