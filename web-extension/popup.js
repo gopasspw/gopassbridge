@@ -23,7 +23,7 @@ function switchToCreateNewDialog() {
         document.getElementsByClassName('search')[0].style.display = 'none';
         document.getElementsByClassName('results')[0].style.display = 'none';
         document.getElementsByClassName('create')[0].style.display = 'block';
-        document.getElementById('create_name').value = `${settings['defaultfolder']}/${urlDomain(currentTab.url)}`;
+        document.getElementById('create_name').value = `${settings['defaultfolder']}/${urlDomain(currentPageUrl)}`;
         document.getElementById('create_docreate').style.display = 'block';
         document.getElementById('create_doabort').style.display = 'block';
         document.getElementById('creating').style.display = 'none';

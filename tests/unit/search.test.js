@@ -36,7 +36,9 @@ const search = window.tests.search;
 function resetSearchState() {
     document.body.innerHTML = documentHtml;
     jest.clearAllMocks();
-    global.currentTab = { id: 42, url: 'http://some.host' };
+    global.currentTabId = 42;
+    global.currentPageUrl = 'http://some.host';
+    global.currentTabFavIconUrl = null;
 }
 
 describe('search method', () => {
@@ -233,7 +235,7 @@ describe('search method', () => {
         });
 
         test('break if tab has changed', () => {
-            global.currentTab.url = 'http://evil.host';
+            global.currentPageUrl = 'http://evil.host';
             global.searchedUrl = 'muh';
             search._onSearchResults([], false);
             expect(global.createButtonWithCallback.mock.calls.length).toBe(0);
@@ -241,7 +243,7 @@ describe('search method', () => {
 
         describe('favicon', () => {
             beforeEach(() => {
-                global.currentTab.favIconUrl = 'http://some.host/fav.ico';
+                global.currentTabFavIconUrl = 'http://some.host/fav.ico';
             });
 
             test('sets favicon if matching', () => {

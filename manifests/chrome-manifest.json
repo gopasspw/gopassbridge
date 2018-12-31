@@ -34,7 +34,7 @@
       "i18n.js",
       "background.js"
     ],
-    "persistent": false
+    "persistent": true
   },
 
   "options_ui": {
@@ -67,6 +67,8 @@
     "nativeMessaging",
     "http://*/*",
     "https://*/*",
-    "notifications"
+    "notifications",
+    "webRequest",
+    "webRequestBlocking"
   ]
 }

@@ -4,6 +4,7 @@ const DEFAULT_SETTINGS = {
     markfields: true,
     sendnotifications: true,
     submitafterfill: true,
+    handleauthrequests: true,
     defaultfolder: 'Account',
 };
 
@@ -76,6 +77,14 @@ function showNotificationOnSetting(message) {
     });
 }
 
+function getPopupUrl() {
+    return browser.runtime.getURL('gopassbridge.html');
+}
+
+function isChrome() {
+    return browser.runtime.getURL('/').startsWith('chrome');
+}
+
 window.tests = {
     generic: {
         sendNativeAppMessage,
@@ -85,5 +94,7 @@ window.tests = {
         getLocalStorageKey,
         createButtonWithCallback,
         showNotificationOnSetting,
+        getPopupUrl,
+        isChrome,
     },
 };

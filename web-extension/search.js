@@ -28,7 +28,7 @@ function _onSearchInputEvent() {
     if (input.value.length) {
         search(input.value);
     } else {
-        const currentHost = urlDomain(currentTab.url);
+        const currentHost = urlDomain(currentPageUrl);
         searchHost(currentHost);
     }
 }
@@ -62,7 +62,7 @@ function _doSearch(term, queryHost) {
 
     searchTerm = term;
     armSpinnerTimeout();
-    searchedUrl = currentTab.url;
+    searchedUrl = currentPageUrl;
     searching = new Promise((resolve, reject) => {
         const message = {
             type: queryHost ? 'queryHost' : 'query',
@@ -91,8 +91,8 @@ function searchHost(host) {
 }
 
 function _faviconUrl() {
-    if (currentTab && currentTab.favIconUrl && currentTab.favIconUrl.indexOf(urlDomain(currentTab.url)) > -1) {
-        return currentTab.favIconUrl;
+    if (currentTabFavIconUrl && currentTabFavIconUrl.indexOf(urlDomain(currentPageUrl)) > -1) {
+        return currentTabFavIconUrl;
     }
 
     return 'icons/si-glyph-key-2.svg';
@@ -131,16 +131,16 @@ function _onSearchResults(response, isHostQuery) {
     try {
         if (response.error) {
             setStatusText(response.error);
-        } else if (currentTab.url !== searchedUrl) {
+        } else if (currentPageUrl !== searchedUrl) {
             console.log('Result is not from the same URL as we were searching for, ignoring');
         } else if (response.length) {
             setLocalStorageKey(
-                LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url),
+                LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentPageUrl),
                 document.getElementById('search_input').value
             );
             _displaySearchResults(response, isHostQuery);
         } else {
-            browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentTab.url));
+            browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentPageUrl));
             _displayNoResults();
         }
     } finally {
@@ -160,7 +160,7 @@ function _onEntryAction(event, element) {
     } else {
         const value = (element || event.target).innerText;
         browser.runtime
-            .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTab.id, url: currentTab.url } })
+            .sendMessage({ type: 'LOGIN_TAB', entry: value, tab: { id: currentTabId, url: currentPageUrl } })
             .then(_onLoginCredentialsDidLogin, logAndDisplayError);
     }
 }

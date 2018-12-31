@@ -7,7 +7,7 @@ global.logError = jest.fn();
 global.getSettings = jest.fn();
 global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
 global.urlDomain = jest.fn(() => 'some.domain');
-global.currentTab = { url: 'http://some.domain' };
+global.currentPageUrl = 'http://some.domain';
 
 require('popup.js');
 

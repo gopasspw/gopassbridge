@@ -19,6 +19,14 @@
     "message": "Benutzername konnte nicht bestimmt werden",
     "description": "shown when no username in response does not match current domain"
   },
+  "authLoginDescription": {
+    "message": "Eintrag auswählen zur Authentifizierung mit",
+    "description": "description on basic auth login popup, url will be appended"
+  },
+  "authLoginOptionsInfo": {
+    "message": "(kann in den Einstellungen der Browser-Erweiterung deaktiviert werden)",
+    "description": "info that basic auth handling can be disabled in options"
+  },
   "searchPlaceholder": {
     "message": "tippen um zu suchen...",
     "description": "placeholder in search field"
@@ -112,6 +120,10 @@
     "message": "Einloggen wenn Logindaten ausgefüllt wurden",
     "description": "label of login after fill checkbox"
   },
+  "optionsHandleAuthRequestsLabel": {
+    "message": "Logindaten für HTTP-Basic-Authentifizierung zur Verfügung stellen",
+    "description": "label of handle auth requests checkbox"
+  },
   "optionsDefaultFolderLabel": {
     "message": "Standardordner für neue Logins",
     "description": "label of default folder"
@@ -127,5 +139,9 @@
   "noURLInEntry": {
     "message": "Eintrag hat kein URL Attribut",
     "description": "Shown when no url attribute in entry and page is loaded"
+  },
+  "cannotHandleMultipleAuthRequests": {
+    "message": "Vorherige Authentifizierung ist noch nicht abgeschlossen, bitte alle Popups schließen und erneut versuchen.",
+    "description": "Error when another basic authentication popup is already open"
   }
 }

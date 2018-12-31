@@ -75,6 +75,8 @@
     "clipboardWrite",
     "storage",
     "nativeMessaging",
-    "notifications"
+    "notifications",
+    "webRequest",
+    "webRequestBlocking"
   ]
 }

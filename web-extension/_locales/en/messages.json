@@ -19,6 +19,14 @@
     "message": "could not determine username",
     "description": "shown when no username in response does not match current domain"
   },
+  "authLoginDescription": {
+    "message": "Select credentials to authenticate with",
+    "description": "description on basic auth login popup, url will be appended"
+  },
+  "authLoginOptionsInfo": {
+    "message": "(this can be disabled in the browser extension options)",
+    "description": "info that basic auth handling can be disabled in options"
+  },
   "searchPlaceholder": {
     "message": "start typing to search...",
     "description": "placeholder in search field"
@@ -112,6 +120,10 @@
     "message": "Login after filling in credentials",
     "description": "label of login after fill checkbox"
   },
+  "optionsHandleAuthRequestsLabel": {
+    "message": "Provide credentials for basic auth requests",
+    "description": "label of handle auth requests checkbox"
+  },
   "optionsDefaultFolderLabel": {
     "message": "Default folder for new credentials",
     "description": "label of default folder"
@@ -127,5 +139,9 @@
   "noURLInEntry": {
     "message": "Entry has no url attribute",
     "description": "Shown when no url attribute in entry and page is loaded"
+  },
+  "cannotHandleMultipleAuthRequests": {
+    "message": "Previous authentication is still in progress, please close all popups and try again.",
+    "description": "Error when another basic authentication popup is already open"
   }
 }
