@@ -1,6 +1,6 @@
 {
   "name": "gopassbridge",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "web-extension/gopassbridge.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinhoefling/gopassbridge.git"
+    "url": "git+https://github.com/gopasspw/gopassbridge.git"
   },
   "keywords": [
     "gopass",
@@ -24,9 +24,9 @@
   "author": "Martin Hoefling",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/martinhoefling/gopassbridge/issues"
+    "url": "https://github.com/gopasspw/gopassbridge/issues"
   },
-  "homepage": "https://github.com/martinhoefling/gopassbridge#readme",
+  "homepage": "https://github.com/gopasspw/gopassbridge#readme",
   "dependencies": {},
   "devDependencies": {
     "codecov": "^3.0.0",

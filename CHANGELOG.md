@@ -1,10 +1,20 @@
+## 0.5.0 / 2018-12-31
+
+* Support filling in basic auth credentials (can be turned off in settings) (#99)
+* Add button to open URL of entry in new tab (shortcut Ctrl+Click) (#71)
+* Add feedback when saving a new secret (#84)
+* Add saving indicator to settings (#61)
+* Support frames similar to iframes (#77)
+* Fix missing values after input events (#92)
+* Document keyboard shortcut in "Usage Hints" (#80)
+
 ## 0.4.0 / 2018-06-16
 
 * Detail view and buttons for copy
 * Credentials are now inserted via background script to prevent closing via pinentry
 * Tests added for most parts of the code
 
-## 0.3.0 / 2018-05-3
+## 0.3.0 / 2018-05-03
 
 * Fix focused case for iframes
 * Fix focus of search field on firefox on open

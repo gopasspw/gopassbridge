@@ -84,7 +84,7 @@
     "description": "Text of changelog",
     "placeholders": {
       "url": {
-        "content": "https://github.com/martinhoefling/gopassbridge/blob/master/CHANGELOG.md"
+        "content": "https://github.com/gopasspw/gopassbridge/blob/master/CHANGELOG.md"
       }
     }
   },
