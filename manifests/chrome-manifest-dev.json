@@ -2,10 +2,10 @@
   "manifest_version": 2,
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "__MSG_extensionDescription__",
   "author": "Martin Hoefling",
-  "homepage_url": "https://github.com/martinhoefling/gopassbridge",
+  "homepage_url": "https://github.com/gopasspw/gopassbridge",
   "incognito": "split",
 
   "icons": {
