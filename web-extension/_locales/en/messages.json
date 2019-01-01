@@ -143,5 +143,9 @@
   "cannotHandleMultipleAuthRequests": {
     "message": "Previous authentication is still in progress, please close all popups and try again.",
     "description": "Error when another basic authentication popup is already open"
+  },
+  "correctlySetup": {
+    "message": "Is gopass correctly set up for gopassbridge?",
+    "description": "Error when gopassbridge is not correctly setup"
   }
 }

@@ -8,6 +8,12 @@ global.getSettings = jest.fn();
 global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
 global.urlDomain = jest.fn(() => 'some.domain');
 global.currentPageUrl = 'http://some.domain';
+global.openURL = jest.fn();
+global.i18n = {
+    getMessage: jest.fn(key => {
+        return `__MSG_${key}__`;
+    }),
+};
 
 require('popup.js');
 
@@ -45,6 +51,13 @@ describe('popup', () => {
 
         test('sets text content to provided message', () => {
             expect(document.getElementsByClassName('status-text')[0].innerHTML).toBe('an example text');
+        });
+
+        test('displays setup hint on certain messages', () => {
+            popup.setStatusText('Attempt to postMessage on disconnected port');
+            expect(document.getElementsByClassName('status-text')[1].innerHTML).toBe(
+                `<a href="${popup.SETUP_URL}">__MSG_correctlySetup__</a>`
+            );
         });
     });
 

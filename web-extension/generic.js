@@ -25,6 +25,11 @@ function logError(error) {
     console.log(error);
 }
 
+function openURL(event) {
+    event.preventDefault();
+    browser.tabs.create({ url: event.target.href });
+}
+
 function executeOnSetting(setting, trueCallback, falseCallback) {
     return getSettings().then(result => {
         if (result[setting]) {
@@ -96,5 +101,6 @@ window.tests = {
         showNotificationOnSetting,
         getPopupUrl,
         isChrome,
+        openURL,
     },
 };

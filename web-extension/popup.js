@@ -1,6 +1,11 @@
 'use strict';
 
 let spinnerTimeout;
+const SETUP_URL = 'https://github.com/gopasspw/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser';
+const SETUP_ERRORS = [
+    'Access to the specified native messaging host is forbidden',
+    'Attempt to postMessage on disconnected port',
+];
 
 function armSpinnerTimeout() {
     clearTimeout(spinnerTimeout);
@@ -10,12 +15,34 @@ function armSpinnerTimeout() {
 }
 
 function setStatusText(text) {
+    clearTimeout(spinnerTimeout);
     const results = document.getElementById('results');
     const element = document.createElement('div');
     element.textContent = text;
     element.className = 'status-text';
     results.innerHTML = '';
     results.appendChild(element);
+    const setupErrorElement = _getSetupErrorElement(text);
+    if (setupErrorElement) {
+        results.append(setupErrorElement);
+    }
+}
+
+function _getSetupErrorElement(text) {
+    let element = null;
+    let isSetupError = SETUP_ERRORS.some(msg => {
+        return text.search(msg) > -1;
+    });
+    if (isSetupError) {
+        element = document.createElement('div');
+        element.className = 'status-text';
+        const anchor = document.createElement('a');
+        anchor.href = SETUP_URL;
+        anchor.addEventListener('click', openURL);
+        anchor.textContent = i18n.getMessage('correctlySetup');
+        element.append(anchor);
+    }
+    return element;
 }
 
 function switchToCreateNewDialog() {
@@ -67,5 +94,6 @@ window.tests = {
         switchToSearch,
         logAndDisplayError,
         copyToClipboard,
+        SETUP_URL,
     },
 };
