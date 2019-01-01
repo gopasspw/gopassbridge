@@ -11,7 +11,7 @@ browser.tabs.onActivated.addListener(switchTab);
 function switchTab(tab) {
     console.log('Switching to tab', tab);
 
-    const isContentTab = tab && tab.url && tab.id;
+    const isContentTab = tab && tab.url && tab.id && tab.url.startsWith('http');
 
     if (isContentTab) {
         currentTabId = tab.id;
@@ -22,16 +22,18 @@ function switchTab(tab) {
     if (authUrl) {
         document.getElementById('auth_login').style.display = 'block';
         document.getElementById('auth_login_url').textContent = authUrl;
-        return _handleUrlSearch(authUrl);
+        return _handleUrlSearch(authUrl).catch(logAndDisplayError);
     }
 
     if (isContentTab) {
         executeOnSetting('markfields', () => {
             browser.tabs.sendMessage(currentTabId, { type: 'MARK_LOGIN_FIELDS' });
         });
-        return _handleUrlSearch(tab.url);
+        return _handleUrlSearch(tab.url).catch(logAndDisplayError);
     }
 
+    // clear spinner
+    document.getElementById('results').innerHTML = '';
     return Promise.resolve();
 }
 
@@ -60,6 +62,7 @@ function _handleUrlSearch(url) {
     } else {
         document.getElementById('results').innerHTML = '';
     }
+    return Promise.resolve();
 }
 
 window.tests = {

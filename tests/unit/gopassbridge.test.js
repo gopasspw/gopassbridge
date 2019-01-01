@@ -30,6 +30,7 @@ global.search.mockResolvedValue();
 global.searchHost = jest.fn();
 global.searchHost.mockResolvedValue();
 
+global.logAndDisplayError = jest.fn();
 global.restoreDetailView = jest.fn();
 
 require('gopassbridge.js');
@@ -51,7 +52,13 @@ describe('on startup', () => {
 });
 
 describe('switchTab', () => {
+    const start = `
+            <div id="results">
+                <div></div>
+            </div>`;
+
     beforeEach(() => {
+        document.body.innerHTML = start;
         global.browser.tabs.sendMessage.mockReset();
         global.search.mockReset();
         global.searchHost.mockReset();
@@ -67,6 +74,12 @@ describe('switchTab', () => {
     test('does nothing if tab has no url', () => {
         const previousTab = gopassbridge.getCurrentTab();
         gopassbridge.switchTab({ id: 'holla' });
+        expect(gopassbridge.getCurrentTab()).toEqual(previousTab);
+    });
+
+    test('does nothing if tab url does not start with http', () => {
+        const previousTab = gopassbridge.getCurrentTab();
+        gopassbridge.switchTab({ id: 'holla', url: 'chrome://somethingelse' });
         expect(gopassbridge.getCurrentTab()).toEqual(previousTab);
     });
 
@@ -90,11 +103,6 @@ describe('switchTab', () => {
     });
 
     test('if no search term could be derived, clear results', () => {
-        const start = `
-            <div id="results">
-                <div></div>
-            </div>`;
-        document.body.innerHTML = start;
         global.urlDomain = jest.fn(() => null);
         gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
         expect(document.body.innerHTML).not.toEqual(start);
