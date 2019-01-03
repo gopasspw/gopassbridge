@@ -145,7 +145,7 @@
     "description": "Error when another basic authentication popup is already open"
   },
   "correctlySetup": {
-    "message": "Is gopass correctly set up for gopassbridge?",
+    "message": "Is your browser correctly set up for gopass?",
     "description": "Error when gopassbridge is not correctly setup"
   }
 }
