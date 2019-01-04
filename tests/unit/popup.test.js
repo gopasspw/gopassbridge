@@ -104,14 +104,18 @@ describe('popup', () => {
 
     describe('logAndDisplayError', () => {
         test('displays message', () => {
-            popup.logAndDisplayError({ message: 'sample error messsage' });
+            expect(() => {
+                popup.logAndDisplayError({ message: 'sample error messsage' });
+            }).toThrow({ message: 'sample error messsage' });
             expect(document.getElementsByClassName('status-text')[0].innerHTML).toBe('sample error messsage');
         });
 
         test('switches back to search', () => {
-            expect.assertions(3);
+            expect.assertions(4);
             return popup.switchToCreateNewDialog().then(() => {
-                popup.logAndDisplayError({ message: 'sample error messsage' });
+                expect(() => {
+                    popup.logAndDisplayError({ message: 'sample error messsage' });
+                }).toThrow({ message: 'sample error messsage' });
                 expect(document.getElementsByClassName('search')[0].style.display).toBe('block');
                 expect(document.getElementsByClassName('results')[0].style.display).toBe('block');
                 expect(document.getElementsByClassName('create')[0].style.display).toBe('none');
