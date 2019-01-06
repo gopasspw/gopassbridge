@@ -70,6 +70,7 @@ function logAndDisplayError(error) {
     console.log(error);
     switchToSearch();
     setStatusText(error.message);
+    throw error;
 }
 
 function copyToClipboard(text) {
