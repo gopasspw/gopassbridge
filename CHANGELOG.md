@@ -1,3 +1,9 @@
+## 0.5.1 / 2019-01-06
+
+* Set minimum supported browser versions to Chrome 63 and Firefox 60 (#102)
+* Fix error handling and reporting when setup is not complete (#97, #93)
+* Fix browser crash when jsonapi not configured (#104, #105)
+
 ## 0.5.0 / 2018-12-31
 
 * Support filling in basic auth credentials (can be turned off in settings) (#99)
