@@ -13,7 +13,7 @@
 
 # gopassbridge
 
-A web extension for Firefox and Chrome to insert login credentials from [gopass](https://gopass.pw)
+A web extension for Firefox and Chrome to insert login credentials from [gopass](https://www.gopass.pw)
 
 ## Summary
 
