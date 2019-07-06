@@ -30,19 +30,19 @@
   "dependencies": {},
   "devDependencies": {
     "codecov": "^3.0.0",
-    "eslint": "^5.3.0",
+    "eslint": "^6.0.1",
     "eslint-plugin-json": "^1.2.0",
     "eslint-plugin-mocha": "^5.1.0",
     "eslint-plugin-promise": "^4.0.1",
     "global": "^4.3.2",
-    "jest": "^23.5.0",
-    "jest-environment-jsdom": "^23.4.0",
+    "jest": "^24.8.0",
+    "jest-environment-jsdom": "^24.8.0",
     "jest-environment-jsdom-global": "^1.0.3",
     "jest-plugin-unhandled-promise": "^2.9.0",
     "jest-webextension-mock": "^3.3.0",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "prettier-check": "^2.0.0",
-    "web-ext": "^2.3.2"
+    "web-ext": "^3.1.0"
   }
 }
