@@ -15,6 +15,7 @@ global.browser.tabs.sendMessage = jest.fn();
 global.browser.webRequest = { onAuthRequired: { addListener: jest.fn() } };
 global.executeOnSetting = jest.fn();
 global.isChrome = jest.fn();
+global.makeAbsolute = jest.fn(string => string);
 
 require('background.js');
 

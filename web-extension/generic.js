@@ -11,6 +11,8 @@ const DEFAULT_SETTINGS = {
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
 const LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
 
+const URL_PATTERN = /^https?:\/\//i;
+
 function getSettings() {
     return browser.storage.sync.get(DEFAULT_SETTINGS);
 }
@@ -25,9 +27,16 @@ function logError(error) {
     console.log(error);
 }
 
+function makeAbsolute(string) {
+    if (!URL_PATTERN.test(string)) {
+        return 'https://' + string;
+    }
+    return string;
+}
+
 function openURL(event) {
     event.preventDefault();
-    browser.tabs.create({ url: event.target.href });
+    browser.tabs.create({ url: makeAbsolute(event.target.href) });
 }
 
 function executeOnSetting(setting, trueCallback, falseCallback) {
@@ -102,5 +111,6 @@ window.tests = {
         getPopupUrl,
         isChrome,
         openURL,
+        makeAbsolute,
     },
 };

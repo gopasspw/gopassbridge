@@ -56,7 +56,7 @@ function _openEntry(entry) {
             if (!message.url) {
                 throw new Error(i18n.getMessage('noURLInEntry'));
             }
-            return browser.tabs.create({ url: message.url });
+            return browser.tabs.create({ url: makeAbsolute(message.url) });
         })
         .then(_waitForTabLoaded)
         .then(tab => _processLoginTabMessage(entry, tab));
