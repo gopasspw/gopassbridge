@@ -213,3 +213,36 @@ describe('makeAbsolute', () => {
         expect(generic.makeAbsolute('muh.de')).toEqual('https://muh.de');
     });
 });
+
+describe('checkVersion', () => {
+    beforeEach(() => {
+        global.browser.runtime.sendNativeMessage = jest.fn();
+    });
+
+    test('rejects with smaller version', () => {
+        expect.assertions(1);
+        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 4 });
+        return generic.checkVersion().then(
+            () => {},
+            error => {
+                expect(error.message).toBe('minimum gopass version is 1.8.5');
+            }
+        );
+    });
+
+    test('resolves with minimum version', () => {
+        expect.assertions(1);
+        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
+        return generic.checkVersion().then(value => {
+            expect(value).toBe(undefined);
+        });
+    });
+
+    test('resolves with larger version', () => {
+        expect.assertions(1);
+        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 2, minor: 9, patch: 2 });
+        return generic.checkVersion().then(value => {
+            expect(value).toBe(undefined);
+        });
+    });
+});

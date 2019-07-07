@@ -2,6 +2,7 @@
 
 let currentPageUrl;
 let currentTabId;
+let currentTabUrl;
 let currentTabFavIconUrl;
 
 browser.tabs.query({ currentWindow: true, active: true }).then(tabs => switchTab(tabs[0]));
@@ -14,27 +15,31 @@ function switchTab(tab) {
     const isContentTab = tab && tab.url && tab.id && tab.url.startsWith('http');
 
     if (isContentTab) {
+        currentTabUrl = tab.url;
         currentTabId = tab.id;
         currentTabFavIconUrl = tab.favIconUrl;
     }
+    console.log('Starting version check');
+    return checkVersion().then(() => {
+        console.log('Version is safe - continuing tab switching');
+        const authUrl = _parseAuthUrl();
+        if (authUrl) {
+            document.getElementById('auth_login').style.display = 'block';
+            document.getElementById('auth_login_url').textContent = authUrl;
+            return _handleUrlSearch(authUrl).catch(logAndDisplayError);
+        }
 
-    const authUrl = _parseAuthUrl();
-    if (authUrl) {
-        document.getElementById('auth_login').style.display = 'block';
-        document.getElementById('auth_login_url').textContent = authUrl;
-        return _handleUrlSearch(authUrl).catch(logAndDisplayError);
-    }
+        if (isContentTab) {
+            executeOnSetting('markfields', () => {
+                browser.tabs.sendMessage(currentTabId, { type: 'MARK_LOGIN_FIELDS' });
+            });
+            return _handleUrlSearch(currentTabUrl).catch(logAndDisplayError);
+        }
 
-    if (isContentTab) {
-        executeOnSetting('markfields', () => {
-            browser.tabs.sendMessage(currentTabId, { type: 'MARK_LOGIN_FIELDS' });
-        });
-        return _handleUrlSearch(tab.url).catch(logAndDisplayError);
-    }
-
-    // clear spinner
-    document.getElementById('results').innerHTML = '';
-    return Promise.resolve();
+        // clear spinner
+        document.getElementById('results').innerHTML = '';
+        return Promise.resolve();
+    }, logAndDisplayError);
 }
 
 function _parseAuthUrl() {
