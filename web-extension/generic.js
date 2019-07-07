@@ -10,6 +10,31 @@ const DEFAULT_SETTINGS = {
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
 const LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
+const REQUIRED_GOPASS_VERSION = [1, 8, 5];
+
+let versionOK = undefined;
+
+function checkVersion() {
+    if (versionOK) {
+        return Promise.resolve();
+    }
+
+    return sendNativeAppMessage({ type: 'getVersion' }).then(response => {
+        let major = REQUIRED_GOPASS_VERSION[0];
+        let minor = REQUIRED_GOPASS_VERSION[1];
+        let patch = REQUIRED_GOPASS_VERSION[2];
+        if (
+            response.major > major ||
+            (response.major === major && (response.minor > minor || response.minor === minor && response.patch >= patch)
+        )) {
+            versionOK = true;
+            console.log('Version is OK');
+            return Promise.resolve();
+        }
+        console.log('Version is not OK');
+        return Promise.reject(new Error(`minimum gopass version is ${REQUIRED_GOPASS_VERSION.join('.')}`));
+    });
+}
 
 const URL_PATTERN = /^https?:\/\//i;
 
@@ -116,5 +141,6 @@ window.tests = {
         isChrome,
         openURLOnEvent,
         makeAbsolute,
+        checkVersion,
     },
 };

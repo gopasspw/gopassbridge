@@ -32,6 +32,8 @@ global.searchHost.mockResolvedValue();
 
 global.logAndDisplayError = jest.fn();
 global.restoreDetailView = jest.fn();
+global.checkVersion = jest.fn();
+global.checkVersion.mockResolvedValue();
 
 require('gopassbridge.js');
 
@@ -90,23 +92,29 @@ describe('switchTab', () => {
     });
 
     test('sends message to mark fields if setting is true', () => {
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
-        expect(global.browser.tabs.sendMessage.mock.calls).toEqual([['someid', { type: 'MARK_LOGIN_FIELDS' }]]);
+        expect.assertions(1);
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+            expect(global.browser.tabs.sendMessage.mock.calls).toEqual([['someid', { type: 'MARK_LOGIN_FIELDS' }]]);
+        });
     });
 
     test('does not send a message to mark fields if setting is false', () => {
         global.executeOnSetting = jest.fn((_, cb) => {});
         global.browser.tabs.sendMessage.mockReset();
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
-        expect(global.browser.tabs.sendMessage.mock.calls).toEqual([]);
-        global.executeOnSetting = jest.fn((_, cb) => cb());
+        expect.assertions(1);
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+            expect(global.browser.tabs.sendMessage.mock.calls).toEqual([]);
+            global.executeOnSetting = jest.fn((_, cb) => cb());
+        });
     });
 
     test('if no search term could be derived, clear results', () => {
         global.urlDomain = jest.fn(() => null);
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
-        expect(document.body.innerHTML).not.toEqual(start);
-        global.urlDomain = jest.fn(() => 'some.url');
+        expect.assertions(1);
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+            expect(document.body.innerHTML).not.toEqual(start);
+            global.urlDomain = jest.fn(() => 'some.url');
+        });
     });
 
     test('if search term could be derived, do not clear results', () => {
@@ -115,8 +123,11 @@ describe('switchTab', () => {
                 <div></div>
             </div>`;
         document.body.innerHTML = start;
-        gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' });
-        expect(document.body.innerHTML).toEqual(start);
+        expect.assertions(1);
+
+        return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
+            expect(document.body.innerHTML).toEqual(start);
+        });
     });
 
     test('if search term in local storage, call search', () => {
