@@ -14,7 +14,7 @@ global.currentTabId = 42;
 global.currentPageUrl = 'http://other.domain';
 global.re_weburl = new RegExp('https://.*');
 global.logAndDisplayError = jest.fn();
-global.openURL = jest.fn(event => {
+global.openURLOnEvent = jest.fn(event => {
     event.preventDefault();
 });
 
@@ -112,9 +112,9 @@ describe('onEntryData', () => {
         });
 
         test('url clicks', () => {
-            global.openURL.mockClear();
+            global.openURLOnEvent.mockClear();
             document.getElementsByTagName('a')[0].click();
-            expect(global.openURL.mock.calls[0][0].target.href).toEqual('https://someurl/');
+            expect(global.openURLOnEvent.mock.calls[0][0].target.href).toEqual('https://someurl/');
         });
     });
 

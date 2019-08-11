@@ -44,7 +44,7 @@ function _createURLValueElement(value) {
     valueElement.href = value.match(re_weburl)[0];
     valueElement.target = '_blank';
     valueElement.innerText = value.match(re_weburl)[0];
-    valueElement.addEventListener('click', openURL);
+    valueElement.addEventListener('click', openURLOnEvent);
     return valueElement;
 }
 

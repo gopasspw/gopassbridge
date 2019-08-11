@@ -15,6 +15,8 @@ global.browser.tabs.sendMessage = jest.fn();
 global.browser.webRequest = { onAuthRequired: { addListener: jest.fn() } };
 global.executeOnSetting = jest.fn();
 global.isChrome = jest.fn();
+global.openURL = jest.fn();
+global.makeAbsolute = jest.fn(string => string);
 
 require('background.js');
 
@@ -71,7 +73,7 @@ describe('background', () => {
             }
 
             beforeEach(() => {
-                global.browser.tabs.create.mockResolvedValue();
+                global.openURL.mockResolvedValue();
                 global.sendNativeAppMessage.mockResolvedValue({
                     url: 'https://www.some.host',
                     username: 'username',
@@ -86,7 +88,7 @@ describe('background', () => {
 
             test('opens tab and immediately loads credentials if tab is loaded', () => {
                 expect.assertions(1);
-                global.browser.tabs.create.mockResolvedValue({
+                global.openURL.mockResolvedValue({
                     id: 42,
                     status: 'complete',
                     url: 'http://www.some.host',
@@ -101,7 +103,7 @@ describe('background', () => {
             test('raises error if no url in entry', () => {
                 global.sendNativeAppMessage.mockResolvedValue({});
                 expect.assertions(1);
-                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'complete' });
+                global.openURL.mockResolvedValue({ id: 42, status: 'complete' });
                 return openTabMessage().catch(error => {
                     expect(error.message).toBe('__i18n_noURLInEntry__');
                 });
@@ -109,7 +111,7 @@ describe('background', () => {
 
             test('opens tab and loads credentials when tab is ready', () => {
                 expect.assertions(1);
-                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'loading' });
+                global.openURL.mockResolvedValue({ id: 42, status: 'loading' });
 
                 const promise = openTabMessage().then(() => {
                     expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
@@ -125,7 +127,7 @@ describe('background', () => {
             test('raises error on timeout when waiting for new tab to be ready', () => {
                 global.sendNativeAppMessage.mockResolvedValue({ url: 'some.url' });
                 expect.assertions(2);
-                global.browser.tabs.create.mockResolvedValue({ id: 42, status: 'loading' });
+                global.openURL.mockResolvedValue({ id: 42, status: 'loading' });
 
                 const promise = openTabMessage().catch(error => {
                     expect(global.browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
