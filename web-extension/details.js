@@ -9,7 +9,9 @@ function onEntryData(element, message) {
         oldDetailView.remove();
     });
     return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(() => {
-        if (alreadyShown) return;
+        if (alreadyShown) {
+            return;
+        }
 
         const newDetailView = _detailViewFromMessage(message);
         newDetailView.classList.add('detail-view');
@@ -24,7 +26,9 @@ function _insertAfter(newNode, referenceNode) {
 
 function _detailViewFromMessage(message) {
     const container = document.createElement('div');
-    Object.keys(message).forEach(key => _appendEntry(container, key, message[key]));
+    Object.keys(message)
+        .filter(key => message[key] !== null && message[key] !== undefined && message[key] !== '')
+        .forEach(key => _appendEntry(container, key, message[key]));
     return container;
 }
 
@@ -87,7 +91,9 @@ function _copyElementToClipboard(event) {
 function restoreDetailView() {
     let element;
     return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(value => {
-        if (!value) return Promise.resolve();
+        if (!value) {
+            return Promise.resolve();
+        }
 
         Array.from(document.getElementsByClassName('login')).forEach(loginElement => {
             if (loginElement.innerText === value) {
