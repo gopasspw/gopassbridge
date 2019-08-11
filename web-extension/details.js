@@ -25,7 +25,7 @@ function _insertAfter(newNode, referenceNode) {
 }
 
 function _detailViewFromMessage(message) {
-    const container = document.createElement('div');
+    const container = document.createElement('ul');
     Object.keys(message)
         .filter(key => message[key] !== null && message[key] !== undefined && message[key] !== '')
         .forEach(key => _appendEntry(container, key, message[key]));
@@ -33,9 +33,13 @@ function _detailViewFromMessage(message) {
 }
 
 function _createNestedValueElement(value) {
-    const valueElement = document.createElement('div');
+    const valueElement = document.createElement('ul');
     valueElement.classList.add('detail-nested');
-    Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
+    if (Array.isArray(value)) {
+        value.forEach(item => _appendEntry(valueElement, null, item));
+    } else {
+        Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
+    }
     return valueElement;
 }
 
@@ -70,15 +74,18 @@ function _createFlatValueElement(value) {
 }
 
 function _appendEntry(container, key, value) {
-    let keyElement, valueElement;
     const entryElement = document.createElement('li');
+    let hasKey = key !== undefined && key !== null;
 
-    keyElement = document.createElement('span');
-    keyElement.innerText = `${key}:`;
-    keyElement.classList.add('detail-key');
-    valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
+    if (hasKey) {
+        let keyElement = document.createElement('span');
+        keyElement.innerText = `${key}:`;
+        keyElement.classList.add('detail-key');
+        entryElement.appendChild(keyElement);
+    }
 
-    entryElement.appendChild(keyElement);
+    let valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
+
     entryElement.appendChild(valueElement);
     container.appendChild(entryElement);
 }
