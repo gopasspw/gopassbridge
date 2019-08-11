@@ -88,12 +88,24 @@ describe('onEntryData', () => {
         });
 
         test('nested values', () => {
-            expect.assertions(3);
-            return details.onEntryData(loginElement, { hallo: { holla: 'waldfee' } }).then(() => {
-                expect(document.getElementsByClassName('detail-key')[0].innerText).toBe('hallo:');
-                expect(document.getElementsByClassName('detail-key')[1].innerText).toBe('holla:');
-                expect(document.getElementsByClassName('detail-clickable-value')[0].innerText).toBe('waldfee');
-            });
+            expect.assertions(9);
+            return details
+                .onEntryData(loginElement, { hallo: { holla: 'waldfee', list: ['wald', 'fee'] } })
+                .then(() => {
+                    let keys = document.getElementsByClassName('detail-key');
+                    expect(keys.length).toBe(3);
+                    expect(keys[0].innerText).toBe('hallo:');
+                    expect(keys[1].innerText).toBe('holla:');
+                    expect(keys[2].innerText).toBe('list:');
+
+                    let values = document.getElementsByClassName('detail-clickable-value');
+                    expect(values.length).toBe(3);
+                    expect(values[0].innerText).toBe('waldfee');
+                    expect(values[1].innerText).toBe('wald');
+                    expect(values[2].innerText).toBe('fee');
+
+                    expect(document.getElementsByClassName('detail-nested').length).toBe(2);
+                });
         });
     });
 
