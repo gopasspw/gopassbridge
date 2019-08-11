@@ -195,11 +195,21 @@ describe('isChrome', () => {
     });
 });
 
-describe('openURL', () => {
+describe('openURLOnEvent', () => {
     test('opens URL', () => {
         const event = { target: { href: 'https://someurl/' }, preventDefault: jest.fn() };
-        generic.openURL(event);
+        generic.openURLOnEvent(event);
         expect(browser.tabs.create.mock.calls).toEqual([[{ url: 'https://someurl/' }]]);
         expect(event.preventDefault.mock.calls.length).toBe(1);
+    });
+});
+
+describe('makeAbsolute', () => {
+    test('does not change absolute urls', () => {
+        expect(generic.makeAbsolute('https://muh.de')).toEqual('https://muh.de');
+        expect(generic.makeAbsolute('http://muh.de')).toEqual('http://muh.de');
+    });
+    test('makes urls absolute', () => {
+        expect(generic.makeAbsolute('muh.de')).toEqual('https://muh.de');
     });
 });
