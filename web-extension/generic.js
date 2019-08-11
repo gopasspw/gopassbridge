@@ -25,8 +25,9 @@ function checkVersion() {
         let patch = REQUIRED_GOPASS_VERSION[2];
         if (
             response.major > major ||
-            (response.major === major && (response.minor > minor || response.minor === minor && response.patch >= patch)
-        )) {
+            (response.major === major &&
+                (response.minor > minor || (response.minor === minor && response.patch >= patch)))
+        ) {
             versionOK = true;
             console.log('Version is OK');
             return Promise.resolve();
