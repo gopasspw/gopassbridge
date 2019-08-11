@@ -128,6 +128,15 @@ describe('onEntryData', () => {
             });
         });
 
+        test('does nothing if no value is returned', () => {
+            expect.assertions(2);
+            global.getLocalStorageKey.mockResolvedValue(null);
+            return details.restoreDetailView().then(() => {
+                expect(document.getElementsByClassName('detail-view').length).toBe(0);
+                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
+            });
+        });
+
         test('recreates detail-view if login matches', () => {
             expect.assertions(2);
             global.getLocalStorageKey.mockResolvedValue('secret/entry');
