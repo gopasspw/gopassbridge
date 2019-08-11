@@ -33,7 +33,9 @@ function checkVersion() {
             return Promise.resolve();
         }
         console.log('Version is not OK');
-        return Promise.reject(new Error(`minimum gopass version is ${REQUIRED_GOPASS_VERSION.join('.')}`));
+        return Promise.reject(
+            new Error(`Please update gopass to version ${REQUIRED_GOPASS_VERSION.join('.')} or newer.`)
+        );
     });
 }
 

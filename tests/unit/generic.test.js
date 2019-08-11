@@ -225,7 +225,7 @@ describe('checkVersion', () => {
         return generic.checkVersion().then(
             () => {},
             error => {
-                expect(error.message).toBe('minimum gopass version is 1.8.5');
+                expect(error.message).toBe('Please update gopass to version 1.8.5 or newer.');
             }
         );
     });
