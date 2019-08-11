@@ -8,7 +8,7 @@ global.getSettings = jest.fn();
 global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
 global.urlDomain = jest.fn(() => 'some.domain');
 global.currentPageUrl = 'http://some.domain';
-global.openURL = jest.fn();
+global.openURLOnEvent = jest.fn();
 global.i18n = {
     getMessage: jest.fn(key => {
         return `__MSG_${key}__`;

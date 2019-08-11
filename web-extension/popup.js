@@ -38,7 +38,7 @@ function _getSetupErrorElement(text) {
         element.className = 'status-text';
         const anchor = document.createElement('a');
         anchor.href = SETUP_URL;
-        anchor.addEventListener('click', openURL);
+        anchor.addEventListener('click', openURLOnEvent);
         anchor.textContent = i18n.getMessage('correctlySetup');
         element.append(anchor);
     }

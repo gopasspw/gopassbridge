@@ -34,9 +34,13 @@ function makeAbsolute(string) {
     return string;
 }
 
-function openURL(event) {
+function openURL(url) {
+    return browser.tabs.create({ url: makeAbsolute(url) });
+}
+
+function openURLOnEvent(event) {
     event.preventDefault();
-    browser.tabs.create({ url: makeAbsolute(event.target.href) });
+    openURL(event.target.href);
 }
 
 function executeOnSetting(setting, trueCallback, falseCallback) {
@@ -110,7 +114,7 @@ window.tests = {
         showNotificationOnSetting,
         getPopupUrl,
         isChrome,
-        openURL,
+        openURLOnEvent,
         makeAbsolute,
     },
 };

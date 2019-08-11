@@ -195,10 +195,10 @@ describe('isChrome', () => {
     });
 });
 
-describe('openURL', () => {
+describe('openURLOnEvent', () => {
     test('opens URL', () => {
         const event = { target: { href: 'https://someurl/' }, preventDefault: jest.fn() };
-        generic.openURL(event);
+        generic.openURLOnEvent(event);
         expect(browser.tabs.create.mock.calls).toEqual([[{ url: 'https://someurl/' }]]);
         expect(event.preventDefault.mock.calls.length).toBe(1);
     });
