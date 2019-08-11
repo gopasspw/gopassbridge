@@ -71,6 +71,14 @@ describe('onEntryData', () => {
             });
         });
 
+        test('empty values', () => {
+            expect.assertions(2);
+            return details.onEntryData(loginElement, { hallo: null, welt: undefined, empty: '' }).then(() => {
+                expect(document.getElementsByClassName('detail-key').length).toBe(0);
+                expect(document.getElementsByClassName('detail-clickable-value').length).toBe(0);
+            });
+        });
+
         test('url values', () => {
             expect.assertions(2);
             return details.onEntryData(loginElement, { hallo: 'https://hallo.welt' }).then(() => {
@@ -114,6 +122,15 @@ describe('onEntryData', () => {
         test('does nothing if no matching login found', () => {
             expect.assertions(2);
             global.getLocalStorageKey.mockResolvedValue('another/key');
+            return details.restoreDetailView().then(() => {
+                expect(document.getElementsByClassName('detail-view').length).toBe(0);
+                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
+            });
+        });
+
+        test('does nothing if no value is returned', () => {
+            expect.assertions(2);
+            global.getLocalStorageKey.mockResolvedValue(null);
             return details.restoreDetailView().then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(0);
                 expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
