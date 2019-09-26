@@ -128,6 +128,10 @@
     "message": "Default folder for new credentials",
     "description": "label of default folder"
   },
+  "optionsOmitKeysLabel": {
+    "message": "Keys not displayed in detail view (separated by comma)",
+    "description": "keys to omit in detail view"
+  },
   "optionsResetButtonText": {
     "message": "Reset all settings to defaults",
     "description": "text of reset button"

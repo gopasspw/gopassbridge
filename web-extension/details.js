@@ -8,26 +8,34 @@ function onEntryData(element, message) {
         }
         oldDetailView.remove();
     });
-    return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(() => {
-        if (alreadyShown) {
-            return;
-        }
+    return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(
+        getSettings().then(settings => {
+            if (alreadyShown) {
+                return;
+            }
 
-        const newDetailView = _detailViewFromMessage(message);
-        newDetailView.classList.add('detail-view');
-        _insertAfter(newDetailView, element);
-        setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl), element.innerText);
-    });
+            const newDetailView = _detailViewFromMessage(message, settings);
+            newDetailView.classList.add('detail-view');
+            _insertAfter(newDetailView, element);
+            setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl), element.innerText);
+        })
+    );
 }
 
 function _insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
-function _detailViewFromMessage(message) {
+function _excludeKey(key, settings) {
+    const omit = settings.omitkeys.split(',').map(item => item.trim());
+    return omit.some(value => value === key);
+}
+
+function _detailViewFromMessage(message, settings) {
     const container = document.createElement('ul');
     Object.keys(message)
         .filter(key => message[key] !== null && message[key] !== undefined && message[key] !== '')
+        .filter(key => !_excludeKey(key, settings))
         .forEach(key => _appendEntry(container, key, message[key]));
     return container;
 }
