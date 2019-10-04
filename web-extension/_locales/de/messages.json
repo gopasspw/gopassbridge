@@ -128,6 +128,10 @@
     "message": "Standardordner für neue Logins",
     "description": "label of default folder"
   },
+  "optionsDefaultPasswordLengthLabel": {
+    "message": "Standardlänge für neue Passwörter",
+    "description": "default length of new passwords"
+  },
   "optionsResetButtonText": {
     "message": "Alle Einstellungen auf den Standard zurücksetzen",
     "description": "text of reset button"

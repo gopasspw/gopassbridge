@@ -6,6 +6,7 @@ const DEFAULT_SETTINGS = {
     submitafterfill: true,
     handleauthrequests: true,
     defaultfolder: 'Account',
+    defaultpasswordlength: 24,
 };
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
