@@ -61,7 +61,7 @@ describe('create', () => {
                     {
                         entry_name: '',
                         generate: true,
-                        length: 16,
+                        length: 24,
                         login: '',
                         password: '',
                         type: 'create',
