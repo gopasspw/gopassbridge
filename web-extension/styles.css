@@ -215,39 +215,50 @@ body {
 
 #create_docreate,
 #create_doabort {
-    display: block;
+    display: inline-block;
     box-sizing: border-box;
-    width: 100%;
+    cursor: pointer;
     -webkit-appearance: none;
     -moz-appearance: none;
-    padding: 10px 7px 10px 32px;
-    cursor: pointer;
-    border: 0;
+    border: 1px solid transparent;
+    border-radius: 0.25em;
     text-align: center;
-    background-size: 16px 16px;
     line-height: 1.2;
     font-size: 14px;
     min-height: 32px;
+    background-color: transparent;
 }
 
 #create_docreate {
-    background: #b6dee3;
+    border-color: #0366d6;
+    color: #0366d6;
 }
 
 #create_doabort {
-    background: #ffb0b0;
+    border-color: #dc3545;
+    color: #dc3545;
 }
 
 #create_docreate:hover,
 #create_docreate:focus {
     outline: 0;
-    background-color: #9ac0c5;
+    background-color: #0366d6;
+    color: #fff;
 }
 
 #create_doabort:hover,
 #create_doabort:focus {
     outline: 0;
-    background-color: #ff8080;
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.row {
+    display: flex;
+}
+
+#create_doabort {
+    margin-left: 0.25rem;
 }
 
 #auth_login {
