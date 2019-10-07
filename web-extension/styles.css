@@ -215,7 +215,7 @@ body {
 
 #create_docreate,
 #create_doabort {
-    display: inline-block;
+    display: block;
     box-sizing: border-box;
     cursor: pointer;
     -webkit-appearance: none;
@@ -227,6 +227,7 @@ body {
     font-size: 14px;
     min-height: 32px;
     background-color: transparent;
+    width: 100%;
 }
 
 #create_docreate {
