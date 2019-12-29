@@ -54,6 +54,11 @@ Adapt the wrapper and manifest and copy them to the correct locations.
 
 More details about Native Messaging can be found in the [Chrome](https://developer.chrome.com/apps/nativeMessaging) and [MDN](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging) documentation.
 
+### Change default shortcut
+
+On firefox, you can change the shortcut via "manage extension shortcut" in the extension menu. 
+In Chrome under "keyboard shortcuts" in the hamburger menu in extensions.
+
 ## Development
 
 Contributions to this project are welcome!

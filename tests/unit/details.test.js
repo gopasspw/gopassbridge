@@ -18,7 +18,7 @@ global.openURLOnEvent = jest.fn(event => {
     event.preventDefault();
 });
 global.getSettings = jest.fn();
-global.getSettings.mockResolvedValue({omitkeys: "otpauth, muh"});
+global.getSettings.mockResolvedValue({ omitkeys: 'otpauth, muh' });
 require('details.js');
 
 const details = window.tests.details;
@@ -82,7 +82,7 @@ describe('onEntryData', () => {
 
         test('filtered keys', () => {
             expect.assertions(2);
-            return details.onEntryData(loginElement, { muh: "value" }).then(() => {
+            return details.onEntryData(loginElement, { muh: 'value' }).then(() => {
                 expect(document.getElementsByClassName('detail-key').length).toBe(0);
                 expect(document.getElementsByClassName('detail-clickable-value').length).toBe(0);
             });
