@@ -49,7 +49,7 @@ const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).j
 
 function isVisible(element) {
     const elementStyle = window.getComputedStyle(element);
-    if (element.offsetWidth < 50) {
+    if (element.offsetWidth < 30) {
         return false;
     }
     if (element.offsetHeight < 10) {

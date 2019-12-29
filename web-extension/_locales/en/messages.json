@@ -132,6 +132,10 @@
     "message": "Keys not displayed in detail view (separated by comma)",
     "description": "keys to omit in detail view"
   },
+  "optionsDefaultPasswordLengthLabel": {
+    "message": "Default length for new passwords",
+    "description": "default length of new passwords"
+  },
   "optionsResetButtonText": {
     "message": "Reset all settings to defaults",
     "description": "text of reset button"

@@ -7,6 +7,7 @@ const DEFAULT_SETTINGS = {
     handleauthrequests: true,
     defaultfolder: 'Account',
     omitkeys: 'otpauth',
+    defaultpasswordlength: 24,
 };
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';

@@ -132,6 +132,10 @@
     "message": "Schlüssel die in der Detailansicht nicht angezeigt werden sollen (durch Komma getrennt)",
     "description": "keys to omit in detail view"
   },
+  "optionsDefaultPasswordLengthLabel": {
+    "message": "Standardlänge für neue Passwörter",
+    "description": "default length of new passwords"
+  },
   "optionsResetButtonText": {
     "message": "Alle Einstellungen auf den Standard zurücksetzen",
     "description": "text of reset button"
