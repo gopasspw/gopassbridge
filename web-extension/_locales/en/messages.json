@@ -128,6 +128,10 @@
     "message": "Default folder for new credentials",
     "description": "label of default folder"
   },
+  "optionsOmitKeysLabel": {
+    "message": "Keys not displayed in detail view (separated by comma)",
+    "description": "keys to omit in detail view"
+  },
   "optionsDefaultPasswordLengthLabel": {
     "message": "Default length for new passwords",
     "description": "default length of new passwords"
