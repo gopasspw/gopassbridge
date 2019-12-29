@@ -1,3 +1,11 @@
+## 0.6.0 / 2019-12-29
+
+* Do not display empty values in detail view, allow filtering (#114)
+* Make urls absolute when opening them, fixes (#106)
+* Add version check (currently minimum supported gopass version set to 1.8.5)
+* Make default password length configurable and set to gopass default (#126)
+* Add explanation how to change default shortcut (#124)
+
 ## 0.5.1 / 2019-01-06
 
 * Set minimum supported browser versions to Chrome 63 and Firefox 60 (#102)
