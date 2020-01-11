@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
     defaultfolder: 'Account',
     omitkeys: 'otpauth',
     defaultpasswordlength: 24,
+    appendlogintoname: false,
 };
 
 const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';

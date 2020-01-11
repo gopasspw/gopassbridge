@@ -116,6 +116,10 @@
     "message": "Allow to send notifications if necessary",
     "description": "label of send notifications checkbox"
   },
+  "optionsAppendToLoginName": {
+    "message": "Append login/username to password path on creation",
+    "description" : "label of append login to password path checkbox"
+  },
   "optionsLoginAfterFillLabel": {
     "message": "Login after filling in credentials",
     "description": "label of login after fill checkbox"
