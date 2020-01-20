@@ -1,0 +1,15 @@
+3rd party libraries
+===================
+
+the webextension-polyfill.js is from https://github.com/mozilla/webextension-polyfill.git
+Currently v0.3.1 built with the webextension-polyfill target in the Makefile
+The code is just bundled but not minified.
+
+regex-weburl.js is from https://gist.github.com/dperini/729294 (MIT
+Licensed)
+
+unsafe assignment to innerHTML
+==============================
+
+There are in two code locations, where innerHTML is assigned. They both refer to i18n string replacements
+and are thus not untrusted content, as the content is provided with the extension translation.

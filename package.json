@@ -1,6 +1,6 @@
 {
   "name": "gopassbridge",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "web-extension/gopassbridge.js",
   "scripts": {
@@ -31,7 +31,7 @@
   "devDependencies": {
     "codecov": "^3.0.0",
     "eslint": "^6.0.1",
-    "eslint-plugin-json": "^1.2.0",
+    "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-mocha": "^6.0.0",
     "eslint-plugin-promise": "^4.0.1",
     "global": "^4.3.2",
@@ -43,6 +43,6 @@
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
     "prettier-check": "^2.0.0",
-    "web-ext": "^3.1.0"
+    "web-ext": "^4.0.0"
   }
 }
