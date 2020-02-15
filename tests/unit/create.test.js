@@ -5,6 +5,8 @@ const fs = require('fs');
 global.armSpinnerTimeout = jest.fn();
 global.sendNativeAppMessage = jest.fn();
 global.sendNativeAppMessage.mockResolvedValue({});
+global.getSettings = jest.fn();
+global.getSettings.mockResolvedValue({ appendlogintoname: true });
 global.switchToSearch = jest.fn();
 global.setStatusText = jest.fn();
 global.urlDomain = jest.fn(() => 'some.domain');
@@ -59,7 +61,7 @@ describe('create', () => {
             expect(global.sendNativeAppMessage.mock.calls).toEqual([
                 [
                     {
-                        entry_name: '',
+                        entry_name: '/',
                         generate: true,
                         length: 24,
                         login: '',
@@ -72,9 +74,10 @@ describe('create', () => {
         });
 
         test('starts query after successful finishing', () => {
-            expect.assertions(1);
+            expect.assertions(2);
             promise.then(() => {
                 expect(global.searchHost).toHaveBeenCalledTimes(1);
+                expect(global.getSettings).toHaveBeenCalledTimes(4);
             });
         });
     });
