@@ -117,7 +117,7 @@
     "description": "label of send notifications checkbox"
   },
   "optionsAppendToLoginName": {
-    "message": "Append login/username to password path on creation",
+    "message": "Hänge Login/Benutzername an den Passwortpfad beim Erzeugen an",
     "description" : "label of append login to password path checkbox"
   },
   "optionsLoginAfterFillLabel": {
