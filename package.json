@@ -29,7 +29,7 @@
   "homepage": "https://github.com/gopasspw/gopassbridge#readme",
   "dependencies": {},
   "devDependencies": {
-    "codecov": "^3.0.0",
+    "codecov": "^3.6.5",
     "eslint": "^6.0.1",
     "eslint-plugin-json": "^2.0.1",
     "eslint-plugin-mocha": "^6.0.0",
