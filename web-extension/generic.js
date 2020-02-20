@@ -6,7 +6,7 @@ const DEFAULT_SETTINGS = {
     submitafterfill: true,
     handleauthrequests: true,
     defaultfolder: 'Account',
-    omitkeys: 'otpauth',
+    omitkeys: 'otpauth,totp',
     defaultpasswordlength: 24,
     appendlogintoname: false,
 };
