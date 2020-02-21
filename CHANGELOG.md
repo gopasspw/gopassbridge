@@ -1,3 +1,12 @@
+## 0.6.2 / 2020-02-21
+
+* Add option to append login name to gopass path during login creation (disabled by default) (#134)
+* Omit "totp" from being displayed by default (#137)
+
+## 0.6.1 / 2020-01-20
+
+* Re-upload of 0.6.0 for Firefox (#135)
+
 ## 0.6.0 / 2019-12-29
 
 * Do not display empty values in detail view, allow filtering (#114)
