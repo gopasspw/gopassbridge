@@ -7,3 +7,4 @@ firefox-release
 test-client/test-client
 node_modules
 coverage
+*.pem
