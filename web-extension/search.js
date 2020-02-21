@@ -138,7 +138,12 @@ function _onSearchResults(response, isHostQuery) {
                 LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentPageUrl),
                 document.getElementById('search_input').value
             );
-            _displaySearchResults(response, isHostQuery);
+            // This is a workaround for gopass issue #1166 (windows only)
+            if (window.navigator.userAgent.toLocaleLowerCase().includes('windows')) {
+                _displaySearchResults(response.map(itm => itm.replace(/\\/g, '/')), isHostQuery);
+            } else {
+                _displaySearchResults(response, isHostQuery);
+            }
         } else {
             browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + urlDomain(currentPageUrl));
             _displayNoResults();
