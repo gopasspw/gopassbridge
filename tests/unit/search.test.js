@@ -4,6 +4,23 @@ const fs = require('fs');
 
 jest.useFakeTimers();
 
+const originalUA = global.navigator.userAgent;
+let UA = null;
+
+Object.defineProperty(global.navigator, 'userAgent', {
+    get() {
+        return UA || originalUA;
+    },
+});
+
+function clear() {
+    UA = '';
+}
+
+function mockUA(agent) {
+    UA = agent;
+}
+
 const documentHtml = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
 
 global.LAST_DOMAIN_SEARCH_PREFIX = 'PREFIX_';
@@ -239,6 +256,41 @@ describe('search method', () => {
             global.searchedUrl = 'muh';
             search._onSearchResults([], false);
             expect(global.createButtonWithCallback.mock.calls.length).toBe(0);
+        });
+
+        describe('modification', () => {
+            afterEach(() => {
+                clear();
+            });
+
+            test('is not applied on non windows browsers', () => {
+                mockUA('some browser');
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some\\entry']);
+                return search.searchHost('entry').then(() => {
+                    expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                        'login',
+                        'some\\entry',
+                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        search._onEntryAction,
+                    ]);
+                });
+            });
+
+            test('is applied on windows browsers', () => {
+                mockUA('windows browser');
+                global.window.userAgent = 'windows browser';
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some\\entry']);
+                return search.searchHost('entry').then(() => {
+                    expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
+                        'login',
+                        'some/entry',
+                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        search._onEntryAction,
+                    ]);
+                });
+            });
         });
 
         describe('favicon', () => {

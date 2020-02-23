@@ -140,7 +140,10 @@ function _onSearchResults(response, isHostQuery) {
             );
             // This is a workaround for gopass issue #1166 (windows only)
             if (window.navigator.userAgent.toLocaleLowerCase().includes('windows')) {
-                _displaySearchResults(response.map(itm => itm.replace(/\\/g, '/')), isHostQuery);
+                _displaySearchResults(
+                    response.map(itm => itm.replace(/\\/g, '/')),
+                    isHostQuery
+                );
             } else {
                 _displaySearchResults(response, isHostQuery);
             }
