@@ -5,6 +5,7 @@ const SETUP_URL = 'https://github.com/gopasspw/gopass/blob/master/docs/setup.md#
 const SETUP_ERRORS = [
     'Access to the specified native messaging host is forbidden',
     'Attempt to postMessage on disconnected port',
+    'Specified native messaging host not found',
 ];
 
 function armSpinnerTimeout() {
