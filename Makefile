@@ -2,8 +2,7 @@ LOCAL_PRETTIER=node_modules/.bin/prettier
 LOCAL_WEB_EXT=node_modules/.bin/web-ext
 
 run-firefox: develop
-		WEB_EXT_CMD=web-ext; if [ -e $(LOCAL_WEB_EXT) ]; then WEB_EXT_CMD=$(LOCAL_WEB_EXT); fi; \
-		$$WEB_EXT_CMD run -v --browser-console -s $(CURDIR)/firefox -u https://github.com/login
+		$(LOCAL_WEB_EXT) run -v --browser-console -s $(CURDIR)/firefox -u https://github.com/login
 
 develop: format
 		rm -rf chrome firefox
@@ -27,15 +26,14 @@ release: package
 		rm -f chrome.zip
 		cd chrome-release; zip -r ../chrome.zip .
 
-		web-ext -s $(CURDIR)/firefox-release lint
-		web-ext -s $(CURDIR)/firefox-release build --overwrite-dest
+		$(LOCAL_WEB_EXT) -s $(CURDIR)/firefox-release lint
+		$(LOCAL_WEB_EXT) -s $(CURDIR)/firefox-release build --overwrite-dest
 
 clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill
 
 format:
-		PRETTIER_CMD=prettier; if [ -e $(LOCAL_PRETTIER) ]; then PRETTIER_CMD=$(LOCAL_PRETTIER); fi; \
-		$$PRETTIER_CMD --write web-extension/*.js web-extension/*.css tests/**/*.js
+		$(LOCAL_PRETTIER) --write web-extension/*.js web-extension/*.css tests/**/*.js
 
 webextension-polyfill: clean
 	    git clone https://github.com/mozilla/webextension-polyfill.git
