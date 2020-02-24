@@ -99,22 +99,25 @@ function _faviconUrl() {
 }
 
 function _displaySearchResults(response, isHostQuery) {
-    const results = document.getElementById('results');
-    results.innerHTML = '';
-    response.forEach(result => {
+  const isWindows = window.navigator.userAgent.toLocaleLowerCase().includes('windows')
+  const results = document.getElementById('results');
+  results.innerHTML = '';
+  response.forEach(result => {
+        // This is a workaround for gopass issue #1166 (windows only)
+        const item = isWindows ? result.replace(/\\/g, '/') : result
         const entry = document.createElement('div');
         entry.classList.add('entry');
         entry.appendChild(
             createButtonWithCallback(
                 'login',
-                result,
+                item,
                 `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
                 _onEntryAction
             )
         );
-        entry.appendChild(createButtonWithCallback('open', result, null, event => _onEntryOpen(event.target)));
-        entry.appendChild(createButtonWithCallback('copy', result, null, event => _onEntryCopy(event.target)));
-        entry.appendChild(createButtonWithCallback('details', result, null, event => _onEntryDetails(event.target)));
+        entry.appendChild(createButtonWithCallback('open', item, null, event => _onEntryOpen(event.target)));
+        entry.appendChild(createButtonWithCallback('copy', item, null, event => _onEntryCopy(event.target)));
+        entry.appendChild(createButtonWithCallback('details', item, null, event => _onEntryDetails(event.target)));
         results.appendChild(entry);
     });
 }
