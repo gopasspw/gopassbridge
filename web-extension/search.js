@@ -99,34 +99,60 @@ function _faviconUrl() {
 }
 
 function _displaySearchResults(response, isHostQuery) {
-  const isWindows = window.navigator.userAgent.toLocaleLowerCase().includes('windows')
-  const results = document.getElementById('results');
-  results.innerHTML = '';
-  response.forEach(result => {
+    const isWindows = window.navigator.userAgent.toLocaleLowerCase().includes('windows');
+    const results = document.getElementById('results');
+    results.innerHTML = '';
+    response.forEach(result => {
         // This is a workaround for gopass issue #1166 (windows only)
-        const item = isWindows ? result.replace(/\\/g, '/') : result
+        const item = isWindows ? result.replace(/\\/g, '/') : result;
         const entry = document.createElement('div');
         entry.classList.add('entry');
+
+        entry.appendChild(_createSearchResultLoginButton(item, isHostQuery));
         entry.appendChild(
-            createButtonWithCallback(
-                'login',
+            _createSimpleSearchResultButton('open', item, i18n.getMessage('searchResultOpenTooltip'), _onEntryOpen)
+        );
+        entry.appendChild(
+            _createSimpleSearchResultButton('copy', item, i18n.getMessage('searchResultCopyTooltip'), _onEntryCopy)
+        );
+        entry.appendChild(
+            _createSimpleSearchResultButton(
+                'details',
                 item,
-                `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-                _onEntryAction
+                i18n.getMessage('searchResultDetailsTooltip'),
+                _onEntryDetails
             )
         );
-        entry.appendChild(createButtonWithCallback('open', item, null, event => _onEntryOpen(event.target)));
-        entry.appendChild(createButtonWithCallback('copy', item, null, event => _onEntryCopy(event.target)));
-        entry.appendChild(createButtonWithCallback('details', item, null, event => _onEntryDetails(event.target)));
+
         results.appendChild(entry);
     });
 }
+
+const _createSearchResultLoginButton = (item, isHostQuery) =>
+    createButtonWithCallback(
+        {
+            className: 'login',
+            textContent: item,
+            title: i18n.getMessage('searchResultLoginTooltip'),
+            style: `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
+        },
+        _onEntryAction
+    );
+
+const _createSimpleSearchResultButton = (className, text, title, clickHandler) =>
+    createButtonWithCallback({ className, title, textContent: text }, event => clickHandler(event.target));
 
 function _displayNoResults() {
     const results = document.getElementById('results');
     setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
     results.appendChild(
-        createButtonWithCallback('login', i18n.getMessage('createNewEntryButtonText'), null, switchToCreateNewDialog)
+        createButtonWithCallback(
+            {
+                className: 'login',
+                textContent: i18n.getMessage('createNewEntryButtonText'),
+            },
+            switchToCreateNewDialog
+        )
     );
 }
 
