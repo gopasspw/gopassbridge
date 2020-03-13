@@ -218,28 +218,95 @@ describe('search method', () => {
             return search.searchHost('mih').then(() => {
                 expect(global.setStatusText.mock.calls).toEqual([['__KEY_noResultsForMessage__ mih']]);
                 expect(global.createButtonWithCallback.mock.calls).toEqual([
-                    ['login', '__KEY_createNewEntryButtonText__', null, global.switchToCreateNewDialog],
+                    [
+                        { className: 'login', textContent: '__KEY_createNewEntryButtonText__' },
+                        global.switchToCreateNewDialog,
+                    ],
                 ]);
             });
         });
 
-        test('creates entry with three additional buttons for non empty response', () => {
-            expect.assertions(3);
-            global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
-            return search.searchHost('mih').then(() => {
-                expect(global.createButtonWithCallback.mock.calls).toEqual([
-                    ['login', 'some/entry', "background-image: url('icons/si-glyph-key-2.svg')", search._onEntryAction],
-                    ['open', 'some/entry', null, expect.any(Function)],
-                    ['copy', 'some/entry', null, expect.any(Function)],
-                    ['details', 'some/entry', null, expect.any(Function)],
-                ]);
+        describe('additional search result buttons', () => {
+            test('are created for non empty response', () => {
+                expect.assertions(2);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.searchHost('mih').then(() => {
+                    expect(global.createButtonWithCallback.mock.calls).toEqual([
+                        [
+                            {
+                                className: 'login',
+                                textContent: 'some/entry',
+                                style: "background-image: url('icons/si-glyph-key-2.svg')",
+                                title: '__KEY_searchResultLoginTooltip__',
+                            },
+                            search._onEntryAction,
+                        ],
+                        [
+                            { className: 'open', textContent: 'some/entry', title: '__KEY_searchResultOpenTooltip__' },
+                            expect.any(Function),
+                        ],
+                        [
+                            { className: 'copy', textContent: 'some/entry', title: '__KEY_searchResultCopyTooltip__' },
+                            expect.any(Function),
+                        ],
+                        [
+                            {
+                                className: 'details',
+                                textContent: 'some/entry',
+                                title: '__KEY_searchResultDetailsTooltip__',
+                            },
+                            expect.any(Function),
+                        ],
+                    ]);
 
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'mih', type: 'queryHost' }]]);
-                global.sendNativeAppMessage.mockClear();
-                global.createButtonWithCallback.mock.calls[3][3]({
-                    target: { innerText: 'text' },
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'mih', type: 'queryHost' }]]);
                 });
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'text', type: 'getData' }]]);
+            });
+
+            test("'Open' tries to open in a new tab", () => {
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.searchHost('mih').then(() => {
+                    global.sendNativeAppMessage.mockClear();
+                    global.createButtonWithCallback.mock.calls[1][1]({
+                        target: { innerText: 'text' },
+                    });
+                    expect(global.browser.runtime.sendMessage.mock.calls).toEqual([
+                        [{ entry: 'text', type: 'OPEN_TAB' }],
+                    ]);
+                });
+            });
+
+            test("'Copy' tries to copy to clipboard", () => {
+                expect.assertions(2);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.searchHost('mih').then(() => {
+                    global.sendNativeAppMessage.mockClear();
+                    const messagePromise = Promise.resolve({ password: '1234' });
+                    global.sendNativeAppMessage.mockImplementation(() => messagePromise);
+
+                    global.createButtonWithCallback.mock.calls[2][1]({
+                        target: { innerText: 'text' },
+                    });
+
+                    return messagePromise.then(() => {
+                        expect(global.copyToClipboard.mock.calls).toEqual([['1234']]);
+                        jest.runAllTimers();
+                        expect(global.window.close.mock.calls.length).toBe(1);
+                    });
+                });
+            });
+
+            test("'Details' tries to show details", () => {
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
+                return search.searchHost('mih').then(() => {
+                    global.sendNativeAppMessage.mockClear();
+                    global.createButtonWithCallback.mock.calls[3][1]({
+                        target: { innerText: 'text' },
+                    });
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'text', type: 'getData' }]]);
+                });
             });
         });
 
@@ -269,9 +336,12 @@ describe('search method', () => {
                 global.sendNativeAppMessage.mockResolvedValueOnce(['some\\entry']);
                 return search.searchHost('entry').then(() => {
                     expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                        'login',
-                        'some\\entry',
-                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        {
+                            className: 'login',
+                            textContent: 'some\\entry',
+                            style: "background-image: url('icons/si-glyph-key-2.svg')",
+                            title: '__KEY_searchResultLoginTooltip__',
+                        },
                         search._onEntryAction,
                     ]);
                 });
@@ -284,9 +354,12 @@ describe('search method', () => {
                 global.sendNativeAppMessage.mockResolvedValueOnce(['some\\entry']);
                 return search.searchHost('entry').then(() => {
                     expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                        'login',
-                        'some/entry',
-                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        {
+                            className: 'login',
+                            textContent: 'some/entry',
+                            style: "background-image: url('icons/si-glyph-key-2.svg')",
+                            title: '__KEY_searchResultLoginTooltip__',
+                        },
                         search._onEntryAction,
                     ]);
                 });
@@ -303,9 +376,12 @@ describe('search method', () => {
                 global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
                 return search.searchHost('mih').then(() => {
                     expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                        'login',
-                        'some/entry',
-                        "background-image: url('http://some.host/fav.ico')",
+                        {
+                            className: 'login',
+                            textContent: 'some/entry',
+                            style: "background-image: url('http://some.host/fav.ico')",
+                            title: '__KEY_searchResultLoginTooltip__',
+                        },
                         search._onEntryAction,
                     ]);
                 });
@@ -316,9 +392,12 @@ describe('search method', () => {
                 global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
                 return search.search('mih').then(() => {
                     expect(global.createButtonWithCallback.mock.calls[0]).toEqual([
-                        'login',
-                        'some/entry',
-                        "background-image: url('icons/si-glyph-key-2.svg')",
+                        {
+                            className: 'login',
+                            textContent: 'some/entry',
+                            style: "background-image: url('icons/si-glyph-key-2.svg')",
+                            title: '__KEY_searchResultLoginTooltip__',
+                        },
                         search._onEntryAction,
                     ]);
                 });

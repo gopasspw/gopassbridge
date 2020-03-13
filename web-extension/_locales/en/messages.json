@@ -35,6 +35,22 @@
     "message": "Search",
     "description": "caption of search button"
   },
+  "searchResultLoginTooltip": {
+    "message": "Login",
+    "description": "tooltip for login button in search result"
+  },
+  "searchResultOpenTooltip": {
+    "message": "Open in new tab",
+    "description": "tooltip for open button in search result"
+  },
+  "searchResultCopyTooltip": {
+    "message": "Copy",
+    "description": "tooltip for copy button in search result"
+  },
+  "searchResultDetailsTooltip": {
+    "message": "Show details",
+    "description": "tooltip for details button in search result"
+  },
   "createNameLabel": {
     "message": "Name",
     "description": "label for name"

@@ -84,13 +84,11 @@ function executeOnSetting(setting, trueCallback, falseCallback) {
     }, logError);
 }
 
-function createButtonWithCallback(className, text, style, callback) {
+function createButtonWithCallback(attributes, callback) {
     const element = document.createElement('button');
-    element.className = className;
-    element.textContent = text;
-    if (style) {
-        element.style = style;
-    }
+    Object.keys(attributes).forEach(attribute => {
+        element[attribute] = attributes[attribute];
+    });
     element.addEventListener('click', callback);
     return element;
 }

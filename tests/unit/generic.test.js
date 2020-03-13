@@ -123,21 +123,13 @@ describe('localStorage wrappers', () => {
 });
 
 describe('createButtonWithCallback', () => {
-    test('callback works for button with style', () => {
+    test('creates button with callback and sets attributes', () => {
         const buttonCbMock = jest.fn();
-        const button = generic.createButtonWithCallback('myclass', 'the text', 'border: 5px red;', buttonCbMock);
+        const button = generic.createButtonWithCallback({ className: 'myclass' }, buttonCbMock);
         expect(buttonCbMock.mock.calls.length).toBe(0);
         button.click();
         expect(buttonCbMock.mock.calls.length).toBe(1);
-        expect(button.style._values.border).toEqual('5px red');
-    });
-
-    test('callback works for button without style', () => {
-        const buttonCbMock = jest.fn();
-        const button = generic.createButtonWithCallback('myclass', 'the text', null, buttonCbMock);
-        expect(buttonCbMock.mock.calls.length).toBe(0);
-        button.click();
-        expect(buttonCbMock.mock.calls.length).toBe(1);
+        expect(button.className).toEqual('myclass');
     });
 });
 
