@@ -64,11 +64,9 @@
   },
 
   "permissions": [
-    "tabs",
+    "activeTab",
     "storage",
     "nativeMessaging",
-    "http://*/*",
-    "https://*/*",
     "notifications",
     "webRequest",
     "webRequestBlocking"
