@@ -70,6 +70,7 @@
   },
 
   "permissions": [
+    "<all_urls>",
     "activeTab",
     "clipboardWrite",
     "storage",
