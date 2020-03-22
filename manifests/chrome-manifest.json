@@ -64,7 +64,7 @@
   },
 
   "permissions": [
-    "tabs",
+    "activeTab",
     "storage",
     "nativeMessaging",
     "http://*/*",
