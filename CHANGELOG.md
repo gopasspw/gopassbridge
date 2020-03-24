@@ -1,3 +1,10 @@
+## 0.7.0 / 2020-03-25
+
+* Improve error message when gopass setup is incomplete (#139)
+* Better handling for secret paths on Windows (#122)
+* Add tooltips to search results (#144)
+* Reduce requested web extension permissions (#145)
+
 ## 0.6.2 / 2020-02-21
 
 * Add option to append login name to gopass path during login creation (disabled by default) (#134)
