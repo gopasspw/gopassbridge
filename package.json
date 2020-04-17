@@ -10,8 +10,8 @@
     "lint": "npm-run-all lint:*",
     "lint:eslint": "eslint --ext=.js,.json web-extension manifests tests",
     "lint:webext": "web-ext -s firefox-release lint",
-    "lint:prettier": "prettier --check '**/*'",
-    "format": "prettier --write '**/*'"
+    "lint:prettier": "prettier --check \"**/*\"",
+    "format": "prettier --write \"**/*\""
   },
   "repository": {
     "type": "git",
