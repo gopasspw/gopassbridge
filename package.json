@@ -7,7 +7,7 @@
     "test": "npm-run-all test:*",
     "test:lint": "npm run lint",
     "lint": "npm-run-all lint:*",
-    "lint:prettier": "prettier-check web-extension/*.js web-extension/*.css tests/**/*.js",
+    "lint:prettier": "prettier --check '**/*.{js,css}'",
     "lint:eslint": "eslint --ext=.js,.json web-extension manifests tests",
     "lint:webext": "web-ext -s firefox-release lint",
     "test:jest": "jest"
@@ -42,7 +42,6 @@
     "jest-webextension-mock": "^3.3.0",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.10.2",
-    "prettier-check": "^2.0.0",
     "web-ext": "^4.0.0"
   }
 }
