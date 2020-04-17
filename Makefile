@@ -1,4 +1,3 @@
-LOCAL_PRETTIER=node_modules/.bin/prettier
 LOCAL_WEB_EXT=node_modules/.bin/web-ext
 
 run-firefox: develop
@@ -33,7 +32,7 @@ clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill
 
 format:
-		$(LOCAL_PRETTIER) --write '**/*'
+		npm run format
 
 webextension-polyfill: clean
 	    git clone https://github.com/mozilla/webextension-polyfill.git
