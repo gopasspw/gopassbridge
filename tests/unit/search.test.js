@@ -282,15 +282,18 @@ describe('search method', () => {
                 global.sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
                 return search.searchHost('mih').then(() => {
                     global.sendNativeAppMessage.mockClear();
-                    const messagePromise = Promise.resolve({ password: '1234' });
+                    const messagePromise = Promise.resolve({ status: 'ok' });
                     global.sendNativeAppMessage.mockImplementation(() => messagePromise);
 
                     global.createButtonWithCallback.mock.calls[2][1]({
                         target: { innerText: 'text' },
                     });
 
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        [{ type: 'copyToClipboard', entry: 'text' }],
+                    ]);
+
                     return messagePromise.then(() => {
-                        expect(global.copyToClipboard.mock.calls).toEqual([['1234']]);
                         jest.runAllTimers();
                         expect(global.window.close.mock.calls.length).toBe(1);
                     });
@@ -498,17 +501,16 @@ describe('search input', () => {
         });
 
         test('on keypress SHIFT-ENTER with one result triggers copy to clipboard', () => {
-            expect.assertions(4);
-            const messagePromise = Promise.resolve({ password: '1234' });
+            expect.assertions(3);
+            const messagePromise = Promise.resolve({ status: 'ok' });
             global.sendNativeAppMessage = jest.fn(() => messagePromise);
 
             addDummySearchResult();
             const event = simulateKeyPress({ keyCode: 13, shiftKey: true });
-            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getLogin' }]]);
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'copyToClipboard' }]]);
             expect(event.preventDefault.mock.calls.length).toBe(1);
 
             return messagePromise.then(() => {
-                expect(global.copyToClipboard.mock.calls).toEqual([['1234']]);
                 jest.runAllTimers();
                 expect(global.window.close.mock.calls.length).toBe(1);
             });
@@ -521,7 +523,7 @@ describe('search input', () => {
 
             addDummySearchResult();
             const event = simulateKeyPress({ keyCode: 13, shiftKey: true });
-            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'getLogin' }]]);
+            expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'some text', type: 'copyToClipboard' }]]);
             expect(event.preventDefault.mock.calls.length).toBe(1);
 
             return messagePromise.then(() => {
