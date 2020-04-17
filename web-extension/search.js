@@ -195,7 +195,7 @@ function _onEntryAction(event, element) {
 }
 
 function _onEntryCopy(element) {
-    sendNativeAppMessage({ type: 'getLogin', entry: element.innerText }).then(
+    sendNativeAppMessage({ type: 'copyToClipboard', entry: element.innerText }).then(
         _onLoginCredentialsDoCopyClipboard,
         logAndDisplayError
     );
@@ -219,8 +219,6 @@ function _onLoginCredentialsDoCopyClipboard(response) {
         setStatusText(response.error);
         return;
     }
-
-    copyToClipboard(response.password);
 
     const content = document.getElementById('content');
     content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
