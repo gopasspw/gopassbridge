@@ -36,6 +36,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - run: yarn --frozen-lockfile --non-interactive --no-progress --check-files
+
       - run: make package
 
       - run: npm test
