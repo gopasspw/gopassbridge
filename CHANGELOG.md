@@ -1,3 +1,7 @@
+## Next Release
+
+* Copy passwords to clipboard directly via gopass, including auto-clearing of clipboard (#147)
+
 ## 0.7.0 / 2020-03-25
 
 * Improve error message when gopass setup is incomplete (#139)
