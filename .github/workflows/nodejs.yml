@@ -39,7 +39,9 @@ jobs:
 
       - run: yarn --frozen-lockfile --non-interactive --no-progress --check-files
 
-      - run: make package
+      - run: npm run lint
+
+      - run: make package  # Includes auto-formatting, so we run "lint" check before
 
       - run: npm test
         env:
