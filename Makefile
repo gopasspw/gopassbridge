@@ -33,7 +33,7 @@ clean:
 		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill
 
 format:
-		$(LOCAL_PRETTIER) --write '**/*.{js,css}'
+		$(LOCAL_PRETTIER) --write '**/*'
 
 webextension-polyfill: clean
 	    git clone https://github.com/mozilla/webextension-polyfill.git

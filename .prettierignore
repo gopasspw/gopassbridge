@@ -1,1 +1,12 @@
+# Ignore all files by default
+*
+
+# White-list files to include
+!**/*.js
+!**/*.css
+
+!tests/
+!tests/*
+
+!web-extension/
 web-extension/vendor/
