@@ -63,6 +63,8 @@ In Chrome under "keyboard shortcuts" in the hamburger menu in extensions.
 
 Contributions to this project are welcome!
 
+For details on Pull Requests please read [CONTRIBUTING.md](./CONTRIBUTING.md).
+
 To start with development of this extension
 * clone the repo
 * run `yarn` to install the dependencies
