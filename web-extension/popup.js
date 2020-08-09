@@ -6,6 +6,8 @@ const SETUP_ERRORS = [
     'Access to the specified native messaging host is forbidden',
     'Attempt to postMessage on disconnected port',
     'Specified native messaging host not found',
+    'Native host has exited', // Chrome: gopass-jsonapi not found or other error in gopass_wrapper.sh
+    'An unexpected error occurred', // Firefox: gopass-jsonapi not found or other error in gopass_wrapper.sh
 ];
 
 function armSpinnerTimeout() {

@@ -173,7 +173,7 @@
     "description": "Error when another basic authentication popup is already open"
   },
   "correctlySetup": {
-    "message": "Is your browser correctly set up for gopass?",
+    "message": "Is your browser correctly set up for gopass? If you are upgrading to gopass v1.10 or newer you need to re-run the gopass-jsonapi setup command.",
     "description": "Error when gopassbridge is not correctly setup"
   }
 }
