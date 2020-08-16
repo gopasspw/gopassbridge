@@ -23,6 +23,7 @@ body {
 .status-text {
     padding: 6px;
     text-align: center;
+    max-width: 400px;
 }
 
 .results {
