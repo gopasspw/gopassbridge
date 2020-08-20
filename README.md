@@ -17,9 +17,10 @@ A web extension for Firefox and Chrome to insert login credentials from [gopass]
 
 ## Summary
 
-[Gopass](https://github.com/gopasspw/gopass) is the awesome command line password manager. This plugin enables input of login credentials from gopass.
-To access gopass, a native app has to be configured in the browser in addition to this plugin. 
-The native app is a wrapper that calls gopass with the jsonapi parameter to communicate via stdin/stdout. 
+[Gopass](https://github.com/gopasspw/gopass) is the awesome command line password manager.
+This plugin enables input of login credentials from gopass.
+To access gopass, a native app has to be configured in the browser in addition to installing this extension. 
+The native app is a wrapper that calls `gopass-jsonapi` to communicate via stdin/stdout. 
 
 ## Quick impression
 
@@ -43,16 +44,18 @@ See `Makefile` release target. For Firefox, the development plugin can be instal
 
 ### Connect to gopass
 
-The connection to gopass is achieved via the native messaging.
-For this a native messaging manifest is necessary.
+The connection to gopass is achieved via the native messaging API.
+For this a native messaging manifest must be configured for your browser.
 
-It is recommended that you set up the manifests with gopass as described in the [gopass documentation, "filling passwords from browser"](https://github.com/gopasspw/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser).
-In most cases it is enough to run `gopass jsonapi configure` and follow the tutorial.
+Since **gopass v1.10** `gopass-jsonapi` is its own binary that you can download and unpack from the
+[archive files on Github Releases](https://github.com/gopasspw/gopass/releases).
 
-If you prefer a manual setup, example manifest configurations and a wrapper for gopass can be found in the `native-app` directory of this repository. 
-Adapt the wrapper and manifest and copy them to the correct locations.
+It is recommended that you set up the manifests with `gopass-jsonapi` as described in the 
+[gopass documentation, "filling passwords from browser"](https://github.com/gopasspw/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser).
+In most cases it is enough to run `gopass-jsonapi configure` and follow the tutorial.
 
-More details about Native Messaging can be found in the [Chrome](https://developer.chrome.com/apps/nativeMessaging) and [MDN](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging) documentation.
+More details about Native Messaging can be found in the [Chrome](https://developer.chrome.com/apps/nativeMessaging)
+and [MDN](https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Native_messaging) documentation.
 
 ### Change default shortcut
 
