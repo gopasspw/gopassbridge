@@ -1,6 +1,11 @@
 ## Next Release
 
+## 0.8.0 / 2020-08-20
+
 * Copy passwords to clipboard directly via gopass, including auto-clearing of clipboard (#147)
+* Prepare documentation for gopass v1.10 release (#165)
+* Improve error handling for transition to separate gopass-jsonapi binary in gopass v1.10 (#166)
+* Upgrade browser-polyfill.js to v0.6.0 (#162)
 
 ## 0.7.0 / 2020-03-25
 
