@@ -1,6 +1,6 @@
 # test-client
 
-This simple program can be used to debug `gopass jsonapi listen` more easily.
+This simple program can be used to debug `gopass-jsonapi listen` more easily.
 
 Documentation about the API can be found here: https://github.com/gopasspw/gopass/blob/master/docs/jsonapi.md#overview
 
