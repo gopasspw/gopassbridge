@@ -88,6 +88,30 @@ describe('onEntryData', () => {
             });
         });
 
+        test('filtered keys is case-insensitive', () => {
+            expect.assertions(2);
+            return details.onEntryData(loginElement, { MuH: 'value' }).then(() => {
+                expect(document.getElementsByClassName('detail-key').length).toBe(0);
+                expect(document.getElementsByClassName('detail-clickable-value').length).toBe(0);
+            });
+        });
+
+        test('filtered keys always hides "password"', () => {
+            expect.assertions(2);
+            return details.onEntryData(loginElement, { password: 'value' }).then(() => {
+                expect(document.getElementsByClassName('detail-key').length).toBe(0);
+                expect(document.getElementsByClassName('detail-clickable-value').length).toBe(0);
+            });
+        });
+
+        test('filtered keys always hides "Password"', () => {
+            expect.assertions(2);
+            return details.onEntryData(loginElement, { Password: 'value' }).then(() => {
+                expect(document.getElementsByClassName('detail-key').length).toBe(0);
+                expect(document.getElementsByClassName('detail-clickable-value').length).toBe(0);
+            });
+        });
+
         test('url values', () => {
             expect.assertions(2);
             return details.onEntryData(loginElement, { hallo: 'https://hallo.welt' }).then(() => {

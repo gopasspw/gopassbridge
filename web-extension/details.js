@@ -27,8 +27,10 @@ function _insertAfter(newNode, referenceNode) {
 }
 
 function _excludeKey(key, settings) {
-    const omit = settings.omitkeys.split(',').map(item => item.trim());
-    return omit.some(value => value === key);
+    const _canonicalize = k => k.trim().toLowerCase();
+    const omit = settings.omitkeys.split(',');
+    omit.push('password'); // Always exclude default "password/Password" key from detail view, user can use copy button
+    return omit.some(value => _canonicalize(value) === _canonicalize(key));
 }
 
 function _detailViewFromMessage(message, settings) {
