@@ -11,6 +11,10 @@
     "message": "create new login entry",
     "description": "Text of create new entry button"
   },
+  "createAnotherEntryButtonText": {
+    "message": "create another login entry",
+    "description": "Text of create another entry button"
+  },
   "copiedToClipboardMessage": {
     "message": "copied to clipboard",
     "description": "Text to display when an entry was copied to clipboard"
