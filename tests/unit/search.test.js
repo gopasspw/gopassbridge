@@ -257,6 +257,13 @@ describe('search method', () => {
                             },
                             expect.any(Function),
                         ],
+                        [
+                            {
+                                className: 'login',
+                                textContent: '__KEY_createAnotherEntryButtonText__',
+                            },
+                            expect.any(Function),
+                        ],
                     ]);
 
                     expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'mih', type: 'queryHost' }]]);
