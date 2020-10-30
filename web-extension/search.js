@@ -127,16 +127,17 @@ function _displaySearchResults(response, isHostQuery) {
         results.appendChild(entry);
     });
 
-    results.appendChild(
-        createButtonWithCallback(
-            {
-                className: 'login',
-                textContent: i18n.getMessage('createAnotherEntryButtonText'),
-            },
-            switchToCreateNewDialog
-        )
-    );
+    results.appendChild(_createAnotherEntryButton());
 }
+
+const _createAnotherEntryButton = () =>
+    createButtonWithCallback(
+        {
+            className: 'login',
+            textContent: i18n.getMessage('createAnotherEntryButtonText'),
+        },
+        switchToCreateNewDialog
+    );
 
 const _createSearchResultLoginButton = (item, isHostQuery) =>
     createButtonWithCallback(
