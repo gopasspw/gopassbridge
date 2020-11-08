@@ -22,7 +22,7 @@ function checkVersion() {
         return Promise.resolve();
     }
 
-    return sendNativeAppMessage({ type: 'getVersion' }).then(response => {
+    return sendNativeAppMessage({ type: 'getVersion' }).then((response) => {
         let major = REQUIRED_GOPASS_VERSION[0];
         let minor = REQUIRED_GOPASS_VERSION[1];
         let patch = REQUIRED_GOPASS_VERSION[2];
@@ -75,7 +75,7 @@ function openURLOnEvent(event) {
 }
 
 function executeOnSetting(setting, trueCallback, falseCallback) {
-    return getSettings().then(result => {
+    return getSettings().then((result) => {
         if (result[setting]) {
             if (trueCallback) trueCallback();
         } else {
@@ -86,7 +86,7 @@ function executeOnSetting(setting, trueCallback, falseCallback) {
 
 function createButtonWithCallback(attributes, callback) {
     const element = document.createElement('button');
-    Object.keys(attributes).forEach(attribute => {
+    Object.keys(attributes).forEach((attribute) => {
         element[attribute] = attributes[attribute];
     });
     element.addEventListener('click', callback);
@@ -108,7 +108,7 @@ function setLocalStorageKey(key, value) {
 
 function getLocalStorageKey(key) {
     console.log('getting local storage', key);
-    return browser.storage.local.get(key).then(values => {
+    return browser.storage.local.get(key).then((values) => {
         return values[key];
     }, logError);
 }

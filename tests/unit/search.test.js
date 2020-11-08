@@ -30,10 +30,10 @@ global.setStatusText = jest.fn();
 global.onEntryData = jest.fn();
 global.copyToClipboard = jest.fn();
 global.i18n = {
-    getMessage: jest.fn(messagekey => `__KEY_${messagekey}__`),
+    getMessage: jest.fn((messagekey) => `__KEY_${messagekey}__`),
 };
 global.spinnerTimeout = 24;
-global.urlDomain = jest.fn(url => 'some.host');
+global.urlDomain = jest.fn((url) => 'some.host');
 global.createButtonWithCallback = jest.fn(() => document.createElement('div'));
 global.switchToCreateNewDialog = jest.fn();
 global.setLocalStorageKey = jest.fn();

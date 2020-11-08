@@ -9,14 +9,14 @@ global.browser.extension = {
 };
 global.urlDomain = jest.fn(() => 'some.url');
 global.i18n = {
-    getMessage: jest.fn(key => `__i18n_${key}__`),
+    getMessage: jest.fn((key) => `__i18n_${key}__`),
 };
 global.browser.tabs.sendMessage = jest.fn();
 global.browser.webRequest = { onAuthRequired: { addListener: jest.fn() } };
 global.executeOnSetting = jest.fn();
 global.isChrome = jest.fn();
 global.openURL = jest.fn();
-global.makeAbsolute = jest.fn(string => string);
+global.makeAbsolute = jest.fn((string) => string);
 
 require('background.js');
 
@@ -44,7 +44,7 @@ describe('background', () => {
         test('raises on content script messages', () => {
             expect.assertions(2);
             const msg = 'Background script received unexpected message {} from content script or popup window.';
-            return background.processMessageAndCatch({}, { tab: 42 }).catch(error => {
+            return background.processMessageAndCatch({}, { tab: 42 }).catch((error) => {
                 expect(global.showNotificationOnSetting.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
             });
@@ -53,7 +53,7 @@ describe('background', () => {
         test('raises on unknown message types', () => {
             expect.assertions(2);
             const msg = `Background script received unexpected message {"type":"UNKNOWN"} from extension`;
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch(error => {
+            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((error) => {
                 expect(global.showNotificationOnSetting.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
             });
@@ -62,7 +62,7 @@ describe('background', () => {
         test('do not show notification if popup is shown', () => {
             expect.assertions(1);
             global.browser.extension.getViews.mockReturnValueOnce({ length: 1 });
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch(error => {
+            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((error) => {
                 expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
             });
         });
@@ -81,7 +81,7 @@ describe('background', () => {
                 });
                 global.browser.tabs.sendMessage.mockResolvedValue();
                 global.browser.tabs.onUpdated = {
-                    addListener: jest.fn(callback => callback(42, { status: 'complete' })),
+                    addListener: jest.fn((callback) => callback(42, { status: 'complete' })),
                     removeListener: jest.fn(),
                 };
             });
@@ -104,7 +104,7 @@ describe('background', () => {
                 global.sendNativeAppMessage.mockResolvedValue({});
                 expect.assertions(1);
                 global.openURL.mockResolvedValue({ id: 42, status: 'complete' });
-                return openTabMessage().catch(error => {
+                return openTabMessage().catch((error) => {
                     expect(error.message).toBe('__i18n_noURLInEntry__');
                 });
             });
@@ -129,7 +129,7 @@ describe('background', () => {
                 expect.assertions(2);
                 global.openURL.mockResolvedValue({ id: 42, status: 'loading' });
 
-                const promise = openTabMessage().catch(error => {
+                const promise = openTabMessage().catch((error) => {
                     expect(global.browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
                     expect(error).toBe('Loading timed out');
                 });
@@ -159,7 +159,7 @@ describe('background', () => {
             test('raises if native app message response contains error', () => {
                 global.sendNativeAppMessage.mockResolvedValue({ error: 'some native app error' });
                 expect.assertions(1);
-                return loginTabMessage().catch(error => {
+                return loginTabMessage().catch((error) => {
                     expect(error.message).toBe('some native app error');
                 });
             });
@@ -167,7 +167,7 @@ describe('background', () => {
             test('raises if username is equal to the domain message response contains error', () => {
                 global.sendNativeAppMessage.mockResolvedValue({ username: 'some.url', password: 'waldfee' });
                 expect.assertions(1);
-                return loginTabMessage().catch(error => {
+                return loginTabMessage().catch((error) => {
                     expect(error.message).toBe('__i18n_couldNotDetermineUsernameMessage__');
                 });
             });
@@ -252,7 +252,7 @@ describe('background', () => {
             return windowCreatePromise.then(() => {
                 browser.windows.onRemoved.addListener.mock.calls[0][0](42);
 
-                return authRequiredPromise.then(authRequiredResult => {
+                return authRequiredPromise.then((authRequiredResult) => {
                     expect(browser.windows.create.mock.calls.length).toBe(1);
                     expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
                         browser.windows.onRemoved.removeListener.mock.calls
@@ -277,7 +277,7 @@ describe('background', () => {
                     { tab: {}, url: validAuthPopupUrl }
                 );
 
-                return Promise.all([authRequiredPromise, processMessagePromise]).then(null, processMessageError => {
+                return Promise.all([authRequiredPromise, processMessagePromise]).then(null, (processMessageError) => {
                     expect(browser.windows.create.mock.calls.length).toBe(1);
                     expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
                     expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
@@ -337,7 +337,7 @@ describe('background', () => {
 
             global.executeOnSetting = jest.fn((_, enabled, disabled) => disabled());
 
-            return onAuthRequiredCallback({ url: authUrl }).then(authRequiredResult => {
+            return onAuthRequiredCallback({ url: authUrl }).then((authRequiredResult) => {
                 expect(browser.windows.create.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);

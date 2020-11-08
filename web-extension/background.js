@@ -3,7 +3,7 @@
 let currentAuthRequest = null;
 
 function _processLoginTabMessage(entry, tab) {
-    return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
+    return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then((response) => {
         if (response.error) {
             throw new Error(response.error);
         }
@@ -52,14 +52,14 @@ function _waitForTabLoaded(tab) {
 
 function _openEntry(entry) {
     return sendNativeAppMessage({ type: 'getData', entry })
-        .then(message => {
+        .then((message) => {
             if (!message.url) {
                 throw new Error(i18n.getMessage('noURLInEntry'));
             }
             return openURL(message.url);
         })
         .then(_waitForTabLoaded)
-        .then(tab => _processLoginTabMessage(entry, tab));
+        .then((tab) => _processLoginTabMessage(entry, tab));
 }
 
 function _processMessage(message, sender, _) {
@@ -110,7 +110,7 @@ function _showNotificationIfNoPopup(message) {
 
 function processMessageAndCatch(message, sender, sendResponse) {
     try {
-        return _processMessage(message, sender, sendResponse).catch(error => {
+        return _processMessage(message, sender, sendResponse).catch((error) => {
             _showNotificationIfNoPopup(error.message);
             throw error;
         });
@@ -163,7 +163,7 @@ function _openAuthRequestPopup(popupUrl, resolutionCallback) {
             top: 280,
             type: 'popup',
         })
-        .then(popupWindow => {
+        .then((popupWindow) => {
             console.log('Opened popup for auth request', popupWindow);
 
             function onPopupClose(windowId) {
@@ -179,7 +179,7 @@ function _openAuthRequestPopup(popupUrl, resolutionCallback) {
 }
 
 function _tryToResolveCurrentAuthRequest(entry, senderUrl) {
-    return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then(response => {
+    return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then((response) => {
         if (response.error) {
             throw new Error(response.error);
         }

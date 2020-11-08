@@ -156,11 +156,11 @@ describe('on sample login form', () => {
         }
 
         beforeEach(() => {
-            global.window.requestAnimationFrame = fn => {
+            global.window.requestAnimationFrame = (fn) => {
                 fn();
             };
             const form = document.getElementById('form');
-            form.addEventListener('submit', e => {
+            form.addEventListener('submit', (e) => {
                 e.preventDefault();
             });
         });
@@ -334,7 +334,7 @@ for (const page in pages) {
         let clickCallback;
 
         function setupClickListener() {
-            const onClick = jest.fn(event => {
+            const onClick = jest.fn((event) => {
                 event.preventDefault();
             });
             document.addEventListener('click', onClick);

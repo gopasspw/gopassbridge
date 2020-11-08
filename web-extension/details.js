@@ -2,14 +2,14 @@
 
 function onEntryData(element, message) {
     let alreadyShown = false;
-    Array.from(document.getElementsByClassName('detail-view')).forEach(oldDetailView => {
+    Array.from(document.getElementsByClassName('detail-view')).forEach((oldDetailView) => {
         if (oldDetailView.previousSibling === element) {
             alreadyShown = true;
         }
         oldDetailView.remove();
     });
     return browser.storage.local.remove(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(
-        getSettings().then(settings => {
+        getSettings().then((settings) => {
             if (alreadyShown) {
                 return;
             }
@@ -27,18 +27,18 @@ function _insertAfter(newNode, referenceNode) {
 }
 
 function _excludeKey(key, settings) {
-    const _canonicalize = k => k.trim().toLowerCase();
+    const _canonicalize = (k) => k.trim().toLowerCase();
     const omit = settings.omitkeys.split(',');
     omit.push('password'); // Always exclude default "password/Password" key from detail view, user can use copy button
-    return omit.some(value => _canonicalize(value) === _canonicalize(key));
+    return omit.some((value) => _canonicalize(value) === _canonicalize(key));
 }
 
 function _detailViewFromMessage(message, settings) {
     const container = document.createElement('ul');
     Object.keys(message)
-        .filter(key => message[key] !== null && message[key] !== undefined && message[key] !== '')
-        .filter(key => !_excludeKey(key, settings))
-        .forEach(key => _appendEntry(container, key, message[key]));
+        .filter((key) => message[key] !== null && message[key] !== undefined && message[key] !== '')
+        .filter((key) => !_excludeKey(key, settings))
+        .forEach((key) => _appendEntry(container, key, message[key]));
     return container;
 }
 
@@ -46,9 +46,9 @@ function _createNestedValueElement(value) {
     const valueElement = document.createElement('ul');
     valueElement.classList.add('detail-nested');
     if (Array.isArray(value)) {
-        value.forEach(item => _appendEntry(valueElement, null, item));
+        value.forEach((item) => _appendEntry(valueElement, null, item));
     } else {
-        Object.keys(value).forEach(key => _appendEntry(valueElement, key, value[key]));
+        Object.keys(value).forEach((key) => _appendEntry(valueElement, key, value[key]));
     }
     return valueElement;
 }
@@ -107,19 +107,19 @@ function _copyElementToClipboard(event) {
 
 function restoreDetailView() {
     let element;
-    return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then(value => {
+    return getLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl)).then((value) => {
         if (!value) {
             return Promise.resolve();
         }
 
-        Array.from(document.getElementsByClassName('login')).forEach(loginElement => {
+        Array.from(document.getElementsByClassName('login')).forEach((loginElement) => {
             if (loginElement.innerText === value) {
                 element = loginElement;
             }
         });
         if (element) {
             return sendNativeAppMessage({ type: 'getData', entry: value }).then(
-                message => onEntryData(element, message),
+                (message) => onEntryData(element, message),
                 logAndDisplayError
             );
         }

@@ -3,11 +3,7 @@
 let savingIndicatorTimeout;
 
 function resetSettings() {
-    browser.storage.sync
-        .clear()
-        .then(getSettings)
-        .then(resetViewState, logError)
-        .then(_showSavingIndicator);
+    browser.storage.sync.clear().then(getSettings).then(resetViewState, logError).then(_showSavingIndicator);
 }
 
 function init() {
@@ -16,14 +12,14 @@ function init() {
         clearButton.addEventListener('click', resetSettings);
     }
 
-    return getSettings().then(settings => {
+    return getSettings().then((settings) => {
         const checkboxes = document.querySelectorAll('input[type=checkbox]');
-        checkboxes.forEach(checkbox => {
+        checkboxes.forEach((checkbox) => {
             checkbox.addEventListener('change', _onCheckboxChange);
         });
 
         const textinputs = document.querySelectorAll('input[type=text]');
-        textinputs.forEach(textinput => {
+        textinputs.forEach((textinput) => {
             textinput.addEventListener('input', _onTextinputChange);
         });
 
@@ -39,7 +35,7 @@ function resetViewState(settings) {
 }
 
 function _setCheckboxes(result) {
-    Object.keys(result).forEach(key => {
+    Object.keys(result).forEach((key) => {
         const checkbox = document.getElementById(key);
         if (checkbox) {
             checkbox.checked = !!result[key];
@@ -58,7 +54,7 @@ function _saveSetting(id, value) {
 }
 
 function _setTextinputs(result) {
-    Object.keys(result).forEach(key => {
+    Object.keys(result).forEach((key) => {
         const textinput = document.getElementById(key);
         if (textinput) {
             textinput.value = result[key];
