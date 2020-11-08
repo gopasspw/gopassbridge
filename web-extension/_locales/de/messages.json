@@ -12,7 +12,7 @@
     "description": "Text of create new entry button"
   },
   "createAnotherEntryButtonText": {
-    "message": "sie einen weiteren Eintrag erstellen",
+    "message": "einen weiteren Eintrag erstellen",
     "description": "Text of create another entry button"
   },
   "copiedToClipboardMessage": {
