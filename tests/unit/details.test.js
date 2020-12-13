@@ -14,7 +14,7 @@ global.currentTabId = 42;
 global.currentPageUrl = 'http://other.domain';
 global.re_weburl = new RegExp('https://.*');
 global.logAndDisplayError = jest.fn();
-global.openURLOnEvent = jest.fn(event => {
+global.openURLOnEvent = jest.fn((event) => {
     event.preventDefault();
 });
 global.getSettings = jest.fn();

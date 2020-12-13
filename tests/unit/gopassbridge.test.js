@@ -151,7 +151,7 @@ describe('switchTab', () => {
     describe('handles authUrl query parameter', () => {
         beforeEach(() => {
             global.getLocalStorageKey.mockResolvedValue(undefined);
-            global.urlDomain = jest.fn(url => url);
+            global.urlDomain = jest.fn((url) => url);
             global.getPopupUrl = jest.fn(() => 'http://localhost/');
             jsdom.reconfigure({ url: 'http://localhost/?authUrl=' + encodeURIComponent('https://example.com') });
             document.body.innerHTML = documentHtml;

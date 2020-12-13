@@ -5,7 +5,7 @@ let currentTabId;
 let currentTabUrl;
 let currentTabFavIconUrl;
 
-browser.tabs.query({ currentWindow: true, active: true }).then(tabs => switchTab(tabs[0]));
+browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => switchTab(tabs[0]));
 
 browser.tabs.onActivated.addListener(switchTab);
 
@@ -57,7 +57,7 @@ function _handleUrlSearch(url) {
 
     const searchUrl = urlDomain(url);
     if (searchUrl) {
-        return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + searchUrl).then(value => {
+        return getLocalStorageKey(LAST_DOMAIN_SEARCH_PREFIX + searchUrl).then((value) => {
             if (value) {
                 return search(value).then(restoreDetailView);
             } else {

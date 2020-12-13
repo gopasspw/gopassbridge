@@ -35,7 +35,7 @@ function setStatusText(text) {
 
 function _getSetupErrorElement(text) {
     let element = null;
-    let isSetupError = SETUP_ERRORS.some(msg => {
+    let isSetupError = SETUP_ERRORS.some((msg) => {
         return text.search(msg) > -1;
     });
     if (isSetupError) {
@@ -51,7 +51,7 @@ function _getSetupErrorElement(text) {
 }
 
 function switchToCreateNewDialog() {
-    return getSettings().then(settings => {
+    return getSettings().then((settings) => {
         document.getElementsByClassName('search')[0].style.display = 'none';
         document.getElementsByClassName('results')[0].style.display = 'none';
         document.getElementsByClassName('create')[0].style.display = 'block';

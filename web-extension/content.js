@@ -14,18 +14,18 @@ const inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'inpu
     ],
     ignorePasswordIds = ['signup_minireg_password'],
     loginInputTypes = ['email', 'text'],
-    loginInputTypesString = loginInputTypes.map(string => `input[type=${string}]`).join(',') + ',input:not([type])';
+    loginInputTypesString = loginInputTypes.map((string) => `input[type=${string}]`).join(',') + ',input:not([type])';
 
 function exactMatch(property, string) {
     const idstr = `[${property}=${string}]`;
-    return loginInputTypes.map(string => `input[type=${string}]${idstr}`).join(',') + `,input:not([type])${idstr}`;
+    return loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',') + `,input:not([type])${idstr}`;
 }
 
 function partialMatch(property, string) {
     const idstr = `[${property}*=${string}]`;
     return (
         loginInputTypes
-            .map(function(string) {
+            .map(function (string) {
                 return `input[type=${string}]${idstr}`;
             })
             .join(',') +
@@ -66,7 +66,7 @@ function selectFocusedElement(parent) {
         parent.activeElement.tagName === 'FRAME'
     ) {
         let focusedElement = null;
-        parent.querySelectorAll('iframe,frame').forEach(iframe => {
+        parent.querySelectorAll('iframe,frame').forEach((iframe) => {
             if (iframe.src.startsWith(window.location.origin)) {
                 const focused = selectFocusedElement(iframe.contentWindow.document);
                 if (focused) {
@@ -83,15 +83,15 @@ function selectFocusedElement(parent) {
 function selectVisibleElements(selector) {
     const visibleElements = [];
 
-    document.querySelectorAll(selector).forEach(element => {
+    document.querySelectorAll(selector).forEach((element) => {
         if (isVisible(element)) {
             visibleElements.push(element);
         }
     });
 
-    document.querySelectorAll('iframe,frame').forEach(iframe => {
+    document.querySelectorAll('iframe,frame').forEach((iframe) => {
         if (iframe.src.startsWith(window.location.origin)) {
-            iframe.contentWindow.document.body.querySelectorAll(selector).forEach(element => {
+            iframe.contentWindow.document.body.querySelectorAll(selector).forEach((element) => {
                 if (isVisible(element)) {
                     visibleElements.push(element);
                 }
@@ -105,7 +105,7 @@ function selectVisibleElements(selector) {
 function selectFirstVisiblePasswordElement(selector) {
     for (let element of selectVisibleElements(selector)) {
         if (
-            ignorePasswordIds.every(ignore => {
+            ignorePasswordIds.every((ignore) => {
                 return element.id !== ignore;
             })
         ) {
@@ -133,7 +133,7 @@ function updateElement(element, newValue) {
     element.setAttribute('value', newValue);
     element.value = newValue;
 
-    inputEventNames.forEach(name => {
+    inputEventNames.forEach((name) => {
         element.dispatchEvent(new Event(name, { bubbles: true }));
         // Some sites clear the fields on certain events, refill to make sure that values are in the field are set
         element.setAttribute('value', newValue);

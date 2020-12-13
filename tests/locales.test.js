@@ -8,7 +8,7 @@ describe('Locales', () => {
         referenceKeys = Object.keys(reference).sort();
     });
 
-    ['de'].forEach(localeId => {
+    ['de'].forEach((localeId) => {
         test(`${localeId} have same keys as reference`, () => {
             const locale = require(`${__dirname}/../web-extension/_locales/${localeId}/messages.json`);
             const localeKeys = Object.keys(locale).sort();
@@ -16,11 +16,11 @@ describe('Locales', () => {
         });
     });
 
-    ['en', 'de'].forEach(localeId => {
+    ['en', 'de'].forEach((localeId) => {
         test(`${localeId} entries have message and description`, () => {
             const locale = require(`${__dirname}/../web-extension/_locales/${localeId}/messages.json`);
             const localeKeys = Object.keys(locale).sort();
-            localeKeys.forEach(key => {
+            localeKeys.forEach((key) => {
                 expect(locale[key].message);
                 expect(locale[key].description);
             });

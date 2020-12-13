@@ -69,7 +69,7 @@ function _doSearch(term, queryHost) {
         };
         message[queryHost ? 'host' : 'query'] = term;
         return sendNativeAppMessage(message)
-            .then(result => _onSearchResults(result, queryHost), logAndDisplayError)
+            .then((result) => _onSearchResults(result, queryHost), logAndDisplayError)
             .then(resolve, reject);
     });
     return searching;
@@ -102,7 +102,7 @@ function _displaySearchResults(response, isHostQuery) {
     const isWindows = window.navigator.userAgent.toLocaleLowerCase().includes('windows');
     const results = document.getElementById('results');
     results.innerHTML = '';
-    response.forEach(result => {
+    response.forEach((result) => {
         // This is a workaround for gopass issue #1166 (windows only)
         const item = isWindows ? result.replace(/\\/g, '/') : result;
         const entry = document.createElement('div');
@@ -151,7 +151,7 @@ const _createSearchResultLoginButton = (item, isHostQuery) =>
     );
 
 const _createSimpleSearchResultButton = (className, text, title, clickHandler) =>
-    createButtonWithCallback({ className, title, textContent: text }, event => clickHandler(event.target));
+    createButtonWithCallback({ className, title, textContent: text }, (event) => clickHandler(event.target));
 
 function _displayNoResults() {
     const results = document.getElementById('results');
@@ -220,7 +220,7 @@ function _onEntryOpen(element) {
 
 function _onEntryDetails(element) {
     sendNativeAppMessage({ type: 'getData', entry: element.innerText }).then(
-        message => onEntryData(element, message),
+        (message) => onEntryData(element, message),
         logAndDisplayError
     );
 }

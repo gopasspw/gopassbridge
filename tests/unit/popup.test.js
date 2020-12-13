@@ -10,7 +10,7 @@ global.urlDomain = jest.fn(() => 'some.domain');
 global.currentPageUrl = 'http://some.domain';
 global.openURLOnEvent = jest.fn();
 global.i18n = {
-    getMessage: jest.fn(key => {
+    getMessage: jest.fn((key) => {
         return `__MSG_${key}__`;
     }),
 };
