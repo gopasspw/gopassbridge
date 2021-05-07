@@ -214,12 +214,6 @@ function _resolveCurrentAuthRequest(result, senderUrl) {
 
 function initBackground() {
     browser.runtime.onMessage.addListener(processMessageAndCatch);
-
-    browser.webRequest.onAuthRequired.addListener(
-        _onAuthRequired,
-        { urls: ['<all_urls>'] },
-        isChrome() ? ['asyncBlocking'] : ['blocking']
-    );
 }
 
 initBackground();

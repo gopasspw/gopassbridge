@@ -21,20 +21,6 @@
     }
   },
 
-  "content_scripts": [
-    {
-      "matches": [
-          "http://*/*",
-          "https://*/*"
-        ],
-      "js": [
-        "vendor/browser-polyfill.js",
-        "generic.js",
-        "content.js"
-      ]
-    }
-  ],
-
   "background": {
     "scripts": [
       "vendor/browser-polyfill.js",
@@ -70,12 +56,15 @@
   },
 
   "permissions": [
-    "<all_urls>",
     "activeTab",
     "clipboardWrite",
     "storage",
     "nativeMessaging",
-    "notifications",
+    "notifications"
+  ],
+
+  "optional_permissions": [
+    "<all_urls>",
     "webRequest",
     "webRequestBlocking"
   ]

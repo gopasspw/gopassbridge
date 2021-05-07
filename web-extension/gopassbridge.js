@@ -5,9 +5,15 @@ let currentTabId;
 let currentTabUrl;
 let currentTabFavIconUrl;
 
-browser.tabs.query({ currentWindow: true, active: true }).then(tabs => switchTab(tabs[0]));
-
-browser.tabs.onActivated.addListener(switchTab);
+browser.tabs.query({ currentWindow: true, active: true }).then(tabs => {
+    browser.tabs.executeScript(tabs[0].id, { file: '/vendor/browser-polyfill.js' }).then(() => {
+        browser.tabs.executeScript(tabs[0].id, { file: '/generic.js' }).then(() => {
+            browser.tabs.executeScript(tabs[0].id, { file: '/content.js' }).then(() => {
+                switchTab(tabs[0]);
+            });
+        });
+    });
+});
 
 function switchTab(tab) {
     console.log('Switching to tab', tab);
