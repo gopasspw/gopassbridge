@@ -80,35 +80,32 @@ function selectFocusedElement(parent) {
     }
 }
 
-function selectVisibleElements(selector) {
-    const visibleElements = [];
-
-    document.querySelectorAll(selector).forEach(element => {
-        if (isVisible(element)) {
-            visibleElements.push(element);
-        }
-    });
+function selectElements(selector) {
+    let elements = Array.from(document.querySelectorAll(selector));
 
     document.querySelectorAll('iframe,frame').forEach(iframe => {
         if (iframe.src.startsWith(window.location.origin)) {
-            iframe.contentWindow.document.body.querySelectorAll(selector).forEach(element => {
-                if (isVisible(element)) {
-                    visibleElements.push(element);
-                }
-            });
+            elements = elements.concat(Array.from(iframe.contentWindow.document.body.querySelectorAll(selector)));
         }
     });
 
-    return visibleElements;
+    return elements;
 }
 
-function selectFirstVisiblePasswordElement(selector) {
-    for (let element of selectVisibleElements(selector)) {
-        if (
-            ignorePasswordIds.every(ignore => {
-                return element.id !== ignore;
-            })
-        ) {
+function selectVisibleElements(selector) {
+    const elements = selectElements(selector);
+    return elements.filter(element => isVisible(element));
+}
+
+function selectPasswordElement() {
+    const selector = 'input[type=password]';
+    let elements = selectVisibleElements(selector);
+    if (elements.length === 0) {
+        // Also accept hidden password fields, e.g. like on https://accounts.google.com/ServiceLogin
+        elements = selectElements(selector);
+    }
+    for (let element of elements) {
+        if (ignorePasswordIds.every(ignore => element.id !== ignore)) {
             return element;
         }
     }
@@ -191,8 +188,7 @@ function _getInputFieldsFromPasswordInput(passwordInput) {
 function getInputFields() {
     const focusedInputs = getInputFieldsFromFocus();
     let loginInput = focusedInputs.loginInput;
-    let passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
-
+    let passwordInput = focusedInputs.passwordInput || selectPasswordElement();
     if (passwordInput && passwordInput.form && !focusedInputs.loginInput) {
         return _getInputFieldsFromPasswordInput(passwordInput);
     }
@@ -228,13 +224,13 @@ function updateInputFields(login, password) {
 }
 
 function tryLogIn() {
-    const passwortInputs = selectVisibleElements('input[type=password]');
-    if (passwortInputs.length > 1) {
-        passwortInputs[1].select();
+    const passwordInputs = selectVisibleElements('input[type=password]');
+    if (passwordInputs.length > 1) {
+        passwordInputs[1].select();
     } else {
         window.requestAnimationFrame(() => {
-            if (passwortInputs.length === 1 && passwortInputs[0].form) {
-                const submitButton = selectFirstVisibleFormElement(passwortInputs[0].form, '[type=submit]');
+            if (passwordInputs.length === 1 && passwordInputs[0].form) {
+                const submitButton = selectFirstVisibleFormElement(passwordInputs[0].form, '[type=submit]');
                 if (submitButton) {
                     submitButton.click();
                 }
