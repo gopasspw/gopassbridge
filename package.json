@@ -31,18 +31,18 @@
   "dependencies": {},
   "devDependencies": {
     "codecov": "^3.6.5",
-    "eslint": "^6.0.1",
-    "eslint-plugin-json": "^2.0.1",
-    "eslint-plugin-mocha": "^6.0.0",
-    "eslint-plugin-promise": "^4.0.1",
+    "eslint": "^8.9.0",
+    "eslint-plugin-json": "^2.1.2",
+    "eslint-plugin-mocha": "^6.3.0",
+    "eslint-plugin-promise": "^4.3.1",
     "global": "^4.3.2",
-    "jest": "^24.8.0",
+    "jest": "^27.5.1",
     "jest-environment-jsdom": "^24.8.0",
-    "jest-environment-jsdom-global": "^1.0.3",
+    "jest-environment-jsdom-global": "^3.0.0",
     "jest-plugin-unhandled-promise": "^2.9.0",
     "jest-webextension-mock": "^3.3.0",
     "npm-run-all": "^4.1.2",
-    "prettier": "^1.10.2",
-    "web-ext": "^4.0.0"
+    "prettier": "^2.5.1",
+    "web-ext": "^6.7.0"
   }
 }
