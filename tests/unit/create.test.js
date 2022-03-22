@@ -15,7 +15,7 @@ global.logAndDisplayError = jest.fn();
 global.currentPageUrl = 'http://some.domain';
 global.searchTerm = '';
 global.i18n = {
-    getMessage: jest.fn(key => {
+    getMessage: jest.fn((key) => {
         return `__MSG_${key}__`;
     }),
 };
@@ -182,7 +182,7 @@ describe('create', () => {
     });
 
     describe('initCreate', () => {
-        ['create_docreate', 'create_doabort', 'create_generate'].forEach(id => {
+        ['create_docreate', 'create_doabort', 'create_generate'].forEach((id) => {
             test(`registers eventhandler for ${id}`, () => {
                 const element = document.getElementById('create_docreate');
                 spyOn(element, 'addEventListener');

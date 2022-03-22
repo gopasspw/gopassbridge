@@ -115,7 +115,7 @@ describe('localStorage wrappers', () => {
     test('get key', () => {
         expect.assertions(1);
         return generic.setLocalStorageKey('muh', 123).then(() => {
-            return generic.getLocalStorageKey('muh').then(value => {
+            return generic.getLocalStorageKey('muh').then((value) => {
                 expect(value).toBe(123);
             });
         });
@@ -216,7 +216,7 @@ describe('checkVersion', () => {
         global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 4 });
         return generic.checkVersion().then(
             () => {},
-            error => {
+            (error) => {
                 expect(error.message).toBe('Please update gopass to version 1.8.5 or newer.');
             }
         );
@@ -225,7 +225,7 @@ describe('checkVersion', () => {
     test('resolves with minimum version', () => {
         expect.assertions(1);
         global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
-        return generic.checkVersion().then(value => {
+        return generic.checkVersion().then((value) => {
             expect(value).toBe(undefined);
         });
     });
@@ -233,7 +233,7 @@ describe('checkVersion', () => {
     test('resolves with larger version', () => {
         expect.assertions(1);
         global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 2, minor: 9, patch: 2 });
-        return generic.checkVersion().then(value => {
+        return generic.checkVersion().then((value) => {
             expect(value).toBe(undefined);
         });
     });
