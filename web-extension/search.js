@@ -9,7 +9,6 @@ function initSearch() {
     input.addEventListener('keypress', _onSearchKeypressEvent);
 
     setTimeout(() => {
-        debugger;
         input.focus();
         _onSearchInputEvent();
     }, 200);
@@ -27,25 +26,19 @@ function _onSearchKeypressEvent(event) {
 
 function _onSearchInputEvent() {
     const input = document.getElementById('search_input');
-    debugger;
     console.log('LKG currentPageUrl:' + currentPageUrl);
     if (input.value.length) {
         search(input.value);
     } else {
-        chrome.tabs.getSelected(function (tab) {
-            debugger;
-            console.log(tab.url);
-            const url = new URL(tab.url);
-            const host = url.host;
-            document.getElementById('search_input').value = host;
-            // use `url` here inside the callback because it's asynchronous!
-            searchHost(host);
-        });
-
-        // chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        //     // const currentHost = urlDomain(currentPageUrl);
-
-        // });
+        window.chrome &&
+            chrome.tabs &&
+            chrome.tabs.getSelected(function (tab) {
+                console.log(tab.url);
+                const url = new URL(tab.url);
+                const host = url.host;
+                document.getElementById('search_input').value = host;
+                searchHost(host);
+            });
     }
 }
 
@@ -99,7 +92,6 @@ function search(term) {
 }
 
 function searchHost(host) {
-    debugger;
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
     // document.getElementById('search_input').value = '';
 
