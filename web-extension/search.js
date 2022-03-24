@@ -29,15 +29,13 @@ function _onSearchInputEvent() {
     if (input.value.length) {
         search(input.value);
     } else {
-        window.chrome &&
-            chrome.tabs &&
-            chrome.tabs.getSelected(function (tab) {
-                console.log(tab.url);
-                const url = new URL(tab.url);
-                const host = url.host;
-                document.getElementById('search_input').value = host;
-                searchHost(host);
-            });
+        // covers both chrome and ff
+        browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
+            const url = new URL(tabs[0].url);
+            const host = url.host;
+            document.getElementById('search_input').value = host;
+            searchHost(host);
+        }, console.error);
     }
 }
 
