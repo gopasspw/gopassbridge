@@ -1,5 +1,8 @@
-## Next Release
+## 0.9.0 / 2022-04-08
 
+* Fix a glitch in a German translation
+* Add option to create new credentials against an already-saved site
+* Hide password in detail view when using gopass v1.10
 ## 0.8.0 / 2020-08-20
 
 * Copy passwords to clipboard directly via gopass, including auto-clearing of clipboard (#147)
