@@ -16,7 +16,7 @@ function initSearch() {
 function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
         const elements = document.getElementsByClassName('login');
-        if (elements.length === 1) {
+        if (elements.length >= 1) {
             _onEntryAction(event, elements[0]);
         }
         event.preventDefault();
