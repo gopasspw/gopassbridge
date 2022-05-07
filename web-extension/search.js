@@ -15,9 +15,10 @@ function initSearch() {
 
 function _onSearchKeypressEvent(event) {
     if (event.keyCode === 13) {
-        const elements = document.getElementsByClassName('login');
-        if (elements.length === 1) {
-            _onEntryAction(event, elements[0]);
+        const logins = document.getElementsByClassName('login');
+        const creates = document.getElementsByClassName('createlogin');
+        if (logins.length - creates.length === 1) {
+            _onEntryAction(event, logins[0]);
         }
         event.preventDefault();
     }
@@ -133,7 +134,7 @@ function _displaySearchResults(response, isHostQuery) {
 const _createAnotherEntryButton = () =>
     createButtonWithCallback(
         {
-            className: 'login',
+            className: 'login createlogin',
             textContent: i18n.getMessage('createAnotherEntryButtonText'),
         },
         switchToCreateNewDialog
