@@ -259,7 +259,7 @@ describe('search method', () => {
                         ],
                         [
                             {
-                                className: 'login',
+                                className: 'login createlogin',
                                 textContent: '__KEY_createAnotherEntryButtonText__',
                             },
                             expect.any(Function),
@@ -456,7 +456,7 @@ describe('search input', () => {
             addDummySearchResult();
             addDummySearchResult();
             const event = simulateKeyPress({ keyCode: 13 });
-            expect(global.browser.tabs.sendMessage.mock.calls.length).toBe(0);
+            expect(global.browser.runtime.sendMessage.mock.calls.length).toBe(0);
             expect(event.preventDefault.mock.calls.length).toBe(1);
         });
 
