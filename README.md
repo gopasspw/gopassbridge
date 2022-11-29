@@ -7,7 +7,7 @@
 [![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg?colorB=45bf1e)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
 [![Mozilla Add-on](https://img.shields.io/amo/d/gopass-bridge.svg)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
 
-### Chrome:
+### Chrome / Edge ([via Chrome Webstore](https://support.microsoft.com/en-us/microsoft-edge/add-turn-off-or-remove-extensions-in-microsoft-edge-9c0ec68c-2fbc-2f2c-9ff0-bdc76f46b026)):
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kkhfnlkhiapbiehimabddjbimfaijdhk.svg?colorB=45bf1e)](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/kkhfnlkhiapbiehimabddjbimfaijdhk.svg)](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
 
