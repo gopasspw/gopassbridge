@@ -60,6 +60,12 @@
       "suggested_key": {
         "default": "Ctrl+Shift+U"
       }
+    },
+    "doLogin": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L"
+      },
+      "description": "Do Login"
     }
   },
 
