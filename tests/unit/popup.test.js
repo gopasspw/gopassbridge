@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 jest.useFakeTimers();
+jest.spyOn(global, 'setTimeout');
 
 global.logError = jest.fn();
 global.getSettings = jest.fn();
