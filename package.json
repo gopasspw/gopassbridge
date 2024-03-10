@@ -4,10 +4,10 @@
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "web-extension/gopassbridge.js",
   "scripts": {
-    "test": "npm-run-all test:*",
+    "test": "npm run test:lint && npm run test:jest",
     "test:lint": "npm run lint",
     "test:jest": "jest",
-    "lint": "npm-run-all lint:*",
+    "lint": "npm run lint:eslint && npm run lint:webext && npm run lint:prettier",
     "lint:eslint": "eslint --ext=.js,.json web-extension manifests tests",
     "lint:webext": "web-ext -s firefox-release lint",
     "lint:prettier": "prettier --end-of-line auto --check \"**/*\"",
@@ -30,19 +30,16 @@
   "homepage": "https://github.com/gopasspw/gopassbridge#readme",
   "dependencies": {},
   "devDependencies": {
-    "codecov": "^3.6.5",
-    "eslint": "^8.9.0",
-    "eslint-plugin-json": "^2.1.2",
-    "eslint-plugin-mocha": "^6.3.0",
-    "eslint-plugin-promise": "^4.3.1",
-    "global": "^4.3.2",
-    "jest": "^24.5.1",
-    "jest-environment-jsdom": "^24.8.0",
-    "jest-environment-jsdom-global": "^3.0.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-mocha": "^10.4.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-environment-jsdom-global": "^4.0.0",
     "jest-plugin-unhandled-promise": "^2.9.0",
-    "jest-webextension-mock": "^3.3.0",
-    "npm-run-all": "^4.1.2",
-    "prettier": "^2.5.1",
-    "web-ext": "^6.7.0"
+    "jest-webextension-mock": "^3.8.9",
+    "prettier": "^3.2.5",
+    "web-ext": "^7.11.0"
   }
 }
