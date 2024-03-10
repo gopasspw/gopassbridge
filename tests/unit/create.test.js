@@ -28,12 +28,7 @@ const create = window.tests.create;
 
 describe('create', () => {
     afterEach(() => {
-        global.armSpinnerTimeout.mockReset();
-        global.sendNativeAppMessage.mockReset();
-        global.searchHost.mockReset();
-        global.urlDomain.mockReset();
-        global.switchToSearch.mockReset();
-        global.logAndDisplayError.mockReset();
+        jest.clearAllMocks();
     });
 
     test('doAbort switches to search', () => {
@@ -185,7 +180,7 @@ describe('create', () => {
         ['create_docreate', 'create_doabort', 'create_generate'].forEach((id) => {
             test(`registers eventhandler for ${id}`, () => {
                 const element = document.getElementById('create_docreate');
-                spyOn(element, 'addEventListener');
+                const mock = jest.spyOn(element, 'addEventListener');
                 create.initCreate();
                 expect(element.addEventListener).toHaveBeenCalledTimes(1);
             });
