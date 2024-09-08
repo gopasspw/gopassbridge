@@ -36,6 +36,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         # Docs: https://github.com/marketplace/actions/codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
