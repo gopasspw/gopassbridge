@@ -1,3 +1,11 @@
+## 1.0.0 / 2024-09-05
+
+* Select first entry even if create login is shown (#223)
+* Update setup error detection and installation help message (#257)
+* Upgrade webextension-polyfill to v0.12.0 (#253)
+* Upgrade regex-weburl.js to latest version (#255)
+* Prepare for upcoming Manifest v3 changes
+
 ## 0.9.0 / 2022-04-08
 
 * Fix a glitch in a German translation
