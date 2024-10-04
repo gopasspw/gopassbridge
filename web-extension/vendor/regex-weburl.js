@@ -2,10 +2,11 @@
 // Regular Expression for URL validation
 //
 // Author: Diego Perini
-// Updated: 2010/12/05
+// Created: 2010/12/05
+// Updated: 2018/09/12
 // License: MIT
 //
-// Copyright (c) 2010-2013 Diego Perini (http://www.iport.it)
+// Copyright (c) 2010-2018 Diego Perini (http://www.iport.it)
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -48,54 +49,60 @@
 //   (since they are broadcast/network addresses)
 //
 // - Added exclusion of private, reserved and/or local networks ranges
-//
 // - Made starting path slash optional (http://example.com?foo=bar)
-//
 // - Allow a dot (.) at the end of hostnames (http://example.com.)
+// - Allow an underscore (_) character in host/domain names
+// - Check dot delimited parts length and total length
+// - Made protocol optional, allowed short syntax //
 //
 // Compressed one-line versions:
 //
-// Javascript version
+// Javascript regex version
 //
-// /^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i
+// /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\u00a1-\uffff][a-z0-9\u00a1-\uffff_-]{0,62})?[a-z0-9\u00a1-\uffff]\.)+(?:[a-z\u00a1-\uffff]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$/i
 //
-// PHP version
+// PHP version (uses % symbol as delimiter)
 //
-// _^(?:(?:https?|ftp)://)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)(?:\.(?:[a-z\x{00a1}-\x{ffff}0-9]-*)*[a-z\x{00a1}-\x{ffff}0-9]+)*(?:\.(?:[a-z\x{00a1}-\x{ffff}]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$_iuS
+// %^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\x{00a1}-\x{ffff}][a-z0-9\x{00a1}-\x{ffff}_-]{0,62})?[a-z0-9\x{00a1}-\x{ffff}]\.)+(?:[a-z\x{00a1}-\x{ffff}]{2,}\.?))(?::\d{2,5})?(?:[/?#]\S*)?$%iuS
 //
 var re_weburl = new RegExp(
-  "^" +
-    // protocol identifier
-    "(?:(?:https?|ftp)://)" +
-    // user:pass authentication
+    "^" +
+    // protocol identifier (optional)
+    // short syntax // still required
+    "(?:(?:(?:https?|ftp):)?\\/\\/)" +
+    // user:pass BasicAuth (optional)
     "(?:\\S+(?::\\S*)?@)?" +
     "(?:" +
-      // IP address exclusion
-      // private & local networks
-      "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
-      "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
-      "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
-      // IP address dotted notation octets
-      // excludes loopback network 0.0.0.0
-      // excludes reserved space >= 224.0.0.0
-      // excludes network & broacast addresses
-      // (first & last IP address of each class)
-      "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
-      "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
-      "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
+    // IP address exclusion
+    // private & local networks
+    "(?!(?:10|127)(?:\\.\\d{1,3}){3})" +
+    "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" +
+    "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" +
+    // IP address dotted notation octets
+    // excludes loopback network 0.0.0.0
+    // excludes reserved space >= 224.0.0.0
+    // excludes network & broadcast addresses
+    // (first & last IP address of each class)
+    "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" +
+    "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" +
+    "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" +
     "|" +
-      // host name
-      "(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)" +
-      // domain name
-      "(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*" +
-      // TLD identifier
-      "(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))" +
-      // TLD may end with dot
-      "\\.?" +
+    // host & domain names, may end with dot
+    // can be replaced by a shortest alternative
+    // (?![-_])(?:[-\\w\\u00a1-\\uffff]{0,63}[^-_]\\.)+
+    "(?:" +
+    "(?:" +
+    "[a-z0-9\\u00a1-\\uffff]" +
+    "[a-z0-9\\u00a1-\\uffff_-]{0,62}" +
+    ")?" +
+    "[a-z0-9\\u00a1-\\uffff]\\." +
+    ")+" +
+    // TLD identifier name, may end with dot
+    "(?:[a-z\\u00a1-\\uffff]{2,}\\.?)" +
     ")" +
-    // port number
+    // port number (optional)
     "(?::\\d{2,5})?" +
-    // resource path
+    // resource path (optional)
     "(?:[/?#]\\S*)?" +
-  "$", "i"
+    "$", "i"
 );
