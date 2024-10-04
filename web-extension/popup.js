@@ -3,13 +3,14 @@
 let spinnerTimeout;
 const SETUP_URL = 'https://github.com/gopasspw/gopass/blob/master/docs/setup.md#filling-in-passwords-from-browser';
 const SETUP_ERRORS = [
-    'Access to the specified native messaging host is forbidden',
+    'Access to the specified native messaging host is forbidden', // Chrome: extension ID not in allowed_origins
     'Attempt to postMessage on disconnected port',
     'Specified native messaging host not found',
     'Native host has exited', // Chrome: gopass-jsonapi not found or other error in gopass_wrapper.sh
     'Error when communicating with the native messaging host', // Chrome: gopass v1.10 returns invalid message
     'An unexpected error occurred', // Firefox: gopass-jsonapi not found or other error in gopass_wrapper.sh
     'Native application tried to send a message', // Firefox: gopass v1.10 returns invalid message
+    'No such native application', // Firefox: gopass-jsonapi not configured
 ];
 
 function armSpinnerTimeout() {
