@@ -14,10 +14,10 @@
     "96": "icons/gopassbridge-96.png"
   },
 
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}",
-      "strict_min_version": "60.0"
+      "strict_min_version": "79.0"
     }
   },
 
