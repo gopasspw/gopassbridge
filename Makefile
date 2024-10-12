@@ -29,7 +29,7 @@ release: package
 		$(LOCAL_WEB_EXT) -s $(CURDIR)/firefox-release build --overwrite-dest
 
 clean:
-		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill
+		rm -rf chrome firefox chrome-release firefox-release chrome.zip webextension-polyfill web-ext-artifacts
 
 format:
 		npm run format

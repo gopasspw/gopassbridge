@@ -102,6 +102,10 @@ describe('urlDomain', () => {
     test('extracts hostname', () => {
         expect(generic.urlDomain('http://www.muh.maeh.de:80/some/path?maeh')).toEqual('www.muh.maeh.de');
     });
+
+    test('extracts default "localhost" for invalid URL', () => {
+        expect(generic.urlDomain('invalid')).toEqual('localhost');
+    });
 });
 
 describe('localStorage wrappers', () => {
