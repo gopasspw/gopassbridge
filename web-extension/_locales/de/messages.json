@@ -100,7 +100,7 @@
     "description": "Title of changelog"
   },
   "optionsChangelogText": {
-    "message": "Änderungen können in der <a href=\"$URL$\">Github Änderungshistorie</a> verfolgt werden.",
+    "message": "Änderungen können in der <a href=\"$URL$\" target=\"_blank\"/>Github Änderungshistorie</a> verfolgt werden.",
     "description": "Text of changelog",
     "placeholders": {
       "url": {

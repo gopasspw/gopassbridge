@@ -100,7 +100,7 @@
     "description": "Title of changelog"
   },
   "optionsChangelogText": {
-    "message": "Changes can be found in the <a href=\"$URL$\">Github Changelog</a>.",
+    "message": "Changes can be found in the <a href=\"$URL$\" target=\"_blank\"/>Github Changelog</a>.",
     "description": "Text of changelog",
     "placeholders": {
       "url": {
