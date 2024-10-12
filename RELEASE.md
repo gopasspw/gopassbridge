@@ -1,6 +1,8 @@
 # Release new version
 
- 1. Determine next version x.y.z. Follow semantic versioning to mark breaking changes.
+ 1. Determine next version x.y.z.
+    - follow semantic versioning to mark breaking changes
+    - in case of a new major version adapt "Supported Versions" in `SECURITY.md`
  2. Create new commit "Release x.y.z" with updated version in following files:
     - chrome-manifest.json
     - chrome-manifest-dev.json

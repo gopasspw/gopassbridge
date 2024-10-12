@@ -5,9 +5,9 @@
 These versions of gopassbridge are currently supported with security updates:
 
 | Version | Supported          |
-| ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+|---------|--------------------|
+| 2.x.x   | :white_check_mark: |
+| < 2.0   | :x:                |
 
 These browsers are actively supported for usage with gopassbridge:
 
