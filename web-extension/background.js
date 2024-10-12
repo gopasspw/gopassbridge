@@ -224,9 +224,11 @@ function initBackground() {
 
 initBackground();
 
-window.tests = {
-    background: {
-        initBackground,
-        processMessageAndCatch,
-    },
-};
+if ('window' in globalThis) {
+    window.tests = {
+        background: {
+            initBackground,
+            processMessageAndCatch,
+        },
+    };
+}
