@@ -1,9 +1,27 @@
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #fff;
+        --row-background-color: #fff;
+        --text-color: #000;
+        --hover-color: #bde;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #111;
+        --row-background-color: #000;
+        --text-color: #ddd;
+        --hover-color: #bde3;
+    }
+}
+
 body {
     padding: 0;
     margin: 0;
     font-family: sans-serif;
     min-width: 300px;
-    background: white;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .search input {
@@ -14,6 +32,11 @@ body {
     background: url('icons/si-glyph-magnifier.svg') center right 6px no-repeat;
     background-size: 16px 16px;
     padding: 7px 20px 7px 7px;
+}
+
+input {
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .search input:focus {
@@ -42,11 +65,12 @@ body {
     border: 0;
     border-bottom: 1px dotted #6bd6e4;
     text-align: left;
-    background: white url('icons/si-glyph-key-2.svg') no-repeat left 8px center;
+    background: var(--row-background-color) url('icons/si-glyph-key-2.svg') no-repeat left 8px center;
     background-size: 16px 16px;
     line-height: 1.2;
     font-size: 12px;
     min-height: 32px;
+    color: #ddd;
 }
 
 .detail-clickable-value:hover {
@@ -96,7 +120,7 @@ body {
 .login:hover,
 .login:focus {
     outline: 0;
-    background-color: #b6dee3;
+    background-color: var(--hover-color);
 }
 
 .entry:hover .copy,
