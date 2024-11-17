@@ -1,3 +1,7 @@
+## 2.1.0 / 2024-11-17
+
+* Support dark mode (#266, #270)
+
 ## 2.0.0 / 2024-10-12
 
 * Migrate Chrome extension to Manifest V3 (#261)
