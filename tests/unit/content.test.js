@@ -7,18 +7,22 @@ let widthMockReturn = 50;
 
 global.getSyncStorage = () => null;
 
-Object.defineProperties(global.HTMLElement.prototype, {
-    offsetHeight: {
-        get: () => {
-            return heightMockReturn;
+function mockElementSize(htmlElementClass) {
+    Object.defineProperties(htmlElementClass.prototype, {
+        offsetHeight: {
+            get: () => {
+                return heightMockReturn;
+            },
         },
-    },
-    offsetWidth: {
-        get: () => {
-            return widthMockReturn;
+        offsetWidth: {
+            get: () => {
+                return widthMockReturn;
+            },
         },
-    },
-});
+    });
+}
+
+mockElementSize(global.HTMLElement);
 
 require('content.js');
 
@@ -238,20 +242,23 @@ describe('on sample login form with inputs in iframe', () => {
         heightMockReturn = 10;
         widthMockReturn = 50;
         document.body.innerHTML =
-            "<html><body><iframe src='https://www.somedomain.com/iframe.html'></iframe></body></html>";
+            "<html><body><iframe src='https://www.somedomain.test/iframe.html'></iframe></body></html>";
         const iframe = document.querySelectorAll('iframe')[0];
-        iframe.contentWindow.document.write(`
+        iframe.contentDocument.write(`
             <form id='form' action='/session' method='post'>
                 <input id='login' type='text' class='test-login'>
                 <input id='login2' type='text' class='another-test-login'>
                 <input type='password' class='test-password'>
                 <input id='submit' type='submit'>
-            </form>`);
+            </form>
+        `);
+
+        mockElementSize(iframe.contentWindow.HTMLElement);
     });
 
     test('selects login and password', () => {
         jsdom.reconfigure({
-            url: 'https://www.somedomain.com/',
+            url: 'https://www.somedomain.test/',
         });
         const iframe = document.querySelectorAll('iframe')[0];
         content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
@@ -260,7 +267,7 @@ describe('on sample login form with inputs in iframe', () => {
 
     test('does not select login and password if iframe starts with different url', () => {
         jsdom.reconfigure({
-            url: 'https://www.someotherdomain.com/',
+            url: 'https://www.someotherdomain.test/',
         });
         const iframe = document.querySelectorAll('iframe')[0];
         content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
@@ -269,7 +276,7 @@ describe('on sample login form with inputs in iframe', () => {
 
     test('selects second textfield if focused', () => {
         jsdom.reconfigure({
-            url: 'https://www.somedomain.com/',
+            url: 'https://www.somedomain.test/',
         });
         const iframe = document.querySelectorAll('iframe')[0];
         const second = iframe.contentWindow.document.getElementsByClassName('another-test-login')[0];

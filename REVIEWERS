@@ -2,7 +2,7 @@
 ===================
 
 the webextension-polyfill.js is from https://github.com/mozilla/webextension-polyfill.git
-Currently v0.6.0 built with the webextension-polyfill target in the Makefile
+Currently v0.12.0 built with the webextension-polyfill target in the Makefile
 The code is just bundled but not minified.
 
 regex-weburl.js is from https://gist.github.com/dperini/729294 (MIT Licensed)

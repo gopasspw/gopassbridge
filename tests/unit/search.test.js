@@ -64,7 +64,7 @@ describe('search method', () => {
     describe('initSearch', () => {
         test('focuses input', () => {
             const input = document.getElementById('search_input');
-            spyOn(input, 'focus');
+            jest.spyOn(input, 'focus');
             search.initSearch();
             expect(input.focus).toHaveBeenCalledTimes(0);
             jest.runAllTimers();
@@ -73,9 +73,9 @@ describe('search method', () => {
 
         test(`registers eventhandlers for input`, () => {
             const input = document.getElementById('search_input');
-            spyOn(input, 'addEventListener');
+            jest.spyOn(input, 'addEventListener');
             search.initSearch();
-            expect(input.addEventListener.calls.allArgs()).toEqual([
+            expect(input.addEventListener.mock.calls).toEqual([
                 ['input', search._onSearchInputEvent],
                 ['keypress', search._onSearchKeypressEvent],
             ]);
@@ -176,8 +176,10 @@ describe('search method', () => {
 
         test('sends search message for host', () => {
             expect.assertions(1);
-            return search.searchHost('muh.com').then(() => {
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ host: 'muh.com', type: 'queryHost' }]]);
+            return search.searchHost('something.test').then(() => {
+                expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                    [{ host: 'something.test', type: 'queryHost' }],
+                ]);
             });
         });
 

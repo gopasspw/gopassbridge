@@ -1,8 +1,28 @@
+## 2.1.0 / 2024-11-17
+
+* Support dark mode (#266, #270)
+
+## 2.0.0 / 2024-10-12
+
+* Migrate Chrome extension to Manifest V3 (#261)
+  * Note: Firefox extension will be migrated separately to reduce the risk in case of bugs
+* Fix link to changelog from options (#260)
+* Document security policy and supported versions: https://github.com/gopasspw/gopassbridge/security
+
+## 1.0.0 / 2024-10-05
+
+* Select first entry even if create login is shown (#223)
+* Update setup error detection and installation help message (#257)
+* Upgrade webextension-polyfill to v0.12.0 (#253)
+* Upgrade regex-weburl.js to latest version (#255)
+* Prepare for upcoming Manifest V3 changes
+
 ## 0.9.0 / 2022-04-08
 
 * Fix a glitch in a German translation
 * Add option to create new credentials against an already-saved site
 * Hide password in detail view when using gopass v1.10
+
 ## 0.8.0 / 2020-08-20
 
 * Copy passwords to clipboard directly via gopass, including auto-clearing of clipboard (#147)

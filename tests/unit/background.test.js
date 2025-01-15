@@ -30,6 +30,12 @@ describe('background', () => {
         global.i18n.getMessage.mockClear();
         global.browser.tabs.sendMessage.mockClear();
         global.executeOnSetting.mockClear();
+
+        jest.spyOn(global.console, 'warn');
+    });
+
+    afterEach(() => {
+        global.console.warn.mockReset();
     });
 
     test('registers message processors on init', () => {
@@ -299,8 +305,6 @@ describe('background', () => {
         test('opens auth popup but does not resolve auth request after URL mismatch', () => {
             expect.assertions(6);
 
-            spyOn(global.console, 'warn');
-
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
             return windowCreatePromise.then(() => {
@@ -315,7 +319,7 @@ describe('background', () => {
                         expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
                         expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
                         expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
-                        expect(global.console.warn.calls.allArgs()).toEqual([
+                        expect(global.console.warn.mock.calls).toEqual([
                             [
                                 'Could not resolve auth request due to URL mismatch',
                                 validAuthPopupUrl,
@@ -382,8 +386,6 @@ describe('background', () => {
         test('does not resolve auth request when no request is pending', () => {
             expect.assertions(6);
 
-            spyOn(global.console, 'warn');
-
             const url = validAuthPopupUrl;
             const processMessagePromise = background.processMessageAndCatch(
                 { type: 'LOGIN_TAB', entry: 'some/entry' },
@@ -396,7 +398,7 @@ describe('background', () => {
                 expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
                 expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
                 expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
-                expect(global.console.warn.calls.allArgs()).toEqual([
+                expect(global.console.warn.mock.calls).toEqual([
                     ['Tried to resolve auth request, but no auth request is currently pending.', url],
                 ]);
             });

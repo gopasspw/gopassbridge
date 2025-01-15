@@ -102,8 +102,14 @@ function _processExtensionMessage(message) {
 }
 
 function _showNotificationIfNoPopup(message) {
-    const popups = browser.extension.getViews({ type: 'popup' });
-    if (popups.length === 0 && !currentAuthRequest) {
+    let hasPopup = true;
+    // TODO How to determine if we need to fallback to notification in V3 service worker? https://github.com/gopasspw/gopassbridge/issues/263
+    if ('getViews' in browser.extension) {
+        // Only compatible with Manifest V2 background script
+        const popups = browser.extension.getViews({ type: 'popup' });
+        hasPopup = popups.length > 0;
+    }
+    if (!hasPopup && !currentAuthRequest) {
         showNotificationOnSetting(message);
     }
 }
@@ -224,9 +230,11 @@ function initBackground() {
 
 initBackground();
 
-window.tests = {
-    background: {
-        initBackground,
-        processMessageAndCatch,
-    },
-};
+if ('window' in globalThis) {
+    window.tests = {
+        background: {
+            initBackground,
+            processMessageAndCatch,
+        },
+    };
+}

@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
-  "version": "0.9.0",
+  "version": "2.1.0",
   "description": "__MSG_extensionDescription__",
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/gopasspw/gopassbridge",
@@ -27,16 +27,10 @@
     }
   ],
 
-  "minimum_chrome_version": "63",
+  "minimum_chrome_version": "88",
 
   "background": {
-    "scripts": [
-      "vendor/browser-polyfill.js",
-      "generic.js",
-      "i18n.js",
-      "background.js"
-    ],
-    "persistent": true
+    "service_worker": "service_worker.js"
   },
 
   "options_ui": {
@@ -45,7 +39,7 @@
 
   "default_locale": "en",
 
-  "browser_action": {
+  "action": {
     "browser_style": true,
     "default_icon": {
       "48": "icons/gopassbridge-48.png",
@@ -56,9 +50,10 @@
   },
 
   "commands": {
-    "_execute_browser_action": {
+    "_execute_action": {
       "suggested_key": {
-        "default": "Ctrl+Shift+U"
+        "default": "Ctrl+Shift+U",
+        "mac": "Command+Shift+U"
       }
     }
   },
@@ -67,10 +62,17 @@
     "activeTab",
     "storage",
     "nativeMessaging",
-    "http://*/*",
-    "https://*/*",
     "notifications",
     "webRequest",
-    "webRequestBlocking"
-  ]
+    "webRequestAuthProvider"
+  ],
+
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; style-src 'unsafe-inline';"
+  }
 }

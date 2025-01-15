@@ -1,5 +1,42 @@
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #fff;
+        --text-color: #000;
+        --link-color: #004650;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #23222b;
+        --text-color: #ddd;
+        --link-color: #bde;
+    }
+}
+
+body {
+    min-width: 600px;
+}
+
+body,
+input {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+a {
+    color: var(--link-color);
+}
+
 .container > label {
     display: block;
+}
+
+.container > * {
+    margin: 12px 0;
+}
+
+li {
+    line-height: 2;
 }
 
 #savingindicator {
@@ -17,4 +54,8 @@
 #savingindicator.saved {
     opacity: 1;
     transition: none;
+}
+
+#clear {
+    height: 32px;
 }

@@ -94,9 +94,11 @@ function createButtonWithCallback(attributes, callback) {
 }
 
 function urlDomain(urlString) {
-    const a = document.createElement('a');
-    a.href = urlString;
-    return a.hostname;
+    try {
+        return new URL(urlString).hostname;
+    } catch (e) {
+        return 'localhost';
+    }
 }
 
 function setLocalStorageKey(key, value) {
@@ -132,19 +134,21 @@ function isChrome() {
     return browser.runtime.getURL('/').startsWith('chrome');
 }
 
-window.tests = {
-    generic: {
-        sendNativeAppMessage,
-        executeOnSetting,
-        urlDomain,
-        setLocalStorageKey,
-        getLocalStorageKey,
-        createButtonWithCallback,
-        showNotificationOnSetting,
-        getPopupUrl,
-        isChrome,
-        openURLOnEvent,
-        makeAbsolute,
-        checkVersion,
-    },
-};
+if ('window' in globalThis) {
+    window.tests = {
+        generic: {
+            sendNativeAppMessage,
+            executeOnSetting,
+            urlDomain,
+            setLocalStorageKey,
+            getLocalStorageKey,
+            createButtonWithCallback,
+            showNotificationOnSetting,
+            getPopupUrl,
+            isChrome,
+            openURLOnEvent,
+            makeAbsolute,
+            checkVersion,
+        },
+    };
+}

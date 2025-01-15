@@ -100,7 +100,7 @@
     "description": "Title of changelog"
   },
   "optionsChangelogText": {
-    "message": "Changes can be found in the <a href=\"$URL$\">Github Changelog</a>.",
+    "message": "Changes can be found in the <a href=\"$URL$\" target=\"_blank\"/>Github Changelog</a>.",
     "description": "Text of changelog",
     "placeholders": {
       "url": {
@@ -177,7 +177,7 @@
     "description": "Error when another basic authentication popup is already open"
   },
   "correctlySetup": {
-    "message": "Is your browser correctly set up for gopass? If you are upgrading to gopass v1.10 or newer you need to re-run the gopass-jsonapi setup command.",
+    "message": "Your browser's integration with gopass is probably not set up. Please run `gopass-jsonapi configure`.",
     "description": "Error when gopassbridge is not correctly setup"
   }
 }

@@ -100,7 +100,7 @@
     "description": "Title of changelog"
   },
   "optionsChangelogText": {
-    "message": "Änderungen können in der <a href=\"$URL$\">Github Änderungshistorie</a> verfolgt werden.",
+    "message": "Änderungen können in der <a href=\"$URL$\" target=\"_blank\"/>Github Änderungshistorie</a> verfolgt werden.",
     "description": "Text of changelog",
     "placeholders": {
       "url": {
@@ -177,7 +177,7 @@
     "description": "Error when another basic authentication popup is already open"
   },
   "correctlySetup": {
-    "message": "Ist Gopass für Gopass Bridge eingerichtet? Bei Aktualisierung auf Gopass v1.10 oder neuer muss das gopass-jsonapi Setup erneut ausgeführt werden.",
+    "message": "Die Gopass Integration für diesen Browser ist wahrscheinlich nicht installiert. Bitte `gopass-jsonapi configure` ausführen.",
     "description": "Error when gopassbridge is not correctly setup"
   }
 }
