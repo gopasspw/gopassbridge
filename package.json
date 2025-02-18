@@ -41,7 +41,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-jsdom-global": "^4.0.0",
     "jest-plugin-unhandled-promise": "^2.9.0",
-    "jest-webextension-mock": "^4.0.0",
+    "jest-webextension-mock": "3.9.0",
     "prettier": "^3.5.1",
     "web-ext": "^8.4.0"
   }
