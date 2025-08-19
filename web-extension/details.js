@@ -64,8 +64,11 @@ function _createURLValueElement(value) {
 
 function _createSimpleValueElement(value) {
     const valueElement = document.createElement('span');
-    valueElement.innerText = value;
+    valueElement.innerHTML = `<span class="gripper"></span>${value}`;
     valueElement.addEventListener('click', _copyElementToClipboard);
+    valueElement.addEventListener('dragstart', function (e) {
+        e.dataTransfer.setData('text', value);
+    });
     return valueElement;
 }
 
@@ -80,6 +83,7 @@ function _isURL(value) {
 function _createFlatValueElement(value) {
     const valueElement = _isURL(value) ? _createURLValueElement(value) : _createSimpleValueElement(value);
     valueElement.classList.add('detail-clickable-value');
+    valueElement.setAttribute('draggable', 'true');
     return valueElement;
 }
 
