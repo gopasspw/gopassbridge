@@ -11,6 +11,7 @@ function _processLoginTabMessage(entry, tab) {
         if (response.username === urlDomain(tab.url)) {
             throw new Error(i18n.getMessage('couldNotDetermineUsernameMessage'));
         }
+        setLocalStorageKey(`${LAST_LOGIN_USED_PREFIX}${tab.url}`, entry);
 
         return browser.tabs
             .sendMessage(tab.id, {
@@ -218,8 +219,30 @@ function _resolveCurrentAuthRequest(result, senderUrl) {
     }
 }
 
+function doInCurrentTab(tabCallback) {
+    chrome.tabs.query({ currentWindow: true, active: true }, function (tabArray) {
+        tabCallback(tabArray[0]);
+    });
+}
+
+function doLogin() {
+    doInCurrentTab(async (tab) => {
+        _processLoginTabMessage(await getLocalStorageKey(`${LAST_LOGIN_USED_PREFIX}${tab.url}`), tab);
+    });
+}
+
+function initCommands() {
+    const commandsMap = {
+        doLogin: doLogin,
+    };
+    chrome.commands.onCommand.addListener((command) => {
+        commandsMap[command]();
+    });
+}
+
 function initBackground() {
     browser.runtime.onMessage.addListener(processMessageAndCatch);
+    initCommands();
 
     browser.webRequest.onAuthRequired.addListener(
         _onAuthRequired,
