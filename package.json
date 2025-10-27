@@ -43,6 +43,6 @@
     "jest-plugin-unhandled-promise": "^2.9.0",
     "jest-webextension-mock": "3.9.0",
     "prettier": "^3.5.1",
-    "web-ext": "^8.10.0"
+    "web-ext": "^9.1.0"
   }
 }
