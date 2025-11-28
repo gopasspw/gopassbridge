@@ -30,19 +30,19 @@
   "homepage": "https://github.com/gopasspw/gopassbridge#readme",
   "dependencies": {},
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@eslint/js": "^9.20.0",
-    "eslint": "^9.20.1",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
     "eslint-plugin-json": "^4.0.0",
-    "eslint-plugin-mocha": "^10.5.0",
+    "eslint-plugin-mocha": "^11.2.0",
     "eslint-plugin-promise": "^7.2.1",
-    "globals": "^15.15.0",
+    "globals": "^16.5.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-jsdom-global": "^4.0.0",
     "jest-plugin-unhandled-promise": "^2.9.0",
     "jest-webextension-mock": "3.9.0",
-    "prettier": "^3.5.1",
+    "prettier": "^3.7.1",
     "web-ext": "^9.2.0"
   }
 }
