@@ -1,7 +1,6 @@
 ![Build Status](https://github.com/gopasspw/gopassbridge/actions/workflows/nodejs.yml/badge.svg?branch=master)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gopasspw/gopass/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/gopasspw/gopassbridge/branch/master/graph/badge.svg)](https://codecov.io/gh/gopasspw/gopassbridge)
-[![Maintainability](https://api.codeclimate.com/v1/badges/2dc6eded0845ab008be7/maintainability)](https://codeclimate.com/github/gopasspw/gopassbridge/maintainability)
 
 ### Firefox:
 [![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg?colorB=45bf1e)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
