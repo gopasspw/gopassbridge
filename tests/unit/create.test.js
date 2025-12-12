@@ -70,9 +70,9 @@ describe('create', () => {
 
         test('starts query after successful finishing', () => {
             expect.assertions(2);
-            promise.then(() => {
+            return promise.then(() => {
                 expect(global.searchHost).toHaveBeenCalledTimes(1);
-                expect(global.getSettings).toHaveBeenCalledTimes(4);
+                expect(global.getSettings).toHaveBeenCalledTimes(1);
             });
         });
     });
