@@ -16,9 +16,9 @@
   "content_scripts": [
     {
       "matches": [
-          "http://*/*",
-          "https://*/*"
-        ],
+        "http://*/*",
+        "https://*/*"
+      ],
       "js": [
         "vendor/browser-polyfill.js",
         "generic.js",

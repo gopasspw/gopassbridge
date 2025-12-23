@@ -138,7 +138,7 @@
   },
   "optionsAppendToLoginName": {
     "message": "Append login/username to password path on creation",
-    "description" : "label of append login to password path checkbox"
+    "description": "label of append login to password path checkbox"
   },
   "optionsLoginAfterFillLabel": {
     "message": "Login after filling in credentials",

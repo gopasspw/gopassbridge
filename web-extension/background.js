@@ -92,7 +92,6 @@ function _processExtensionMessage(message) {
     switch (message.type) {
         case 'LOGIN_TAB':
             return _processLoginTabMessage(entry, tab);
-
         case 'OPEN_TAB':
             return _openEntry(entry);
 

@@ -1,5 +1,4 @@
 {
-
   "manifest_version": 2,
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
@@ -19,7 +18,9 @@
       "id": "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}",
       "strict_min_version": "79.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
@@ -27,9 +28,9 @@
   "content_scripts": [
     {
       "matches": [
-          "http://*/*",
-          "https://*/*"
-        ],
+        "http://*/*",
+        "https://*/*"
+      ],
       "js": [
         "vendor/browser-polyfill.js",
         "generic.js",

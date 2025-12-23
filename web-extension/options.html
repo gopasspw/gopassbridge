@@ -1,34 +1,57 @@
 <!doctype html>
 <html>
-<head>
-    <meta charset="utf-8"/>
+  <head>
+    <meta charset="utf-8">
     <title>gopass bridge settings</title>
-    <link rel="stylesheet" href="options.css"/>
-</head>
-<body>
-<div class="container">
-    <h1>__MSG_optionsChangelogTitle__</h1>
-    __MSG_optionsChangelogText__
-    <h1>__MSG_optionsUsageHintsTitle__</h1>
-    <ul>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>__MSG_optionsChangelogTitle__</h1>
+      __MSG_optionsChangelogText__
+      <h1>__MSG_optionsUsageHintsTitle__</h1>
+      <ul>
         <li>__MSG_optionsUsageHintsClipboardText__</li>
         <li>__MSG_optionsUsageHintsDetailsText__</li>
         <li>__MSG_optionsUsageHintsKeyboardShortcutText__</li>
-    </ul>
-    <h1>__MSG_optionsSettingsTitle__<span id="savingindicator"></span></h1>
-    <label><input type="checkbox" id="markfields"/> __MSG_optionsMarkFieldsLabel__</label>
-    <label><input type="checkbox" id="sendnotifications"/> __MSG_optionsSendNotificationsLabel__</label>
-    <label><input type="checkbox" id="submitafterfill"/> __MSG_optionsLoginAfterFillLabel__</label>
-    <label><input type="checkbox" id="handleauthrequests"/> __MSG_optionsHandleAuthRequestsLabel__</label>
-    <label><input type="checkbox" id="appendlogintoname"/> __MSG_optionsAppendToLoginName__</label>
-    <label>__MSG_optionsDefaultFolderLabel__ <input type="text" id="defaultfolder"/></label>
-    <label>__MSG_optionsOmitKeysLabel__ <input type="text" id="omitkeys"/></label>
-    <label>__MSG_optionsDefaultPasswordLengthLabel__ <input type="text" id="defaultpasswordlength"/></label>
-    <button type="button" id="clear">__MSG_optionsResetButtonText__</button>
-</div>
-<script src="vendor/browser-polyfill.js"></script>
-<script src="generic.js"></script>
-<script src="options.js"></script>
-<script src="i18n.js"></script>
-</body>
+      </ul>
+      <h1>
+        __MSG_optionsSettingsTitle__<span id="savingindicator"></span>
+      </h1>
+      <label>
+        <input type="checkbox" id="markfields">
+        __MSG_optionsMarkFieldsLabel__
+      </label>
+      <label>
+        <input type="checkbox" id="sendnotifications">
+        __MSG_optionsSendNotificationsLabel__
+      </label>
+      <label>
+        <input type="checkbox" id="submitafterfill">
+        __MSG_optionsLoginAfterFillLabel__
+      </label>
+      <label>
+        <input type="checkbox" id="handleauthrequests">
+        __MSG_optionsHandleAuthRequestsLabel__
+      </label>
+      <label>
+        <input type="checkbox" id="appendlogintoname">
+        __MSG_optionsAppendToLoginName__
+      </label>
+      <label>
+        __MSG_optionsDefaultFolderLabel__ <input type="text" id="defaultfolder">
+      </label>
+      <label>
+        __MSG_optionsOmitKeysLabel__ <input type="text" id="omitkeys">
+      </label>
+      <label>
+        __MSG_optionsDefaultPasswordLengthLabel__ <input type="text" id="defaultpasswordlength">
+      </label>
+      <button type="button" id="clear">__MSG_optionsResetButtonText__</button>
+    </div>
+    <script src="vendor/browser-polyfill.js"></script>
+    <script src="generic.js"></script>
+    <script src="options.js"></script>
+    <script src="i18n.js"></script>
+  </body>
 </html>

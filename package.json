@@ -4,14 +4,13 @@
   "description": "Gopass Bridge allows searching and inserting login credentials from the gopass password manager",
   "main": "web-extension/gopassbridge.js",
   "scripts": {
-    "test": "npm run test:lint && npm run test:jest",
-    "test:lint": "npm run lint",
+    "test": "npm run lint && npm run test:jest",
     "test:jest": "jest",
-    "lint": "npm run lint:eslint && npm run lint:webext && npm run lint:prettier",
+    "lint": "npm run lint:eslint && npm run lint:webext && npm run lint:biome",
     "lint:eslint": "eslint web-extension manifests tests",
     "lint:webext": "web-ext -s firefox-release lint",
-    "lint:prettier": "prettier --end-of-line auto --check \"**/*\"",
-    "format": "prettier --write \"**/*\""
+    "lint:biome": "biome format",
+    "format": "biome format --write"
   },
   "repository": {
     "type": "git",
@@ -30,6 +29,7 @@
   "homepage": "https://github.com/gopasspw/gopassbridge#readme",
   "dependencies": {},
   "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
@@ -42,7 +42,6 @@
     "jest-environment-jsdom-global": "^4.0.0",
     "jest-plugin-unhandled-promise": "^2.9.0",
     "jest-webextension-mock": "3.9.0",
-    "prettier": "^3.7.1",
     "web-ext": "^9.2.0"
   }
 }
