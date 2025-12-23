@@ -36,6 +36,6 @@ format:
 
 webextension-polyfill: clean
 	    git clone https://github.com/mozilla/webextension-polyfill.git
-		cd webextension-polyfill && yarn
+		cd webextension-polyfill && pnpm install && pnpm build
 		cp webextension-polyfill/dist/browser-polyfill.js web-extension/vendor/
 		rm -rf webextension-polyfill
