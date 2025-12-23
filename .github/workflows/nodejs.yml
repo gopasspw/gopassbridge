@@ -29,9 +29,9 @@ jobs:
 
       - run: yarn --frozen-lockfile --non-interactive --no-progress --check-files
 
-      - run: npm run lint:prettier
+      - run: npm run lint:biome
 
-      - run: make package  # Includes auto-formatting, so we run "lint:prettier" check before
+      - run: make package  # Includes auto-formatting, so we run "lint:biome" check before
 
       - run: npm test
         env:

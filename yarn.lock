@@ -440,6 +440,60 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@biomejs/biome@^2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/biome/-/biome-2.3.10.tgz#19059a29306081f2c0e095bdb26c91c8c7e3970a"
+  integrity sha512-/uWSUd1MHX2fjqNLHNL6zLYWBbrJeG412/8H7ESuK8ewoRoMPUgHDebqKrPTx/5n6f17Xzqc9hdg3MEqA5hXnQ==
+  optionalDependencies:
+    "@biomejs/cli-darwin-arm64" "2.3.10"
+    "@biomejs/cli-darwin-x64" "2.3.10"
+    "@biomejs/cli-linux-arm64" "2.3.10"
+    "@biomejs/cli-linux-arm64-musl" "2.3.10"
+    "@biomejs/cli-linux-x64" "2.3.10"
+    "@biomejs/cli-linux-x64-musl" "2.3.10"
+    "@biomejs/cli-win32-arm64" "2.3.10"
+    "@biomejs/cli-win32-x64" "2.3.10"
+
+"@biomejs/cli-darwin-arm64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-arm64/-/cli-darwin-arm64-2.3.10.tgz#94d587738e1ee84b0e376f8ec73f220e15f6e785"
+  integrity sha512-M6xUjtCVnNGFfK7HMNKa593nb7fwNm43fq1Mt71kpLpb+4mE7odO8W/oWVDyBVO4ackhresy1ZYO7OJcVo/B7w==
+
+"@biomejs/cli-darwin-x64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-darwin-x64/-/cli-darwin-x64-2.3.10.tgz#8a65aae0d323542f6082f6873965df04da50cb09"
+  integrity sha512-Vae7+V6t/Avr8tVbFNjnFSTKZogZHFYl7MMH62P/J1kZtr0tyRQ9Fe0onjqjS2Ek9lmNLmZc/VR5uSekh+p1fg==
+
+"@biomejs/cli-linux-arm64-musl@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64-musl/-/cli-linux-arm64-musl-2.3.10.tgz#23af18ae2333cfab31fda88145287b112b918d4d"
+  integrity sha512-B9DszIHkuKtOH2IFeeVkQmSMVUjss9KtHaNXquYYWCjH8IstNgXgx5B0aSBQNr6mn4RcKKRQZXn9Zu1rM3O0/A==
+
+"@biomejs/cli-linux-arm64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-arm64/-/cli-linux-arm64-2.3.10.tgz#075122503ade20ec78c3591c3f6af598094de693"
+  integrity sha512-hhPw2V3/EpHKsileVOFynuWiKRgFEV48cLe0eA+G2wO4SzlwEhLEB9LhlSrVeu2mtSn205W283LkX7Fh48CaxA==
+
+"@biomejs/cli-linux-x64-musl@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64-musl/-/cli-linux-x64-musl-2.3.10.tgz#18910580d674305c92abc56001475a62b0f51362"
+  integrity sha512-QTfHZQh62SDFdYc2nfmZFuTm5yYb4eO1zwfB+90YxUumRCR171tS1GoTX5OD0wrv4UsziMPmrePMtkTnNyYG3g==
+
+"@biomejs/cli-linux-x64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-linux-x64/-/cli-linux-x64-2.3.10.tgz#e582f7c336fc9bed5490ce8c344a4f54acd4dd18"
+  integrity sha512-wwAkWD1MR95u+J4LkWP74/vGz+tRrIQvr8kfMMJY8KOQ8+HMVleREOcPYsQX82S7uueco60L58Wc6M1I9WA9Dw==
+
+"@biomejs/cli-win32-arm64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-arm64/-/cli-win32-arm64-2.3.10.tgz#d103a5039ea8bbca4ad8fe015585367026eac606"
+  integrity sha512-o7lYc9n+CfRbHvkjPhm8s9FgbKdYZu5HCcGVMItLjz93EhgJ8AM44W+QckDqLA9MKDNFrR8nPbO4b73VC5kGGQ==
+
+"@biomejs/cli-win32-x64@2.3.10":
+  version "2.3.10"
+  resolved "https://registry.yarnpkg.com/@biomejs/cli-win32-x64/-/cli-win32-x64-2.3.10.tgz#19e5c86cf6e91290154afa7e44ca53ce18d7e910"
+  integrity sha512-pHEFgq7dUEsKnqG9mx9bXihxGI49X+ar+UBrEIj3Wqj3UCZp1rNgV+OoyjFgcXsjCWpuEAF4VJdkZr3TrWdCbQ==
+
 "@devicefarmer/adbkit-logcat@^2.1.2":
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/@devicefarmer/adbkit-logcat/-/adbkit-logcat-2.1.3.tgz#c7a1fb58e500f5799711f32906a2210c0d1ac5ac"
@@ -3763,11 +3817,6 @@ prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
-
-prettier@^3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.7.1.tgz#8dfbf54c98e85a113962d3d8414ae82ff3722991"
-  integrity sha512-RWKXE4qB3u5Z6yz7omJkjWwmTfLdcbv44jUVHC5NpfXwFGzvpQM798FGv/6WNK879tc+Cn0AAyherCl1KjbyZQ==
 
 pretty-format@^29.7.0:
   version "29.7.0"
