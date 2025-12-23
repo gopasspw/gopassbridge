@@ -21,12 +21,26 @@
     "lineEnding": "auto",
     "lineWidth": 120
   },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noConsole": "off",
+        "useStrictMode": "error"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
-      "indentWidth": 4,
       "trailingCommas": "es5",
+      "indentWidth": 4,
       "quoteStyle": "single"
-    }
+    },
+    "globals": [
+      "chrome",
+      "browser",
+      "i18n"
+    ]
   },
   "json": {
     "formatter": {
@@ -46,7 +60,10 @@
   },
   "overrides": [
     {
-      "includes": ["manifests/**"],
+      "includes": [
+        "*.json",
+        "manifests/**"
+      ],
       "json": {
         "formatter": {
           "expand": "always"

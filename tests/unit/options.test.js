@@ -1,5 +1,5 @@
 'use strict';
-const fs = require('fs');
+const fs = require('node:fs');
 
 jest.useFakeTimers();
 
@@ -8,7 +8,7 @@ global.logError = jest.fn();
 
 require('options.js');
 
-let options = window.tests.options;
+const options = window.tests.options;
 
 describe('Init', () => {
     beforeEach(() => {

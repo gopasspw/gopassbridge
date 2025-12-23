@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 
 jest.useFakeTimers();
 
@@ -99,7 +99,7 @@ describe('switchTab', () => {
     });
 
     test('does not send a message to mark fields if setting is false', () => {
-        global.executeOnSetting = jest.fn((_, cb) => {});
+        global.executeOnSetting = jest.fn(() => {});
         global.browser.tabs.sendMessage.mockReset();
         expect.assertions(1);
         return gopassbridge.switchTab({ url: 'http://some.url', id: 'someid' }).then(() => {
@@ -153,7 +153,7 @@ describe('switchTab', () => {
             global.getLocalStorageKey.mockResolvedValue(undefined);
             global.urlDomain = jest.fn((url) => url);
             global.getPopupUrl = jest.fn(() => 'http://localhost/');
-            jsdom.reconfigure({ url: 'http://localhost/?authUrl=' + encodeURIComponent('https://example.com') });
+            jsdom.reconfigure({ url: `http://localhost/?authUrl=${encodeURIComponent('https://example.com')}` });
             document.body.innerHTML = documentHtml;
         });
 

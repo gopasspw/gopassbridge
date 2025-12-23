@@ -11,11 +11,12 @@ const DEFAULT_SETTINGS = {
     appendlogintoname: false,
 };
 
-const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
-const LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
+globalThis.LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
+globalThis.LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
+
 const REQUIRED_GOPASS_VERSION = [1, 8, 5];
 
-let versionOK = undefined;
+let versionOK;
 
 function checkVersion() {
     if (versionOK) {
@@ -23,9 +24,9 @@ function checkVersion() {
     }
 
     return sendNativeAppMessage({ type: 'getVersion' }).then((response) => {
-        let major = REQUIRED_GOPASS_VERSION[0];
-        let minor = REQUIRED_GOPASS_VERSION[1];
-        let patch = REQUIRED_GOPASS_VERSION[2];
+        const major = REQUIRED_GOPASS_VERSION[0];
+        const minor = REQUIRED_GOPASS_VERSION[1];
+        const patch = REQUIRED_GOPASS_VERSION[2];
         if (
             response.major > major ||
             (response.major === major &&
@@ -60,7 +61,7 @@ function logError(error) {
 
 function makeAbsolute(string) {
     if (!URL_PATTERN.test(string)) {
-        return 'https://' + string;
+        return `https://${string}`;
     }
     return string;
 }
@@ -96,7 +97,7 @@ function createButtonWithCallback(attributes, callback) {
 function urlDomain(urlString) {
     try {
         return new URL(urlString).hostname;
-    } catch (e) {
+    } catch (_) {
         return 'localhost';
     }
 }

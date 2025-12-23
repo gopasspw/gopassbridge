@@ -38,7 +38,9 @@ function _detailViewFromMessage(message, settings) {
     Object.keys(message)
         .filter((key) => message[key] !== null && message[key] !== undefined && message[key] !== '')
         .filter((key) => !_excludeKey(key, settings))
-        .forEach((key) => _appendEntry(container, key, message[key]));
+        .forEach((key) => {
+            _appendEntry(container, key, message[key]);
+        });
     return container;
 }
 
@@ -46,9 +48,13 @@ function _createNestedValueElement(value) {
     const valueElement = document.createElement('ul');
     valueElement.classList.add('detail-nested');
     if (Array.isArray(value)) {
-        value.forEach((item) => _appendEntry(valueElement, null, item));
+        value.forEach((item) => {
+            _appendEntry(valueElement, null, item);
+        });
     } else {
-        Object.keys(value).forEach((key) => _appendEntry(valueElement, key, value[key]));
+        Object.keys(value).forEach((key) => {
+            _appendEntry(valueElement, key, value[key]);
+        });
     }
     return valueElement;
 }
@@ -85,16 +91,16 @@ function _createFlatValueElement(value) {
 
 function _appendEntry(container, key, value) {
     const entryElement = document.createElement('li');
-    let hasKey = key !== undefined && key !== null;
+    const hasKey = key !== undefined && key !== null;
 
     if (hasKey) {
-        let keyElement = document.createElement('span');
+        const keyElement = document.createElement('span');
         keyElement.innerText = `${key}:`;
         keyElement.classList.add('detail-key');
         entryElement.appendChild(keyElement);
     }
 
-    let valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
+    const valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
 
     entryElement.appendChild(valueElement);
     container.appendChild(entryElement);

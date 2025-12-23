@@ -10,8 +10,8 @@ function onDoCreate(event) {
     event.preventDefault();
     return getSettings().then((settings) => {
         let name = document.getElementById('create_name').value;
-        if (settings['appendlogintoname']) {
-            name = name + '/' + document.getElementById('create_login').value;
+        if (settings.appendlogintoname) {
+            name = `${name}/${document.getElementById('create_login').value}`;
         }
         const message = {
             type: 'create',

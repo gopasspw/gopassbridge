@@ -6,12 +6,12 @@
   "scripts": {
     "test": "npm run lint && npm run test:jest",
     "test:jest": "jest",
-    "lint": "npm run lint:eslint && npm run lint:webext && npm run lint:biome",
-    "lint:eslint": "eslint web-extension manifests tests",
+    "lint": "npm run lint:biome && npm run lint:webext",
     "lint:webext": "web-ext -s firefox-release lint",
-    "lint:biome": "biome format",
-    "format": "biome format --write"
+    "lint:biome": "biome check --error-on-warnings",
+    "format": "biome check --write"
   },
+  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gopasspw/gopassbridge.git"
@@ -30,13 +30,6 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.1",
-    "eslint": "^9.39.1",
-    "eslint-plugin-json": "^4.0.0",
-    "eslint-plugin-mocha": "^11.2.0",
-    "eslint-plugin-promise": "^7.2.1",
-    "globals": "^16.5.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-environment-jsdom-global": "^4.0.0",
