@@ -69,8 +69,10 @@ For details on Pull Requests please read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 To start with development of this extension
 * clone the repo
-* run `yarn` to install the dependencies
+* install latest Node.js LTS version (includes `corepack`)
+* run `corepack enable pnpm` to enable the `pnpm` package manager
+* run `pnpm install` to install the dependencies
 * run `make develop` to setup the development directories for Firefox and Chrome
 * run `make package` to setup the release directories for Firefox and Chrome
-* run `yarn test` to run all unit tests, linters and auto-formatters
+* run `npm test` to run all unit tests, linters and auto-formatters
 * run `make run-firefox` to start an empty Firefox profile with the extension loaded and a debugger open
