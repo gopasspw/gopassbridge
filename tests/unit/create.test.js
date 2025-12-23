@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 
 global.armSpinnerTimeout = jest.fn();
 global.sendNativeAppMessage = jest.fn();
@@ -180,7 +180,7 @@ describe('create', () => {
         ['create_docreate', 'create_doabort', 'create_generate'].forEach((id) => {
             test(`registers eventhandler for ${id}`, () => {
                 const element = document.getElementById('create_docreate');
-                const mock = jest.spyOn(element, 'addEventListener');
+                jest.spyOn(element, 'addEventListener');
                 create.initCreate();
                 expect(element.addEventListener).toHaveBeenCalledTimes(1);
             });

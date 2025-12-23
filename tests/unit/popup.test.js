@@ -1,6 +1,7 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
+
 jest.useFakeTimers();
 jest.spyOn(global, 'setTimeout');
 

@@ -1,7 +1,5 @@
 'use strict';
 
-const fs = require('fs');
-
 jest.useFakeTimers();
 
 global.LAST_DETAIL_VIEW_PREFIX = 'PREFIX';
@@ -12,7 +10,7 @@ global.setLocalStorageKey = jest.fn();
 global.urlDomain = jest.fn(() => 'some.domain');
 global.currentTabId = 42;
 global.currentPageUrl = 'http://other.domain';
-global.re_weburl = new RegExp('https://.*');
+global.re_weburl = /https:\/\/.*/;
 global.logAndDisplayError = jest.fn();
 global.openURLOnEvent = jest.fn((event) => {
     event.preventDefault();
@@ -125,13 +123,13 @@ describe('onEntryData', () => {
             return details
                 .onEntryData(loginElement, { hallo: { holla: 'waldfee', list: ['wald', 'fee'] } })
                 .then(() => {
-                    let keys = document.getElementsByClassName('detail-key');
+                    const keys = document.getElementsByClassName('detail-key');
                     expect(keys.length).toBe(3);
                     expect(keys[0].innerText).toBe('hallo:');
                     expect(keys[1].innerText).toBe('holla:');
                     expect(keys[2].innerText).toBe('list:');
 
-                    let values = document.getElementsByClassName('detail-clickable-value');
+                    const values = document.getElementsByClassName('detail-clickable-value');
                     expect(values.length).toBe(3);
                     expect(values[0].innerText).toBe('waldfee');
                     expect(values[1].innerText).toBe('wald');

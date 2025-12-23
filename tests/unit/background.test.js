@@ -68,7 +68,7 @@ describe('background', () => {
         test('do not show notification if popup is shown', () => {
             expect.assertions(1);
             global.browser.extension.getViews.mockReturnValueOnce({ length: 1 });
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((error) => {
+            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch(() => {
                 expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
             });
         });
@@ -213,7 +213,7 @@ describe('background', () => {
             global.browser.extension.getViews.mockReset();
             global.browser.extension.getViews.mockReturnValue({ length: 0 });
             global.getPopupUrl = jest.fn(() => 'http://localhost/');
-            global.executeOnSetting = jest.fn((_, enabled, disabled) => enabled());
+            global.executeOnSetting = jest.fn((_, enabled) => enabled());
             windowCreatePromise = Promise.resolve({ id: 42 });
             global.browser.windows = {
                 create: jest.fn(() => windowCreatePromise),
@@ -339,7 +339,7 @@ describe('background', () => {
         test('does not open auth popup when setting is disabled', () => {
             expect.assertions(6);
 
-            global.executeOnSetting = jest.fn((_, enabled, disabled) => disabled());
+            global.executeOnSetting = jest.fn((_, __, disabled) => disabled());
 
             return onAuthRequiredCallback({ url: authUrl }).then((authRequiredResult) => {
                 expect(browser.windows.create.mock.calls.length).toBe(0);

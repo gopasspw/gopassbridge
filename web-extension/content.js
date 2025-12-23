@@ -14,24 +14,16 @@ const inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'inpu
     ],
     ignorePasswordIds = ['signup_minireg_password'],
     loginInputTypes = ['email', 'text'],
-    loginInputTypesString = loginInputTypes.map((string) => `input[type=${string}]`).join(',') + ',input:not([type])';
+    loginInputTypesString = `${loginInputTypes.map((string) => `input[type=${string}]`).join(',')},input:not([type])`;
 
 function exactMatch(property, string) {
     const idstr = `[${property}=${string}]`;
-    return loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',') + `,input:not([type])${idstr}`;
+    return `${loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',')},input:not([type])${idstr}`;
 }
 
 function partialMatch(property, string) {
     const idstr = `[${property}*=${string}]`;
-    return (
-        loginInputTypes
-            .map(function (string) {
-                return `input[type=${string}]${idstr}`;
-            })
-            .join(',') +
-        ',input:not([type])' +
-        idstr
-    );
+    return `${loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',')},input:not([type])${idstr}`;
 }
 
 const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
@@ -103,7 +95,7 @@ function selectVisibleElements(selector) {
 }
 
 function selectFirstVisiblePasswordElement(selector) {
-    for (let element of selectVisibleElements(selector)) {
+    for (const element of selectVisibleElements(selector)) {
         if (
             ignorePasswordIds.every((ignore) => {
                 return element.id !== ignore;
@@ -117,7 +109,7 @@ function selectFirstVisiblePasswordElement(selector) {
 }
 
 function selectFirstVisibleFormElement(form, selector, afterTabInd) {
-    for (let element of selectVisibleElements(selector)) {
+    for (const element of selectVisibleElements(selector)) {
         if (element && form === element.form && (afterTabInd === undefined || element.tabIndex > afterTabInd)) {
             return element;
         }
@@ -143,7 +135,7 @@ function updateElement(element, newValue) {
 }
 
 function getLoginInputFromPasswordInputForm(passwordInputForm) {
-    for (let loginInput of allLoginInputStrings) {
+    for (const loginInput of allLoginInputStrings) {
         const element = selectFirstVisibleFormElement(passwordInputForm, loginInput);
         if (element) return element;
     }
@@ -165,7 +157,7 @@ function _determineFieldsFromFocusedInput(focusedInput) {
 }
 
 function getInputFieldsFromFocus() {
-    let focusedInput = selectFocusedElement(document);
+    const focusedInput = selectFocusedElement(document);
     if (focusedInput && focusedInput.tagName === 'INPUT') {
         return _determineFieldsFromFocusedInput(focusedInput);
     }
@@ -190,10 +182,10 @@ function _getInputFieldsFromPasswordInput(passwordInput) {
 
 function getInputFields() {
     const focusedInputs = getInputFieldsFromFocus();
-    let loginInput = focusedInputs.loginInput;
-    let passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
+    const loginInput = focusedInputs.loginInput;
+    const passwordInput = focusedInputs.passwordInput || selectFirstVisiblePasswordElement('input[type=password]');
 
-    if (passwordInput && passwordInput.form && !focusedInputs.loginInput) {
+    if (passwordInput?.form && !focusedInputs.loginInput) {
         return _getInputFieldsFromPasswordInput(passwordInput);
     }
 

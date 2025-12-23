@@ -1,6 +1,6 @@
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 
 jest.useFakeTimers();
 
@@ -33,7 +33,7 @@ global.i18n = {
     getMessage: jest.fn((messagekey) => `__KEY_${messagekey}__`),
 };
 global.spinnerTimeout = 24;
-global.urlDomain = jest.fn((url) => 'some.host');
+global.urlDomain = jest.fn(() => 'some.host');
 global.createButtonWithCallback = jest.fn(() => document.createElement('div'));
 global.switchToCreateNewDialog = jest.fn();
 global.setLocalStorageKey = jest.fn();
