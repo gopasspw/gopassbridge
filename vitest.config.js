@@ -21,6 +21,17 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       include: ['web-extension/**/*.js'],
       exclude: ['web-extension/lib/**', 'web-extension/vendor/**'],
+      thresholds: {
+        statements: 100,
+        functions: 100,
+        lines: 100,
+      },
+    },
+    sequence: {
+      shuffle: {
+        files: true,
+        tests: true,
+      },
     },
   },
   resolve: {
