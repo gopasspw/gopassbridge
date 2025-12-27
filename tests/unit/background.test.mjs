@@ -1,41 +1,51 @@
-'use strict';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-jest.useFakeTimers();
+let showNotificationOnSettingMock;
+let sendNativeAppMessageMock;
+let urlDomainMock;
 
-global.showNotificationOnSetting = jest.fn();
-global.sendNativeAppMessage = jest.fn();
-global.browser.extension = {
-    getViews: jest.fn(() => ({ length: 0 })),
-};
-global.urlDomain = jest.fn(() => 'some.url');
-global.i18n = {
-    getMessage: jest.fn((key) => `__i18n_${key}__`),
-};
-global.browser.tabs.sendMessage = jest.fn();
-global.browser.webRequest = { onAuthRequired: { addListener: jest.fn() } };
-global.executeOnSetting = jest.fn();
-global.isChrome = jest.fn();
-global.openURL = jest.fn();
-global.makeAbsolute = jest.fn((string) => string);
-
-require('background.js');
-
-const background = window.tests.background;
+let executeOnSettingMock;
+let isChromeMock;
+let openURLMock;
+let makeAbsoluteMock;
+let getPopupUrlMock;
+let background;
 
 describe('background', () => {
-    beforeEach(() => {
-        global.sendNativeAppMessage.mockReset();
-        global.showNotificationOnSetting.mockClear();
-        global.browser.extension.getViews.mockClear();
-        global.i18n.getMessage.mockClear();
-        global.browser.tabs.sendMessage.mockClear();
-        global.executeOnSetting.mockClear();
+    beforeEach(async () => {
+        vi.resetModules();
+        vi.useFakeTimers();
 
-        jest.spyOn(global.console, 'warn');
-    });
+        showNotificationOnSettingMock = vi.fn();
+        vi.stubGlobal('showNotificationOnSetting', showNotificationOnSettingMock);
 
-    afterEach(() => {
-        global.console.warn.mockReset();
+        sendNativeAppMessageMock = vi.fn();
+        vi.stubGlobal('sendNativeAppMessage', sendNativeAppMessageMock);
+
+        browser.extension.getViews = vi.fn(() => ({ length: 0 }));
+
+        urlDomainMock = vi.fn(() => 'url.test');
+        vi.stubGlobal('urlDomain', urlDomainMock);
+
+        executeOnSettingMock = vi.fn();
+        vi.stubGlobal('executeOnSetting', executeOnSettingMock);
+
+        isChromeMock = vi.fn();
+        vi.stubGlobal('isChrome', isChromeMock);
+
+        openURLMock = vi.fn();
+        vi.stubGlobal('openURL', openURLMock);
+
+        makeAbsoluteMock = vi.fn((string) => string);
+        vi.stubGlobal('makeAbsolute', makeAbsoluteMock);
+
+        getPopupUrlMock = vi.fn(() => 'http://localhost.test/');
+        vi.stubGlobal('getPopupUrl', getPopupUrlMock);
+
+        await import('gopassbridge/web-extension/background.js');
+        background = window.tests.background;
+
+        vi.spyOn(global.console, 'warn');
     });
 
     test('registers message processors on init', () => {
@@ -51,7 +61,7 @@ describe('background', () => {
             expect.assertions(2);
             const msg = 'Background script received unexpected message {} from content script or popup window.';
             return background.processMessageAndCatch({}, { tab: 42 }).catch((error) => {
-                expect(global.showNotificationOnSetting.mock.calls).toEqual([[msg]]);
+                expect(showNotificationOnSettingMock.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
             });
         });
@@ -60,16 +70,16 @@ describe('background', () => {
             expect.assertions(2);
             const msg = `Background script received unexpected message {"type":"UNKNOWN"} from extension`;
             return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((error) => {
-                expect(global.showNotificationOnSetting.mock.calls).toEqual([[msg]]);
+                expect(showNotificationOnSettingMock.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
             });
         });
 
         test('do not show notification if popup is shown', () => {
             expect.assertions(1);
-            global.browser.extension.getViews.mockReturnValueOnce({ length: 1 });
+            browser.extension.getViews.mockReturnValueOnce({ length: 1 });
             return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch(() => {
-                expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
             });
         });
 
@@ -79,69 +89,69 @@ describe('background', () => {
             }
 
             beforeEach(() => {
-                global.openURL.mockResolvedValue();
-                global.sendNativeAppMessage.mockResolvedValue({
-                    url: 'https://www.some.host',
+                openURLMock.mockResolvedValue();
+                sendNativeAppMessageMock.mockResolvedValue({
+                    url: 'https://www.host.test',
                     username: 'username',
                     password: 'somepass',
                 });
-                global.browser.tabs.sendMessage.mockResolvedValue();
-                global.browser.tabs.onUpdated = {
-                    addListener: jest.fn((callback) => callback(42, { status: 'complete' })),
-                    removeListener: jest.fn(),
+                browser.tabs.sendMessage.mockResolvedValue();
+                browser.tabs.onUpdated = {
+                    addListener: vi.fn((callback) => callback(42, { status: 'complete' })),
+                    removeListener: vi.fn(),
                 };
             });
 
             test('opens tab and immediately loads credentials if tab is loaded', () => {
                 expect.assertions(1);
-                global.openURL.mockResolvedValue({
+                openURLMock.mockResolvedValue({
                     id: 42,
                     status: 'complete',
-                    url: 'http://www.some.host',
+                    url: 'http://www.host.test',
                 });
                 return openTabMessage().then(() => {
-                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
                         [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
                     ]);
                 });
             });
 
             test('raises error if no url in entry', () => {
-                global.sendNativeAppMessage.mockResolvedValue({});
+                sendNativeAppMessageMock.mockResolvedValue({});
                 expect.assertions(1);
-                global.openURL.mockResolvedValue({ id: 42, status: 'complete' });
+                openURLMock.mockResolvedValue({ id: 42, status: 'complete' });
                 return openTabMessage().catch((error) => {
-                    expect(error.message).toBe('__i18n_noURLInEntry__');
+                    expect(error.message).toBe('__translated_noURLInEntry__');
                 });
             });
 
             test('opens tab and loads credentials when tab is ready', () => {
                 expect.assertions(1);
-                global.openURL.mockResolvedValue({ id: 42, status: 'loading' });
+                openURLMock.mockResolvedValue({ id: 42, status: 'loading' });
 
                 const promise = openTabMessage().then(() => {
-                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
                         [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
                     ]);
                 });
 
-                jest.advanceTimersByTime(1000);
+                vi.advanceTimersByTime(1000);
 
                 return promise;
             });
 
             test('raises error on timeout when waiting for new tab to be ready', () => {
-                global.sendNativeAppMessage.mockResolvedValue({ url: 'some.url' });
+                sendNativeAppMessageMock.mockResolvedValue({ url: 'url.test' });
                 expect.assertions(2);
-                global.openURL.mockResolvedValue({ id: 42, status: 'loading' });
+                openURLMock.mockResolvedValue({ id: 42, status: 'loading' });
 
                 const promise = openTabMessage().catch((error) => {
-                    expect(global.browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
+                    expect(browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
                     expect(error).toBe('Loading timed out');
                 });
 
-                browser.tabs.onUpdated.addListener = jest.fn(() => {
-                    jest.advanceTimersByTime(11000);
+                browser.tabs.onUpdated.addListener = vi.fn(() => {
+                    vi.advanceTimersByTime(11000);
                 });
 
                 return promise;
@@ -150,20 +160,20 @@ describe('background', () => {
 
         describe('message LOGIN_TAB', () => {
             beforeEach(() => {
-                global.sendNativeAppMessage.mockResolvedValue({ login: 'holla', password: 'waldfee' });
-                global.browser.extension.getViews.mockReturnValueOnce({ length: 1 });
-                global.browser.tabs.sendMessage.mockResolvedValue();
+                sendNativeAppMessageMock.mockResolvedValue({ login: 'holla', password: 'waldfee' });
+                browser.extension.getViews.mockReturnValueOnce({ length: 1 });
+                browser.tabs.sendMessage.mockResolvedValue();
             });
 
             function loginTabMessage() {
                 return background.processMessageAndCatch(
-                    { type: 'LOGIN_TAB', entry: 'some/entry', tab: { id: 42, url: 'https://some.url' } },
+                    { type: 'LOGIN_TAB', entry: 'some/entry', tab: { id: 42, url: 'https://url.test' } },
                     {}
                 );
             }
 
             test('raises if native app message response contains error', () => {
-                global.sendNativeAppMessage.mockResolvedValue({ error: 'some native app error' });
+                sendNativeAppMessageMock.mockResolvedValue({ error: 'some native app error' });
                 expect.assertions(1);
                 return loginTabMessage().catch((error) => {
                     expect(error.message).toBe('some native app error');
@@ -171,17 +181,17 @@ describe('background', () => {
             });
 
             test('raises if username is equal to the domain message response contains error', () => {
-                global.sendNativeAppMessage.mockResolvedValue({ username: 'some.url', password: 'waldfee' });
+                sendNativeAppMessageMock.mockResolvedValue({ username: 'url.test', password: 'waldfee' });
                 expect.assertions(1);
                 return loginTabMessage().catch((error) => {
-                    expect(error.message).toBe('__i18n_couldNotDetermineUsernameMessage__');
+                    expect(error.message).toBe('__translated_couldNotDetermineUsernameMessage__');
                 });
             });
 
             test('sends browser tab fill login field message', () => {
                 expect.assertions(1);
                 return loginTabMessage().then(() => {
-                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
                         [42, { login: undefined, password: 'waldfee', type: 'FILL_LOGIN_FIELDS' }],
                     ]);
                 });
@@ -190,12 +200,12 @@ describe('background', () => {
             test('sends browser tab submit after fill message if setting is on', () => {
                 expect.assertions(5);
                 return loginTabMessage().then(() => {
-                    expect(global.browser.tabs.sendMessage.mock.calls.length).toEqual(1);
-                    expect(global.executeOnSetting.mock.calls.length).toEqual(1);
-                    expect(global.executeOnSetting.mock.calls[0][0]).toEqual('submitafterfill');
-                    return global.executeOnSetting.mock.calls[0][1]().then(() => {
-                        expect(global.browser.tabs.sendMessage.mock.calls.length).toEqual(2);
-                        expect(global.browser.tabs.sendMessage.mock.calls[1]).toEqual([42, { type: 'TRY_LOGIN' }]);
+                    expect(browser.tabs.sendMessage.mock.calls.length).toEqual(1);
+                    expect(executeOnSettingMock.mock.calls.length).toEqual(1);
+                    expect(executeOnSettingMock.mock.calls[0][0]).toEqual('submitafterfill');
+                    return executeOnSettingMock.mock.calls[0][1]().then(() => {
+                        expect(browser.tabs.sendMessage.mock.calls.length).toEqual(2);
+                        expect(browser.tabs.sendMessage.mock.calls[1]).toEqual([42, { type: 'TRY_LOGIN' }]);
                     });
                 });
             });
@@ -203,24 +213,23 @@ describe('background', () => {
     });
 
     describe('onAuthRequired', () => {
-        const authUrl = 'https://example.com';
-        const validAuthPopupUrl = `http://localhost/?authUrl=${encodeURIComponent(authUrl)}`;
-        const invalidAuthPopupUrl = `http://localhost.evil/?authUrl=${encodeURIComponent(authUrl)}`;
+        const authUrl = 'https://example.test';
+        const validAuthPopupUrl = `http://localhost.test/?authUrl=${encodeURIComponent(authUrl)}`;
+        const invalidAuthPopupUrl = `http://evil.invalid/?authUrl=${encodeURIComponent(authUrl)}`;
 
         let onAuthRequiredCallback, windowCreatePromise;
 
         beforeEach(() => {
-            global.browser.extension.getViews.mockReset();
-            global.browser.extension.getViews.mockReturnValue({ length: 0 });
-            global.getPopupUrl = jest.fn(() => 'http://localhost/');
-            global.executeOnSetting = jest.fn((_, enabled) => enabled());
+            browser.extension.getViews.mockReturnValue({ length: 0 });
+            getPopupUrlMock.mockImplementation(() => 'http://localhost.test/');
+            executeOnSettingMock.mockImplementation((_, enabled) => enabled());
             windowCreatePromise = Promise.resolve({ id: 42 });
-            global.browser.windows = {
-                create: jest.fn(() => windowCreatePromise),
-                onRemoved: { addListener: jest.fn(), removeListener: jest.fn() },
+            browser.windows = {
+                create: vi.fn(() => windowCreatePromise),
+                onRemoved: { addListener: vi.fn(), removeListener: vi.fn() },
             };
             onAuthRequiredCallback = browser.webRequest.onAuthRequired.addListener.mock.calls[0][0];
-            global.sendNativeAppMessage.mockResolvedValue({ username: 'some.url', password: 'waldfee' });
+            sendNativeAppMessageMock.mockResolvedValue({ username: 'url.test', password: 'waldfee' });
         });
 
         test('opens auth popup and resolves auth request successfully with login credentials', () => {
@@ -239,12 +248,10 @@ describe('background', () => {
                     expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
                         browser.windows.onRemoved.removeListener.mock.calls
                     );
-                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
-                        [{ type: 'getLogin', entry: 'some/entry' }],
-                    ]);
-                    expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                    expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
                     expect(authRequiredResult).toEqual({
-                        authCredentials: { username: 'some.url', password: 'waldfee' },
+                        authCredentials: { username: 'url.test', password: 'waldfee' },
                     });
                 });
             });
@@ -263,8 +270,8 @@ describe('background', () => {
                     expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
                         browser.windows.onRemoved.removeListener.mock.calls
                     );
-                    expect(global.sendNativeAppMessage.mock.calls.length).toBe(0);
-                    expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                    expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
+                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
                     expect(authRequiredResult).toEqual({ cancel: false });
                 });
             });
@@ -273,7 +280,7 @@ describe('background', () => {
         test('opens auth popup but does not resolve auth request after native app error', () => {
             expect.assertions(6);
 
-            global.sendNativeAppMessage.mockResolvedValueOnce({ error: 'native app broken' });
+            sendNativeAppMessageMock.mockResolvedValueOnce({ error: 'native app broken' });
 
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
@@ -287,10 +294,8 @@ describe('background', () => {
                     expect(browser.windows.create.mock.calls.length).toBe(1);
                     expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
                     expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
-                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
-                        [{ type: 'getLogin', entry: 'some/entry' }],
-                    ]);
-                    expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                    expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
                     expect(processMessageError.message).toEqual('native app broken');
 
                     return background.processMessageAndCatch(
@@ -317,8 +322,8 @@ describe('background', () => {
                         expect(browser.windows.create.mock.calls.length).toBe(1);
                         expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
                         expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
-                        expect(global.sendNativeAppMessage.mock.calls.length).toBe(1);
-                        expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                        expect(sendNativeAppMessageMock.mock.calls.length).toBe(1);
+                        expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
                         expect(global.console.warn.mock.calls).toEqual([
                             [
                                 'Could not resolve auth request due to URL mismatch',
@@ -339,15 +344,15 @@ describe('background', () => {
         test('does not open auth popup when setting is disabled', () => {
             expect.assertions(6);
 
-            global.executeOnSetting = jest.fn((_, __, disabled) => disabled());
+            executeOnSettingMock.mockImplementation((_, __, disabled) => disabled());
 
             return onAuthRequiredCallback({ url: authUrl }).then((authRequiredResult) => {
                 expect(browser.windows.create.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
-                expect(global.sendNativeAppMessage.mock.calls.length).toBe(0);
+                expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
                 expect(authRequiredResult).toEqual({});
-                expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
             });
         });
 
@@ -368,15 +373,15 @@ describe('background', () => {
                         expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
                             browser.windows.onRemoved.removeListener.mock.calls
                         );
-                        expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        expect(sendNativeAppMessageMock.mock.calls).toEqual([
                             [{ type: 'getLogin', entry: 'some/entry' }],
                         ]);
                         expect(firstAuthRequiredResult).toEqual({
-                            authCredentials: { username: 'some.url', password: 'waldfee' },
+                            authCredentials: { username: 'url.test', password: 'waldfee' },
                         });
                         expect(secondAuthRequiredResult).toEqual({});
-                        expect(global.showNotificationOnSetting.mock.calls).toEqual([
-                            ['__i18n_cannotHandleMultipleAuthRequests__'],
+                        expect(showNotificationOnSettingMock.mock.calls).toEqual([
+                            ['__translated_cannotHandleMultipleAuthRequests__'],
                         ]);
                     }
                 );
@@ -396,8 +401,8 @@ describe('background', () => {
                 expect(browser.windows.create.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
                 expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
-                expect(global.sendNativeAppMessage.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
-                expect(global.showNotificationOnSetting.mock.calls.length).toEqual(0);
+                expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
                 expect(global.console.warn.mock.calls).toEqual([
                     ['Tried to resolve auth request, but no auth request is currently pending.', url],
                 ]);

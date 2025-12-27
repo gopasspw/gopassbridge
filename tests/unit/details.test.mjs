@@ -1,38 +1,37 @@
-'use strict';
-
-jest.useFakeTimers();
-
-global.LAST_DETAIL_VIEW_PREFIX = 'PREFIX';
-global.copyToClipboard = jest.fn();
-global.sendNativeAppMessage = jest.fn();
-global.getLocalStorageKey = jest.fn();
-global.setLocalStorageKey = jest.fn();
-global.urlDomain = jest.fn(() => 'some.domain');
-global.currentTabId = 42;
-global.currentPageUrl = 'http://other.domain';
-global.re_weburl = /https:\/\/.*/;
-global.logAndDisplayError = jest.fn();
-global.openURLOnEvent = jest.fn((event) => {
-    event.preventDefault();
-});
-global.getSettings = jest.fn();
-global.getSettings.mockResolvedValue({ omitkeys: 'otpauth, muh' });
-require('details.js');
-
-const details = window.tests.details;
-let loginElement;
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('onEntryData', () => {
-    beforeEach(() => {
+    let details;
+    let loginElement;
+
+    beforeEach(async () => {
+        vi.resetModules();
+        vi.useFakeTimers();
+
+        global.LAST_DETAIL_VIEW_PREFIX = 'PREFIX';
+        global.copyToClipboard = vi.fn();
+        global.sendNativeAppMessage = vi.fn();
+        global.getLocalStorageKey = vi.fn();
+        global.setLocalStorageKey = vi.fn();
+        global.urlDomain = vi.fn(() => 'domain.test');
+        global.currentTabId = 42;
+        global.currentPageUrl = 'http://other.test';
+        global.re_weburl = /https:\/\/.*/;
+        global.logAndDisplayError = vi.fn();
+        global.openURLOnEvent = vi.fn((event) => {
+            event.preventDefault();
+        });
+        global.getSettings = vi.fn();
+        global.getSettings.mockResolvedValue({ omitkeys: 'otpauth, muh' });
+
+        await import('gopassbridge/web-extension/details.js');
+        details = window.tests.details;
+
         document.body.innerHTML = '';
         loginElement = document.createElement('div');
         loginElement.classList.add('login');
         loginElement.innerText = 'secret/entry';
         document.body.appendChild(loginElement);
-        global.setLocalStorageKey.mockClear();
-        browser.storage.local.remove.mockClear();
-        global.copyToClipboard.mockClear();
-        global.getLocalStorageKey.mockClear();
     });
 
     describe('with already opened detail view', () => {
@@ -46,7 +45,7 @@ describe('onEntryData', () => {
             expect.assertions(3);
             return details.onEntryData(loginElement, {}).then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(0);
-                expect(browser.storage.local.remove.mock.calls).toEqual([['PREFIXsome.domain']]);
+                expect(global.browser.storage.local.remove.mock.calls).toEqual([['PREFIXdomain.test']]);
                 expect(global.setLocalStorageKey.mock.calls.length).toBe(0);
             });
         });
@@ -57,8 +56,8 @@ describe('onEntryData', () => {
             expect.assertions(3);
             return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(1);
-                expect(browser.storage.local.remove.mock.calls).toEqual([['PREFIXsome.domain']]);
-                expect(global.setLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain', 'secret/entry']]);
+                expect(global.browser.storage.local.remove.mock.calls).toEqual([['PREFIXdomain.test']]);
+                expect(global.setLocalStorageKey.mock.calls).toEqual([['PREFIXdomain.test', 'secret/entry']]);
             });
         });
 
@@ -112,9 +111,9 @@ describe('onEntryData', () => {
 
         test('url values', () => {
             expect.assertions(2);
-            return details.onEntryData(loginElement, { hallo: 'https://hallo.welt' }).then(() => {
+            return details.onEntryData(loginElement, { hallo: 'https://hallo.welt.test' }).then(() => {
                 expect(document.getElementsByClassName('detail-key')[0].innerText).toBe('hallo:');
-                expect(document.getElementsByTagName('a')[0].innerText).toBe('https://hallo.welt');
+                expect(document.getElementsByTagName('a')[0].innerText).toBe('https://hallo.welt.test');
             });
         });
 
@@ -143,10 +142,10 @@ describe('onEntryData', () => {
     describe('click handlers', () => {
         beforeEach(() => {
             global.browser.tabs.onUpdated = {
-                addListener: jest.fn(),
-                removeListener: jest.fn(),
+                addListener: vi.fn(),
+                removeListener: vi.fn(),
             };
-            return details.onEntryData(loginElement, { somevalue: 'avalue', somurl: 'https://someurl' });
+            return details.onEntryData(loginElement, { somevalue: 'avalue', somurl: 'https://someurl.test' });
         });
 
         test('handles value copy clicks', () => {
@@ -155,9 +154,8 @@ describe('onEntryData', () => {
         });
 
         test('url clicks', () => {
-            global.openURLOnEvent.mockClear();
             document.getElementsByTagName('a')[0].click();
-            expect(global.openURLOnEvent.mock.calls[0][0].target.href).toEqual('https://someurl/');
+            expect(global.openURLOnEvent.mock.calls[0][0].target.href).toEqual('https://someurl.test/');
         });
     });
 
@@ -167,7 +165,7 @@ describe('onEntryData', () => {
             global.getLocalStorageKey.mockResolvedValue('another/key');
             return details.restoreDetailView().then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(0);
-                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
+                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXdomain.test']]);
             });
         });
 
@@ -176,7 +174,7 @@ describe('onEntryData', () => {
             global.getLocalStorageKey.mockResolvedValue(null);
             return details.restoreDetailView().then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(0);
-                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
+                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXdomain.test']]);
             });
         });
 
@@ -186,7 +184,7 @@ describe('onEntryData', () => {
             global.sendNativeAppMessage.mockResolvedValue({ some: 'value' });
             return details.restoreDetailView().then(() => {
                 expect(document.getElementsByClassName('detail-view').length).toBe(1);
-                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXsome.domain']]);
+                expect(global.getLocalStorageKey.mock.calls).toEqual([['PREFIXdomain.test']]);
             });
         });
     });
