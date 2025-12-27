@@ -22,6 +22,12 @@ export default defineConfig({
       include: ['web-extension/**/*.js'],
       exclude: ['web-extension/lib/**', 'web-extension/vendor/**'],
     },
+    sequence: {
+      shuffle: {
+        files: true,
+        tests: true,
+      },
+    },
   },
   resolve: {
     alias: {
