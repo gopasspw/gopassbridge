@@ -1,14 +1,18 @@
-'use strict';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-require('generic.js');
-
-const generic = window.tests.generic;
+let generic;
 let mockOnTrue, mockOnFalse, mockOnResult, mockOnError;
+
+beforeEach(async () => {
+    vi.resetModules();
+    await import('gopassbridge/web-extension/generic.js');
+    generic = window.tests.generic;
+});
 
 describe('executeOnSetting', () => {
     beforeEach(() => {
-        mockOnTrue = jest.fn();
-        mockOnFalse = jest.fn();
+        mockOnTrue = vi.fn();
+        mockOnFalse = vi.fn();
     });
 
     test('executes success callback when setting turned on', () => {
@@ -57,20 +61,19 @@ describe('executeOnSetting', () => {
     test('resolves no callback when error occurs on getting value', () => {
         expect.assertions(3);
         global.browser.storage.sync.get.mockRejectedValue('some error');
-        global.console.log = jest.fn();
+        const consoleSpy = vi.spyOn(global.console, 'log').mockImplementation(() => {});
         return generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
-            expect(global.console.log.mock.calls).toEqual([['some error']]);
+            expect(consoleSpy.mock.calls).toEqual([['some error']]);
         });
     });
 });
 
 describe('sendNativeMessage', () => {
     beforeEach(() => {
-        mockOnResult = jest.fn();
-        mockOnError = jest.fn();
-        global.browser.runtime.sendNativeMessage = jest.fn();
+        mockOnResult = vi.fn();
+        mockOnError = vi.fn();
     });
 
     test('sends message with response on success', () => {
@@ -100,7 +103,7 @@ describe('sendNativeMessage', () => {
 
 describe('urlDomain', () => {
     test('extracts hostname', () => {
-        expect(generic.urlDomain('http://www.muh.maeh.de:80/some/path?maeh')).toEqual('www.muh.maeh.de');
+        expect(generic.urlDomain('http://www.muh.maeh.test:80/some/path?maeh')).toEqual('www.muh.maeh.test');
     });
 
     test('extracts default "localhost" for invalid URL', () => {
@@ -118,17 +121,16 @@ describe('localStorage wrappers', () => {
 
     test('get key', () => {
         expect.assertions(1);
-        return generic.setLocalStorageKey('muh', 123).then(() => {
-            return generic.getLocalStorageKey('muh').then((value) => {
-                expect(value).toBe(123);
-            });
+
+        return generic.getLocalStorageKey('muh').then((value) => {
+            expect(value).toBe('_mock_muh_');
         });
     });
 });
 
 describe('createButtonWithCallback', () => {
     test('creates button with callback and sets attributes', () => {
-        const buttonCbMock = jest.fn();
+        const buttonCbMock = vi.fn();
         const button = generic.createButtonWithCallback({ className: 'myclass' }, buttonCbMock);
         expect(buttonCbMock.mock.calls.length).toBe(0);
         button.click();
@@ -138,11 +140,6 @@ describe('createButtonWithCallback', () => {
 });
 
 describe('showNotificationOnSetting', () => {
-    beforeEach(() => {
-        global.browser.runtime.getURL = jest.fn(() => 'some-URL');
-        global.browser.notifications.create.mockReset();
-    });
-
     test('creates notification', () => {
         expect.assertions(1);
         global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: true });
@@ -151,7 +148,7 @@ describe('showNotificationOnSetting', () => {
                 [
                     {
                         type: 'basic',
-                        iconUrl: 'some-URL',
+                        iconUrl: 'chrome-extension://mock-id/icons/gopassbridge-96.png',
                         title: 'gopassbridge',
                         message: 'this is just a test!',
                     },
@@ -170,51 +167,43 @@ describe('showNotificationOnSetting', () => {
 });
 
 describe('getPopupUrl', () => {
-    beforeEach(() => {
-        global.browser.runtime.getURL = jest.fn(() => 'some-popup');
-    });
-
     test('returns URL', () => {
-        expect(generic.getPopupUrl()).toBe('some-popup');
+        expect(generic.getPopupUrl()).toBe('chrome-extension://mock-id/gopassbridge.html');
     });
 });
 
 describe('isChrome', () => {
     test('for Chrome', () => {
-        global.browser.runtime.getURL = jest.fn(() => 'chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/');
+        global.browser.runtime.getURL = vi.fn(() => 'chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/');
         expect(generic.isChrome()).toBe(true);
     });
 
     test('for Firefox', () => {
-        global.browser.runtime.getURL = jest.fn(() => 'moz-extension://eec37db0-22ad-4bf1-9068-5ae08df8c7e9/');
+        global.browser.runtime.getURL = vi.fn(() => 'moz-extension://eec37db0-22ad-4bf1-9068-5ae08df8c7e9/');
         expect(generic.isChrome()).toBe(false);
     });
 });
 
 describe('openURLOnEvent', () => {
     test('opens URL', () => {
-        const event = { target: { href: 'https://someurl/' }, preventDefault: jest.fn() };
+        const event = { target: { href: 'https://someurl.test/' }, preventDefault: vi.fn() };
         generic.openURLOnEvent(event);
-        expect(browser.tabs.create.mock.calls).toEqual([[{ url: 'https://someurl/' }]]);
+        expect(browser.tabs.create.mock.calls).toEqual([[{ url: 'https://someurl.test/' }]]);
         expect(event.preventDefault.mock.calls.length).toBe(1);
     });
 });
 
 describe('makeAbsolute', () => {
     test('does not change absolute urls', () => {
-        expect(generic.makeAbsolute('https://muh.de')).toEqual('https://muh.de');
-        expect(generic.makeAbsolute('http://muh.de')).toEqual('http://muh.de');
+        expect(generic.makeAbsolute('https://muh.test')).toEqual('https://muh.test');
+        expect(generic.makeAbsolute('http://muh.test')).toEqual('http://muh.test');
     });
     test('makes urls absolute', () => {
-        expect(generic.makeAbsolute('muh.de')).toEqual('https://muh.de');
+        expect(generic.makeAbsolute('muh.test')).toEqual('https://muh.test');
     });
 });
 
 describe('checkVersion', () => {
-    beforeEach(() => {
-        global.browser.runtime.sendNativeMessage = jest.fn();
-    });
-
     test('rejects with smaller version', () => {
         expect.assertions(1);
         global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 4 });
@@ -240,5 +229,17 @@ describe('checkVersion', () => {
         return generic.checkVersion().then((value) => {
             expect(value).toBe(undefined);
         });
+    });
+
+    test('returns cached result on subsequent calls', async () => {
+        expect.assertions(2);
+        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
+
+        await generic.checkVersion();
+        expect(global.browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
+
+        await generic.checkVersion();
+        // Should NOT invoke sendNativeMessage again
+        expect(global.browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
     });
 });

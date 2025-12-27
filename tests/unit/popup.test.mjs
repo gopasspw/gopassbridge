@@ -1,30 +1,31 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const fs = require('node:fs');
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-jest.useFakeTimers();
-jest.spyOn(global, 'setTimeout');
-
-global.logError = jest.fn();
-global.getSettings = jest.fn();
-global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
-global.urlDomain = jest.fn(() => 'some.domain');
-global.currentPageUrl = 'http://some.domain';
-global.openURLOnEvent = jest.fn();
-global.i18n = {
-    getMessage: jest.fn((key) => {
-        return `__MSG_${key}__`;
-    }),
-};
-
-require('popup.js');
-
-const popup = window.tests.popup;
+let popup;
 let switchToEditPromise;
 
 describe('popup', () => {
-    beforeEach(() => {
-        document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
+    beforeEach(async () => {
+        vi.resetModules();
+        vi.useFakeTimers();
+        vi.spyOn(global, 'setTimeout');
+
+        global.logError = vi.fn();
+        global.getSettings = vi.fn();
+        global.getSettings.mockResolvedValue({ defaultfolder: 'myfolder' });
+        global.urlDomain = vi.fn(() => 'domain.test');
+        global.currentPageUrl = 'http://domain.test';
+        global.openURLOnEvent = vi.fn();
+
+        await import('gopassbridge/web-extension/popup.js');
+        popup = window.tests.popup;
+
+        document.body.innerHTML = fs.readFileSync(
+            path.join(import.meta.dirname, '../../web-extension/gopassbridge.html'),
+            'utf8'
+        );
     });
     describe('armSpinnerTimeout', () => {
         beforeEach(() => {
@@ -33,12 +34,12 @@ describe('popup', () => {
         });
         test('sets timeout', () => {
             expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 200);
-            jest.runAllTimers();
+            vi.runAllTimers();
         });
 
         test('does not show spinner immediately', () => {
             expect(document.getElementsByClassName('loader').length).toBe(0);
-            jest.runAllTimers();
+            vi.runAllTimers();
             expect(document.getElementsByClassName('loader').length).toBe(1);
         });
     });
@@ -58,7 +59,7 @@ describe('popup', () => {
         test('displays setup hint on certain messages', () => {
             popup.setStatusText('Attempt to postMessage on disconnected port');
             expect(document.getElementsByClassName('status-text')[1].innerHTML).toBe(
-                `<a href="${popup.SETUP_URL}">__MSG_correctlySetup__</a>`
+                `<a href="${popup.SETUP_URL}">__translated_correctlySetup__</a>`
             );
         });
     });
@@ -99,25 +100,31 @@ describe('popup', () => {
         test('fills in name from url', () => {
             expect.assertions(1);
             return switchToEditPromise.then(() => {
-                expect(document.getElementById('create_name').value).toBe('myfolder/some.domain');
+                expect(document.getElementById('create_name').value).toBe('myfolder/domain.test');
             });
         });
     });
 
     describe('logAndDisplayError', () => {
         test('displays message', () => {
-            expect(() => {
+            expect.assertions(2);
+
+            try {
                 popup.logAndDisplayError({ message: 'sample error messsage' });
-            }).toThrow({ message: 'sample error messsage' });
+            } catch (e) {
+                expect(e).toEqual({ message: 'sample error messsage' });
+            }
             expect(document.getElementsByClassName('status-text')[0].innerHTML).toBe('sample error messsage');
         });
 
         test('switches back to search', () => {
             expect.assertions(4);
             return popup.switchToCreateNewDialog().then(() => {
-                expect(() => {
+                try {
                     popup.logAndDisplayError({ message: 'sample error messsage' });
-                }).toThrow({ message: 'sample error messsage' });
+                } catch (e) {
+                    expect(e).toEqual({ message: 'sample error messsage' });
+                }
                 expect(document.getElementsByClassName('search')[0].style.display).toBe('block');
                 expect(document.getElementsByClassName('results')[0].style.display).toBe('block');
                 expect(document.getElementsByClassName('create')[0].style.display).toBe('none');
@@ -127,7 +134,7 @@ describe('popup', () => {
 
     describe('copyToClipboard', () => {
         test('basic test - functionality will be removed in #49', () => {
-            document.execCommand = jest.fn();
+            document.execCommand = vi.fn();
             popup.copyToClipboard('muh');
             expect(document.execCommand).toHaveBeenCalledTimes(1);
         });

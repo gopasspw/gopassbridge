@@ -1,24 +1,30 @@
-'use strict';
-const fs = require('node:fs');
+import fs from 'node:fs';
+import path from 'node:path';
 
-jest.useFakeTimers();
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-global.getSettings = () => Promise.resolve(Promise.resolve({ submitafterfill: true, defaultfolder: 'Muh' }));
-global.logError = jest.fn();
+let logErrorMock;
+let options;
 
-require('options.js');
+beforeEach(async () => {
+    vi.useFakeTimers();
+    vi.resetModules();
+    document.body.innerHTML = fs.readFileSync(
+        path.join(import.meta.dirname, '../../web-extension/options.html'),
+        'utf8'
+    );
 
-const options = window.tests.options;
+    vi.stubGlobal('getSettings', () =>
+        Promise.resolve(Promise.resolve({ submitafterfill: true, defaultfolder: 'Muh' }))
+    );
+    logErrorMock = vi.fn();
+    vi.stubGlobal('logError', logErrorMock);
+
+    await import('gopassbridge/web-extension/options.js');
+    options = window.tests.options;
+});
 
 describe('Init', () => {
-    beforeEach(() => {
-        document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/options.html`);
-    });
-
-    afterEach(() => {
-        global.browser.storage.sync.set.mockClear();
-    });
-
     test('Fills checkboxes from localstore', () => {
         expect.assertions(2);
         return options.init().then(() => {
@@ -39,7 +45,7 @@ describe('Init', () => {
         expect.assertions(1);
         return options.init().then(() => {
             document.getElementById('clear').click();
-            expect(global.browser.storage.sync.clear.mock.calls.length).toBe(1);
+            expect(browser.storage.sync.clear.mock.calls.length).toBe(1);
         });
     });
 
@@ -47,20 +53,16 @@ describe('Init', () => {
         expect.assertions(1);
         return options.init().then(() => {
             document.getElementById('markfields').click();
-            expect(global.browser.storage.sync.set.mock.calls).toEqual([[{ markfields: true }]]);
+            expect(browser.storage.sync.set.mock.calls).toEqual([[{ markfields: true }]]);
         });
     });
 });
 
 describe('onTextInputChange', () => {
-    beforeEach(() => {
-        document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/options.html`);
-    });
-
     test('updates storage', () => {
         options.init();
         options._onTextinputChange({ target: { id: 'muh', value: 'maeh' } });
-        expect(global.browser.storage.sync.set.mock.calls).toEqual([[{ muh: 'maeh' }]]);
+        expect(browser.storage.sync.set.mock.calls).toEqual([[{ muh: 'maeh' }]]);
     });
 
     test('shows saving indicator', () => {
@@ -74,17 +76,13 @@ describe('onTextInputChange', () => {
 });
 
 describe('savingindicator', () => {
-    beforeEach(() => {
-        document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/options.html`);
-    });
-
     test('is shown and hidden', () => {
         expect.assertions(2);
         options._showSavingIndicator();
-        return Promise.resolve().then(() => {
-            expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(true);
-            jest.advanceTimersByTime(1000);
-            expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(false);
-        });
+        // Call it a second time to trigger the clearTimeout logic
+        options._showSavingIndicator();
+        expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(true);
+        vi.advanceTimersByTime(1000);
+        expect(document.getElementById('savingindicator').classList.contains('saved')).toBe(false);
     });
 });
