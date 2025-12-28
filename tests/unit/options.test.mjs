@@ -14,14 +14,14 @@ beforeEach(async () => {
         'utf8'
     );
 
-    vi.stubGlobal('getSettings', () =>
-        Promise.resolve(Promise.resolve({ submitafterfill: true, defaultfolder: 'Muh' }))
+    vi.stubGlobal(
+        'getSettings',
+        vi.fn(() => Promise.resolve({ submitafterfill: true, defaultfolder: 'Muh' }))
     );
     logErrorMock = vi.fn();
     vi.stubGlobal('logError', logErrorMock);
 
-    await import('gopassbridge/web-extension/options.js');
-    options = window.tests.options;
+    options = await import('gopassbridge/web-extension/options.js');
 });
 
 describe('Init', () => {
@@ -54,6 +54,18 @@ describe('Init', () => {
         return options.init().then(() => {
             document.getElementById('markfields').click();
             expect(browser.storage.sync.set.mock.calls).toEqual([[{ markfields: true }]]);
+        });
+    });
+
+    test('Handles missing clear button safely', () => {
+        document.getElementById('clear').remove();
+        return options.init().catch((e) => expect(e).toBeUndefined());
+    });
+
+    test('Ignores settings keys without matching elements', () => {
+        global.getSettings.mockResolvedValue({ nonExistentId: 'value', defaultfolder: 'Folder' });
+        return options.init().then(() => {
+            expect(document.getElementById('defaultfolder').value).toBe('Folder');
         });
     });
 });

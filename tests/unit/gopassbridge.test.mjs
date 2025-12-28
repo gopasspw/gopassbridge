@@ -55,8 +55,7 @@ describe('gopassbridge', () => {
         checkVersionMock = vi.fn().mockResolvedValue();
         vi.stubGlobal('checkVersion', checkVersionMock);
 
-        await import('gopassbridge/web-extension/gopassbridge.js');
-        gopassbridge = window.tests.gopassbridge;
+        gopassbridge = await import('gopassbridge/web-extension/gopassbridge.js');
     });
 
     describe('on startup', () => {

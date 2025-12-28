@@ -135,21 +135,19 @@ function isChrome() {
     return browser.runtime.getURL('/').startsWith('chrome');
 }
 
-if ('window' in globalThis) {
-    window.tests = {
-        generic: {
-            sendNativeAppMessage,
-            executeOnSetting,
-            urlDomain,
-            setLocalStorageKey,
-            getLocalStorageKey,
-            createButtonWithCallback,
-            showNotificationOnSetting,
-            getPopupUrl,
-            isChrome,
-            openURLOnEvent,
-            makeAbsolute,
-            checkVersion,
-        },
+try {
+    module.exports = {
+        sendNativeAppMessage,
+        executeOnSetting,
+        urlDomain,
+        setLocalStorageKey,
+        getLocalStorageKey,
+        createButtonWithCallback,
+        showNotificationOnSetting,
+        getPopupUrl,
+        isChrome,
+        openURLOnEvent,
+        makeAbsolute,
+        checkVersion,
     };
-}
+} catch (_) {}

@@ -5,8 +5,7 @@ let mockOnTrue, mockOnFalse, mockOnResult, mockOnError;
 
 beforeEach(async () => {
     vi.resetModules();
-    await import('gopassbridge/web-extension/generic.js');
-    generic = window.tests.generic;
+    generic = await import('gopassbridge/web-extension/generic.js');
 });
 
 describe('executeOnSetting', () => {
@@ -17,7 +16,7 @@ describe('executeOnSetting', () => {
 
     test('executes success callback when setting turned on', () => {
         expect.assertions(2);
-        global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
+        browser.storage.sync.get.mockResolvedValue({ mysetting: true });
         return generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(1);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
@@ -26,7 +25,7 @@ describe('executeOnSetting', () => {
 
     test('no error if no success callback', () => {
         expect.assertions(1);
-        global.browser.storage.sync.get.mockResolvedValue({ mysetting: true });
+        browser.storage.sync.get.mockResolvedValue({ mysetting: true });
         return generic.executeOnSetting('mysetting', null, mockOnFalse).then(() => {
             expect(true).toEqual(true);
         });
@@ -34,7 +33,7 @@ describe('executeOnSetting', () => {
 
     test('does execute error callback when setting turned off', () => {
         expect.assertions(2);
-        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        browser.storage.sync.get.mockResolvedValue({ mysetting: false });
         return generic.executeOnSetting('mysetting', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(1);
@@ -43,7 +42,7 @@ describe('executeOnSetting', () => {
 
     test('no error if no error callback', () => {
         expect.assertions(1);
-        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        browser.storage.sync.get.mockResolvedValue({ mysetting: false });
         return generic.executeOnSetting('mysetting', mockOnTrue, false).then(() => {
             expect(true).toEqual(true);
         });
@@ -51,7 +50,7 @@ describe('executeOnSetting', () => {
 
     test('does not execute callback when setting does not exist', () => {
         expect.assertions(2);
-        global.browser.storage.sync.get.mockResolvedValue({ mysetting: false });
+        browser.storage.sync.get.mockResolvedValue({ mysetting: false });
         return generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(1);
@@ -60,8 +59,8 @@ describe('executeOnSetting', () => {
 
     test('resolves no callback when error occurs on getting value', () => {
         expect.assertions(3);
-        global.browser.storage.sync.get.mockRejectedValue('some error');
-        const consoleSpy = vi.spyOn(global.console, 'log').mockImplementation(() => {});
+        browser.storage.sync.get.mockRejectedValue('some error');
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         return generic.executeOnSetting('nonexistent', mockOnTrue, mockOnFalse).then(() => {
             expect(mockOnTrue.mock.calls.length).toEqual(0);
             expect(mockOnFalse.mock.calls.length).toEqual(0);
@@ -78,7 +77,7 @@ describe('sendNativeMessage', () => {
 
     test('sends message with response on success', () => {
         expect.assertions(2);
-        global.browser.runtime.sendNativeMessage.mockResolvedValue({ maeh: '123' });
+        browser.runtime.sendNativeMessage.mockResolvedValue({ maeh: '123' });
         return generic
             .sendNativeAppMessage({ payload: 'muh' })
             .then(mockOnResult, mockOnError)
@@ -90,7 +89,7 @@ describe('sendNativeMessage', () => {
 
     test('calls error handler on failure', () => {
         expect.assertions(2);
-        global.browser.runtime.sendNativeMessage.mockRejectedValue('An error');
+        browser.runtime.sendNativeMessage.mockRejectedValue('An error');
         return generic
             .sendNativeAppMessage({ payload: 'muh' })
             .then(mockOnResult, mockOnError)
@@ -115,7 +114,7 @@ describe('localStorage wrappers', () => {
     test('set key', () => {
         expect.assertions(1);
         return generic.setLocalStorageKey('muh', 123).then(() => {
-            expect(global.browser.storage.local.set.mock.calls).toEqual([[{ muh: 123 }]]);
+            expect(browser.storage.local.set.mock.calls).toEqual([[{ muh: 123 }]]);
         });
     });
 
@@ -142,9 +141,9 @@ describe('createButtonWithCallback', () => {
 describe('showNotificationOnSetting', () => {
     test('creates notification', () => {
         expect.assertions(1);
-        global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: true });
+        browser.storage.sync.get.mockResolvedValue({ sendnotifications: true });
         return generic.showNotificationOnSetting('this is just a test!').then(() => {
-            expect(global.browser.notifications.create.mock.calls).toEqual([
+            expect(browser.notifications.create.mock.calls).toEqual([
                 [
                     {
                         type: 'basic',
@@ -159,9 +158,9 @@ describe('showNotificationOnSetting', () => {
 
     test('respects user setting', () => {
         expect.assertions(1);
-        global.browser.storage.sync.get.mockResolvedValue({ sendnotifications: false });
+        browser.storage.sync.get.mockResolvedValue({ sendnotifications: false });
         return generic.showNotificationOnSetting('this is just a test!').then(() => {
-            expect(global.browser.notifications.create.mock.calls.length).toEqual(0);
+            expect(browser.notifications.create.mock.calls.length).toEqual(0);
         });
     });
 });
@@ -174,12 +173,12 @@ describe('getPopupUrl', () => {
 
 describe('isChrome', () => {
     test('for Chrome', () => {
-        global.browser.runtime.getURL = vi.fn(() => 'chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/');
+        browser.runtime.getURL = vi.fn(() => 'chrome-extension://kkhfnlkhiapbiehimabddjbimfaijdhk/');
         expect(generic.isChrome()).toBe(true);
     });
 
     test('for Firefox', () => {
-        global.browser.runtime.getURL = vi.fn(() => 'moz-extension://eec37db0-22ad-4bf1-9068-5ae08df8c7e9/');
+        browser.runtime.getURL = vi.fn(() => 'moz-extension://eec37db0-22ad-4bf1-9068-5ae08df8c7e9/');
         expect(generic.isChrome()).toBe(false);
     });
 });
@@ -206,7 +205,7 @@ describe('makeAbsolute', () => {
 describe('checkVersion', () => {
     test('rejects with smaller version', () => {
         expect.assertions(1);
-        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 4 });
+        browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 4 });
         return generic.checkVersion().then(
             () => {},
             (error) => {
@@ -217,7 +216,7 @@ describe('checkVersion', () => {
 
     test('resolves with minimum version', () => {
         expect.assertions(1);
-        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
+        browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
         return generic.checkVersion().then((value) => {
             expect(value).toBe(undefined);
         });
@@ -225,7 +224,7 @@ describe('checkVersion', () => {
 
     test('resolves with larger version', () => {
         expect.assertions(1);
-        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 2, minor: 9, patch: 2 });
+        browser.runtime.sendNativeMessage.mockResolvedValue({ major: 2, minor: 9, patch: 2 });
         return generic.checkVersion().then((value) => {
             expect(value).toBe(undefined);
         });
@@ -233,13 +232,13 @@ describe('checkVersion', () => {
 
     test('returns cached result on subsequent calls', async () => {
         expect.assertions(2);
-        global.browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
+        browser.runtime.sendNativeMessage.mockResolvedValue({ major: 1, minor: 8, patch: 5 });
 
         await generic.checkVersion();
-        expect(global.browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
+        expect(browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
 
         await generic.checkVersion();
         // Should NOT invoke sendNativeMessage again
-        expect(global.browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
+        expect(browser.runtime.sendNativeMessage.mock.calls.length).toBe(1);
     });
 });

@@ -60,12 +60,12 @@ function onCreateResult(response) {
 
 initCreate();
 
-window.tests = {
-    create: {
+try {
+    module.exports = {
         onDoCreate,
         onDoAbort,
         onGenerateCheckboxChange,
         onCreateResult,
         initCreate,
-    },
-};
+    };
+} catch (_) {}

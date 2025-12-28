@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 let showNotificationOnSettingMock;
 let sendNativeAppMessageMock;
@@ -6,6 +6,7 @@ let urlDomainMock;
 
 let executeOnSettingMock;
 let isChromeMock;
+
 let openURLMock;
 let makeAbsoluteMock;
 let getPopupUrlMock;
@@ -14,15 +15,12 @@ let background;
 describe('background', () => {
     beforeEach(async () => {
         vi.resetModules();
-        vi.useFakeTimers();
 
         showNotificationOnSettingMock = vi.fn();
         vi.stubGlobal('showNotificationOnSetting', showNotificationOnSettingMock);
 
         sendNativeAppMessageMock = vi.fn();
         vi.stubGlobal('sendNativeAppMessage', sendNativeAppMessageMock);
-
-        browser.extension.getViews = vi.fn(() => ({ length: 0 }));
 
         urlDomainMock = vi.fn(() => 'url.test');
         vi.stubGlobal('urlDomain', urlDomainMock);
@@ -42,18 +40,40 @@ describe('background', () => {
         getPopupUrlMock = vi.fn(() => 'http://localhost.test/');
         vi.stubGlobal('getPopupUrl', getPopupUrlMock);
 
-        await import('gopassbridge/web-extension/background.js');
-        background = window.tests.background;
-
-        vi.spyOn(global.console, 'warn');
+        background = await import('gopassbridge/web-extension/background.js');
     });
 
-    test('registers message processors on init', () => {
-        browser.runtime.onMessage.addListener.mockClear();
-        browser.webRequest.onAuthRequired.addListener.mockClear();
-        background.initBackground();
-        expect(browser.runtime.onMessage.addListener).toHaveBeenCalledTimes(1);
-        expect(browser.webRequest.onAuthRequired.addListener).toHaveBeenCalledTimes(1);
+    describe('init', () => {
+        beforeEach(() => {
+            browser.runtime.onMessage.addListener.mockClear();
+            browser.webRequest.onAuthRequired.addListener.mockClear();
+        });
+
+        test('registers message processors', () => {
+            background.initBackground();
+
+            expect(browser.runtime.onMessage.addListener).toHaveBeenCalledTimes(1);
+            expect(browser.webRequest.onAuthRequired.addListener).toHaveBeenNthCalledWith(
+                1,
+                expect.any(Function),
+                expect.any(Object),
+                ['blocking']
+            );
+        });
+
+        test('uses asyncBlocking for Chrome', () => {
+            isChromeMock.mockReturnValue(true);
+
+            background.initBackground();
+
+            expect(browser.runtime.onMessage.addListener).toHaveBeenCalledTimes(1);
+            expect(browser.webRequest.onAuthRequired.addListener).toHaveBeenNthCalledWith(
+                1,
+                expect.any(Function),
+                expect.any(Object),
+                ['asyncBlocking']
+            );
+        });
     });
 
     describe('processMessageAndCatch', () => {
@@ -89,17 +109,21 @@ describe('background', () => {
             }
 
             beforeEach(() => {
+                vi.useFakeTimers();
                 openURLMock.mockResolvedValue();
                 sendNativeAppMessageMock.mockResolvedValue({
                     url: 'https://www.host.test',
                     username: 'username',
                     password: 'somepass',
                 });
-                browser.tabs.sendMessage.mockResolvedValue();
                 browser.tabs.onUpdated = {
                     addListener: vi.fn((callback) => callback(42, { status: 'complete' })),
                     removeListener: vi.fn(),
                 };
+            });
+
+            afterEach(() => {
+                vi.useRealTimers();
             });
 
             test('opens tab and immediately loads credentials if tab is loaded', () => {
@@ -161,8 +185,6 @@ describe('background', () => {
         describe('message LOGIN_TAB', () => {
             beforeEach(() => {
                 sendNativeAppMessageMock.mockResolvedValue({ login: 'holla', password: 'waldfee' });
-                browser.extension.getViews.mockReturnValueOnce({ length: 1 });
-                browser.tabs.sendMessage.mockResolvedValue();
             });
 
             function loginTabMessage() {
@@ -220,8 +242,10 @@ describe('background', () => {
         let onAuthRequiredCallback, windowCreatePromise;
 
         beforeEach(() => {
-            browser.extension.getViews.mockReturnValue({ length: 0 });
-            getPopupUrlMock.mockImplementation(() => 'http://localhost.test/');
+            vi.useFakeTimers();
+
+            vi.spyOn(console, 'warn').mockImplementation(() => {});
+
             executeOnSettingMock.mockImplementation((_, enabled) => enabled());
             windowCreatePromise = Promise.resolve({ id: 42 });
             browser.windows = {
@@ -230,6 +254,10 @@ describe('background', () => {
             };
             onAuthRequiredCallback = browser.webRequest.onAuthRequired.addListener.mock.calls[0][0];
             sendNativeAppMessageMock.mockResolvedValue({ username: 'url.test', password: 'waldfee' });
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
         });
 
         test('opens auth popup and resolves auth request successfully with login credentials', () => {
@@ -406,6 +434,85 @@ describe('background', () => {
                 expect(global.console.warn.mock.calls).toEqual([
                     ['Tried to resolve auth request, but no auth request is currently pending.', url],
                 ]);
+            });
+        });
+
+        test('ignores unrelated popup close', async () => {
+            executeOnSettingMock.mockImplementation((_, enabled) => enabled());
+
+            browser.windows.create = vi.fn().mockResolvedValue({ id: 100 });
+
+            const onAuth = browser.webRequest.onAuthRequired.addListener.mock.calls[0][0];
+            onAuth({ url: 'https://example.test' }, () => {});
+
+            await vi.runAllTimersAsync();
+
+            const onPopupClose = browser.windows.onRemoved.addListener.mock.calls[0][0];
+
+            // Wrong ID
+            onPopupClose(999);
+            expect(browser.windows.onRemoved.removeListener).not.toHaveBeenCalled();
+
+            // Correct ID
+            onPopupClose(100);
+            expect(browser.windows.onRemoved.removeListener).toHaveBeenCalled();
+        });
+    });
+
+    describe('_waitForTabLoaded', () => {
+        beforeEach(() => {
+            vi.useFakeTimers();
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        test('resolves if tab is already complete', async () => {
+            sendNativeAppMessageMock.mockResolvedValue({ url: 'http://url.test' });
+            openURLMock.mockResolvedValue({ id: 42, status: 'complete', url: 'http://url.test' });
+            await background.processMessageAndCatch({ type: 'OPEN_TAB', entry: 'some/entry' }, {});
+        });
+
+        test('ignores unrelated tab updates', async () => {
+            openURLMock.mockResolvedValue({ id: 42, status: 'loading' });
+            sendNativeAppMessageMock.mockResolvedValue({ url: 'http://url.test' });
+
+            const promise = background.processMessageAndCatch({ type: 'OPEN_TAB', entry: 'some/entry' }, {});
+
+            await vi.advanceTimersByTimeAsync(0);
+
+            const listener = browser.tabs.onUpdated.addListener.mock.calls[0][0];
+
+            // Advance timer slightly (not exceeding timeout)
+            vi.advanceTimersByTime(100);
+
+            // Call listener with wrong tab ID
+            listener(999, { status: 'complete' });
+
+            // Call listener with right tab ID but wrong status
+            listener(42, { status: 'loading' });
+
+            // Call listener with matching args
+            listener(42, { status: 'complete' });
+
+            return promise;
+        });
+    });
+
+    describe('Manifest V2 compatibility', () => {
+        test('checks for popup presence when getViews exists', () => {
+            const msg = 'Background script received unexpected message {"type":"UNKNOWN"} from extension';
+            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((_e) => {
+                expect(showNotificationOnSettingMock).toHaveBeenCalledWith(msg);
+                expect(browser.extension.getViews).toHaveBeenCalledWith({ type: 'popup' });
+            });
+        });
+
+        test('falls back to notification if getViews missing', () => {
+            delete browser.extension.getViews;
+            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((_e) => {
+                expect(showNotificationOnSettingMock).toHaveBeenCalledTimes(0);
             });
         });
     });

@@ -3,34 +3,36 @@ import path from 'node:path';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-function expectClassHasBorder(cls, not, base) {
-    const doc = base || document;
-    const element = doc.getElementsByClassName(cls)[0];
-    if (not) {
-        expect(element.style.border).not.toEqual('3px solid blue');
-    } else {
-        expect(element.style.border).toEqual('3px solid blue');
-    }
+const HIGHLIGHT_BORDER = '3px solid blue';
+
+function expectClassHasBorder(cls, base = document) {
+    const element = base.getElementsByClassName(cls)[0];
+    expect(element.style.border).toEqual(HIGHLIGHT_BORDER);
+}
+
+function expectClassHasNoBorder(cls, base = document) {
+    const element = base.getElementsByClassName(cls)[0];
+    expect(element.style.border).not.toEqual(HIGHLIGHT_BORDER);
+}
+
+function expectLoginAndPassword(login, password, base) {
+    expectClassHasBorder(login || 'test-login', base);
+    expectClassHasBorder(password || 'test-password', base);
+}
+
+function expectNotLoginAndPassword(login, password, base) {
+    expectClassHasNoBorder(login || 'test-login', base);
+    expectClassHasNoBorder(password || 'test-password', base);
+}
+
+function expectPasswordOnly() {
+    expectClassHasNoBorder('test-login');
+    expectClassHasBorder('test-password');
 }
 
 function expectClassHasValue(cls, value) {
     const element = document.getElementsByClassName(cls)[0];
     expect(element.value).toEqual(value);
-}
-
-function expectLoginAndPassword(login, password, base) {
-    expectClassHasBorder(login || 'test-login', false, base);
-    expectClassHasBorder(password || 'test-password', false, base);
-}
-
-function expectNotLoginAndPassword(login, password, base) {
-    expectClassHasBorder(login || 'test-login', true, base);
-    expectClassHasBorder(password || 'test-password', true, base);
-}
-
-function expectPasswordOnly() {
-    expectClassHasBorder('test-login', true);
-    expectClassHasBorder('test-password');
 }
 
 function expectLoginAndPasswordHaveValues(login, password) {
@@ -49,14 +51,11 @@ describe('content', () => {
         offsetHeightSpy = vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(10);
         offsetWidthSpy = vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(50);
 
-        await import('gopassbridge/web-extension/content.js');
-        content = window.tests.content;
+        content = await import('gopassbridge/web-extension/content.js');
     });
 
     describe('on sample login form', () => {
         beforeEach(() => {
-            offsetHeightSpy.mockReturnValue(10);
-            offsetWidthSpy.mockReturnValue(50);
             document.body.innerHTML = `
             <html><body><form id='form' action='/session' method='post'>
                 <input id='login' type='text' class='test-login'>
@@ -211,8 +210,6 @@ describe('content', () => {
 
     describe('on sample login form with multiple inputs', () => {
         beforeEach(() => {
-            offsetHeightSpy.mockReturnValue(10);
-            offsetWidthSpy.mockReturnValue(50);
             document.body.innerHTML = `
             <html><body><form id='form' action='/session' method='post'>
                 <input id='login' type='text' class='test-login-first'>
@@ -245,8 +242,6 @@ describe('content', () => {
 
     describe('on sample login form with inputs in iframe', () => {
         beforeEach(() => {
-            offsetHeightSpy.mockReturnValue(10);
-            offsetWidthSpy.mockReturnValue(50);
             document.body.innerHTML =
                 "<html><body><iframe src='https://www.somedomain.test/iframe.html'></iframe></body></html>";
             const iframe = document.querySelectorAll('iframe')[0];
@@ -295,11 +290,6 @@ describe('content', () => {
     });
 
     describe('on sample login form with decoy password inputs with different tabIndex', () => {
-        beforeEach(() => {
-            offsetHeightSpy.mockReturnValue(10);
-            offsetWidthSpy.mockReturnValue(50);
-        });
-
         test('selects first input and password with larger tabindex if focused', () => {
             document.body.innerHTML = `
             <html><body><form id='form' action='/session' method='post'>
@@ -316,82 +306,178 @@ describe('content', () => {
 
         test('selects matching textfield and password with largert tabindex without focus', () => {
             document.body.innerHTML = `
-            <html><body><form id='form' action='/session' method='post'>
-                <input type='password' class='' tabindex='-1'>
-                <input id='login' type='text' class='test-login' tabindex='0'>
-                <input type='password' class='test-password' tabindex='1'>
-                <input id='submit' type='submit'>
-            </form></body></html>`;
+                <html><body><form id='form' action='/session' method='post'>
+                    <input type='password' class='' tabindex='-1'>
+                    <input id='login' type='text' class='test-login' tabindex='0'>
+                    <input type='password' class='test-password' tabindex='1'>
+                    <input id='submit' type='submit'>
+                </form></body></html>
+            `;
             content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
             expectLoginAndPassword('test-login', 'test-password');
         });
     });
 
-    const pages = {
-        github: {
-            toClickSubmit: true,
-        },
-        'aws-console': {
-            toClickSubmit: false,
-        },
-        'ing-nl': {
-            toClickSubmit: false,
-        },
-        'rote-liste-iframe': {
-            toClickSubmit: true,
-        },
-    };
+    test('ignores password fields with specific ignored IDs', () => {
+        document.body.innerHTML = `
+            <html><body><form>
+                <input type='password' class="ignored_input" id='signup_minireg_password'>
+                <input type='password' class="valid_input" id='valid_password'>
+            </form></body></html>
+        `;
 
-    for (const page in pages) {
-        const expected = pages[page];
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
 
-        describe(`on ${page}`, () => {
-            let clickCallback;
+        expectClassHasBorder('valid_input');
+        expectClassHasNoBorder('ignored_input');
+    });
 
-            function setupClickListener() {
-                const onClick = vi.fn((event) => {
-                    event.preventDefault();
-                });
-                document.addEventListener('click', onClick);
-                return onClick;
-            }
+    test('updateInputFields does not update standalone login field (requires password field)', () => {
+        document.body.innerHTML = `
+             <html><body><form>
+                 <input id='login' type='text'>
+             </form></body></html>
+        `;
 
-            beforeEach(() => {
-                vi.stubGlobal('requestAnimationFrame', (fn) => {
-                    fn();
-                });
-                offsetHeightSpy.mockReturnValue(10);
-                offsetWidthSpy.mockReturnValue(50);
-                document.body.innerHTML = fs.readFileSync(
-                    path.join(import.meta.dirname, 'login_pages', `${page}.html`),
-                    'utf8'
-                );
-                clickCallback = setupClickListener();
+        content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pw' });
+
+        expect(document.getElementById('login').value).toEqual('');
+    });
+
+    test('updateInputFields does nothing if no fields detected', () => {
+        const login = 'user';
+        const password = 'pw';
+
+        document.body.innerHTML = `<html><body><div>nothing here</div></body></html>`;
+
+        content.processMessage({ type: 'FILL_LOGIN_FIELDS', login, password });
+
+        expect(document.body.innerHTML).not.toContain(login);
+        expect(document.body.innerHTML).not.toContain(password);
+    });
+
+    test('ignores focused inputs that do not match login criteria', () => {
+        document.body.innerHTML = `
+             <html><body><form>
+                 <input  type='checkbox' class='not_matching'>
+                 <input type='password' class='pw'>
+             </form></body></html>
+        `;
+
+        document.getElementsByClassName('not_matching')[0].focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectClassHasNoBorder('not_matching');
+    });
+
+    test('with focused username, handles missing password field', () => {
+        document.body.innerHTML = `
+             <html><body><form>
+                 <input id='username' class="not_matching" type='text'>
+             </form></body></html>`;
+
+        document.getElementById('username').focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectClassHasNoBorder('not_matching');
+    });
+
+    test('with focused username, falls back to any visible password if no tabindex match', () => {
+        document.body.innerHTML = `
+             <html><body><form>
+                 <input type='password' class='pw1' tabindex='1'>
+                 <input id='username' type='text' tabindex='5'>
+             </form></body></html>
+        `;
+
+        document.getElementById('username').focus();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectClassHasBorder('pw1');
+    });
+
+    test('falls back to original password if no better match', () => {
+        document.body.innerHTML = `
+             <html><body><form>
+                 <input type='password' class='pw1' tabindex='1'>
+                 <input id='username' type='text' tabindex='5'>
+             </form></body></html>
+        `;
+
+        document.activeElement.blur();
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+        expectClassHasBorder('pw1');
+    });
+
+    test('iframe recursion checks elements visibility', () => {
+        document.body.innerHTML = `
+            <html><body>
+                <iframe src='https://localhost.test/iframe.html'></iframe>
+            </body></html>
+        `;
+        const iframe = document.querySelectorAll('iframe')[0];
+        iframe.contentDocument.write(`
+            <form>
+                <input type='password' id='visible'>
+                <input type='password' id='hidden' style='visibility: hidden'>
+            </form>
+        `);
+
+        const visible = iframe.contentDocument.getElementById('visible');
+        vi.spyOn(visible, 'offsetWidth', 'get').mockReturnValue(50);
+        vi.spyOn(visible, 'offsetHeight', 'get').mockReturnValue(10);
+
+        const hidden = iframe.contentDocument.getElementById('hidden');
+        vi.spyOn(hidden, 'offsetWidth', 'get').mockReturnValue(50);
+        vi.spyOn(hidden, 'offsetHeight', 'get').mockReturnValue(10);
+
+        jsdom.reconfigure({ url: 'https://localhost.test/' });
+
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+
+        expect(visible.style.border).toEqual(HIGHLIGHT_BORDER);
+        expect(hidden.style.border).not.toEqual(HIGHLIGHT_BORDER);
+    });
+
+    describe.each([
+        [{ page: 'github', toClickSubmit: true }],
+        [{ page: 'aws-console', toClickSubmit: false }],
+        [{ page: 'ing-nl', toClickSubmit: false }],
+        [{ page: 'rote-liste-iframe', toClickSubmit: true }],
+    ])('on $page', ({ page, toClickSubmit }) => {
+        let clickCallback;
+
+        beforeEach(() => {
+            vi.stubGlobal('requestAnimationFrame', (fn) => {
+                fn();
             });
-
-            test('detects login and password', () => {
-                content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
-                expectLoginAndPassword();
-            });
-
-            describe('on login', () => {
-                beforeEach(() => {
-                    content.processMessage({ type: 'TRY_LOGIN' });
-                });
-
-                if (expected.toClickSubmit) {
-                    test('clicks submit button', () => {
-                        expect(clickCallback.mock.calls.length).toBe(1);
-                        const element = clickCallback.mock.calls[0][0].target;
-                        expect(element.tagName).toBe('INPUT');
-                        expect(element.type).toBe('submit');
-                    });
-                } else {
-                    test('does not click submit button', () => {
-                        expect(clickCallback.mock.calls.length).toBe(0);
-                    });
-                }
-            });
+            document.body.innerHTML = fs.readFileSync(
+                path.join(import.meta.dirname, 'login_pages', `${page}.html`),
+                'utf8'
+            );
+            clickCallback = vi.fn();
+            document.addEventListener('click', clickCallback);
         });
-    }
+
+        test('detects login and password', () => {
+            content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+            expectLoginAndPassword();
+        });
+
+        describe('on login', () => {
+            beforeEach(() => {
+                content.processMessage({ type: 'TRY_LOGIN' });
+            });
+
+            if (toClickSubmit) {
+                test('clicks submit button', () => {
+                    expect(clickCallback.mock.calls.length).toBe(1);
+                    const element = clickCallback.mock.calls[0][0].target;
+                    expect(element.tagName).toBe('INPUT');
+                    expect(element.type).toBe('submit');
+                });
+            } else {
+                test('does not click submit button', () => {
+                    expect(clickCallback.mock.calls.length).toBe(0);
+                });
+            }
+        });
+    });
 });

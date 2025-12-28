@@ -70,9 +70,9 @@ function _handleUrlSearch(url) {
     return Promise.resolve();
 }
 
-window.tests = {
-    gopassbridge: {
+try {
+    module.exports = {
         switchTab,
         getCurrentTab: () => ({ currentPageUrl, currentTabId, currentTabFavIconUrl }),
-    },
-};
+    };
+} catch (_) {}

@@ -14,7 +14,7 @@ beforeEach(() => {
         },
         tabs: {
             query: vi.fn(),
-            sendMessage: vi.fn(),
+            sendMessage: vi.fn().mockResolvedValue({}),
             create: vi.fn(),
             update: vi.fn(),
             remove: vi.fn(),

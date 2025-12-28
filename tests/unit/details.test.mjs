@@ -24,8 +24,7 @@ describe('onEntryData', () => {
         global.getSettings = vi.fn();
         global.getSettings.mockResolvedValue({ omitkeys: 'otpauth, muh' });
 
-        await import('gopassbridge/web-extension/details.js');
-        details = window.tests.details;
+        details = await import('gopassbridge/web-extension/details.js');
 
         document.body.innerHTML = '';
         loginElement = document.createElement('div');
@@ -48,6 +47,26 @@ describe('onEntryData', () => {
                 expect(global.browser.storage.local.remove.mock.calls).toEqual([['PREFIXdomain.test']]);
                 expect(global.setLocalStorageKey.mock.calls.length).toBe(0);
             });
+        });
+    });
+
+    test('with detail view opened on another element closes other view and opens new one', () => {
+        const otherLogin = document.createElement('div');
+        document.body.appendChild(otherLogin);
+        const otherDetailView = document.createElement('div');
+        otherDetailView.classList.add('detail-view');
+        document.body.appendChild(otherDetailView);
+
+        loginElement = document.createElement('div');
+        loginElement.classList.add('login');
+        loginElement.innerText = 'secret/entry';
+        document.body.appendChild(loginElement);
+
+        expect.assertions(3);
+        return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
+            expect(document.getElementsByClassName('detail-view').length).toBe(1);
+            expect(loginElement.nextSibling.classList.contains('detail-view')).toBe(true);
+            expect(document.getElementsByClassName('detail-view')[0]).not.toBe(otherDetailView);
         });
     });
 

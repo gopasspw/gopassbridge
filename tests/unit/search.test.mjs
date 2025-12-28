@@ -41,8 +41,7 @@ describe('search method', () => {
         vi.stubGlobal('currentTabFavIconUrl', null);
         vi.stubGlobal('searchedUrl', null);
 
-        await import('gopassbridge/web-extension/search.js');
-        search = window.tests.search;
+        search = await import('gopassbridge/web-extension/search.js');
         vi.clearAllTimers();
     });
 
@@ -539,6 +538,56 @@ describe('search method', () => {
                 simulateInput('');
                 expect(sendNativeAppMessage.mock.calls).toEqual([[{ host: 'host.test', type: 'queryHost' }]]);
             });
+        });
+    });
+
+    describe('_onEntryAction', () => {
+        test('falls back to event.target if element is null', () => {
+            const event = { target: { innerText: 'value' }, altKey: false, shiftKey: false, ctrlKey: false };
+            search._onEntryAction(event, null);
+            expect(browser.runtime.sendMessage).toHaveBeenCalledWith(
+                expect.objectContaining({ entry: 'value', type: 'LOGIN_TAB' })
+            );
+        });
+
+        test.each([
+            {
+                comment: 'Alt key',
+                altKey: true,
+                shiftKey: false,
+                ctrlKey: false,
+                expectedTriggerType: 'native-message',
+                expectedMessage: { type: 'getData', entry: 'value' },
+            },
+            {
+                comment: 'Shift key (Copy)',
+                altKey: false,
+                shiftKey: true,
+                ctrlKey: false,
+                expectedTriggerType: 'native-message',
+                expectedMessage: { type: 'copyToClipboard', entry: 'value' },
+            },
+            {
+                comment: 'Ctrl key (Open)',
+                altKey: false,
+                shiftKey: false,
+                ctrlKey: true,
+                expectedTriggerType: 'browser-message',
+                expectedMessage: { type: 'OPEN_TAB', entry: 'value' },
+            },
+        ])('handles modifiers for $comment', ({ altKey, shiftKey, ctrlKey, expectedTriggerType, expectedMessage }) => {
+            const event = { target: { innerText: 'value' }, altKey, shiftKey, ctrlKey };
+            search._onEntryAction(event, null);
+            switch (expectedTriggerType) {
+                case 'native-message':
+                    expect(sendNativeAppMessage).toHaveBeenCalledWith(expectedMessage);
+                    break;
+                case 'browser-message':
+                    expect(browser.runtime.sendMessage).toHaveBeenCalledWith(expectedMessage);
+                    break;
+                default:
+                    throw new Error('Unknown trigger type');
+            }
         });
     });
 });

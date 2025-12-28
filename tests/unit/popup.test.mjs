@@ -19,8 +19,7 @@ describe('popup', () => {
         global.currentPageUrl = 'http://domain.test';
         global.openURLOnEvent = vi.fn();
 
-        await import('gopassbridge/web-extension/popup.js');
-        popup = window.tests.popup;
+        popup = await import('gopassbridge/web-extension/popup.js');
 
         document.body.innerHTML = fs.readFileSync(
             path.join(import.meta.dirname, '../../web-extension/gopassbridge.html'),

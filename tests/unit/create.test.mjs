@@ -10,25 +10,26 @@ describe('create', () => {
 
     beforeEach(async () => {
         vi.resetModules();
-        global.armSpinnerTimeout = vi.fn();
-        global.sendNativeAppMessage = vi.fn();
-        global.sendNativeAppMessage.mockResolvedValue({});
-        global.getSettings = vi.fn();
+        vi.stubGlobal('armSpinnerTimeout', vi.fn());
+        vi.stubGlobal('sendNativeAppMessage', vi.fn());
+        vi.stubGlobal('getSettings', vi.fn());
         global.getSettings.mockResolvedValue({ appendlogintoname: true });
-        global.switchToSearch = vi.fn();
-        global.setStatusText = vi.fn();
-        global.urlDomain = vi.fn(() => 'domain.test');
-        global.searchHost = vi.fn();
-        global.logAndDisplayError = vi.fn();
-        global.currentPageUrl = 'http://domain.test';
-        global.searchTerm = '';
+        vi.stubGlobal('switchToSearch', vi.fn());
+        vi.stubGlobal('setStatusText', vi.fn());
+        vi.stubGlobal(
+            'urlDomain',
+            vi.fn(() => 'domain.test')
+        );
+        vi.stubGlobal('searchHost', vi.fn());
+        vi.stubGlobal('logAndDisplayError', vi.fn());
+        vi.stubGlobal('currentPageUrl', 'http://domain.test');
+        vi.stubGlobal('searchTerm', '');
 
         document.body.innerHTML = fs.readFileSync(
             path.join(import.meta.dirname, '../../web-extension/gopassbridge.html'),
             'utf8'
         );
-        await import('gopassbridge/web-extension/create.js');
-        create = window.tests.create;
+        create = await import('gopassbridge/web-extension/create.js');
     });
 
     test('doAbort switches to search', () => {
@@ -65,6 +66,23 @@ describe('create', () => {
                     },
                 ],
             ]);
+        });
+
+        test('sends native message without appended login if setting disabled', async () => {
+            vi.stubGlobal('getSettings', vi.fn().mockResolvedValue({ appendlogintoname: false }));
+
+            await create.onDoCreate(mockEvent);
+
+            const lastCallArgs = global.sendNativeAppMessage.mock.lastCall;
+            expect(lastCallArgs[0]).toEqual({
+                entry_name: '',
+                generate: true,
+                length: 24,
+                login: '',
+                password: '',
+                type: 'create',
+                use_symbols: true,
+            });
         });
 
         test('starts query after successful finishing', () => {
