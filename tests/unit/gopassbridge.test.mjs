@@ -20,8 +20,6 @@ describe('gopassbridge', () => {
     let checkVersionMock;
 
     beforeEach(async () => {
-        vi.resetModules();
-
         browser.tabs.query.mockResolvedValue([
             { url: 'http://url.test', id: 'someid', favIconUrl: 'http://icon.test/fav' },
         ]);
@@ -103,62 +101,50 @@ describe('gopassbridge', () => {
             expect(gopassbridge.getCurrentTab()).toEqual(previousTab);
         });
 
-        test('sends message to mark fields if setting is true', () => {
-            expect.assertions(1);
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(browser.tabs.sendMessage.mock.calls).toEqual([['someid', { type: 'MARK_LOGIN_FIELDS' }]]);
-            });
+        test('sends message to mark fields if setting is true', async () => {
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(browser.tabs.sendMessage.mock.calls).toEqual([['someid', { type: 'MARK_LOGIN_FIELDS' }]]);
         });
 
-        test('does not send a message to mark fields if setting is false', () => {
+        test('does not send a message to mark fields if setting is false', async () => {
             executeOnSettingMock.mockImplementation(() => {});
             browser.tabs.sendMessage.mockReset();
-            expect.assertions(1);
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(browser.tabs.sendMessage.mock.calls).toEqual([]);
-                executeOnSettingMock.mockImplementation((_, cb) => cb());
-            });
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(browser.tabs.sendMessage.mock.calls).toEqual([]);
+            executeOnSettingMock.mockImplementation((_, cb) => cb());
         });
 
-        test('if no search term could be derived, clear results', () => {
+        test('if no search term could be derived, clear results', async () => {
             urlDomainMock.mockImplementation(() => null);
-            expect.assertions(1);
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(document.body.innerHTML).not.toEqual(start);
-                urlDomainMock.mockImplementation(() => 'url.test');
-            });
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(document.body.innerHTML).not.toEqual(start);
+            urlDomainMock.mockImplementation(() => 'url.test');
         });
 
-        test('if search term could be derived, do not clear results', () => {
+        test('if search term could be derived, do not clear results', async () => {
             const start = `
                 <div id="results">
                     <div></div>
                 </div>
             `;
             document.body.innerHTML = start;
-            expect.assertions(1);
 
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(document.body.innerHTML).toEqual(start);
-            });
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(document.body.innerHTML).toEqual(start);
         });
 
-        test('if search term in local storage, call search', () => {
-            expect.assertions(2);
+        test('if search term in local storage, call search', async () => {
             getLocalStorageKeyMock.mockResolvedValue('previoussearch');
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(searchMock.mock.calls).toEqual([['previoussearch']]);
-                expect(searchHostMock.mock.calls).toEqual([]);
-            });
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(searchMock.mock.calls).toEqual([['previoussearch']]);
+            expect(searchHostMock.mock.calls).toEqual([]);
         });
 
-        test('if no search term in local storage, call searchHost', () => {
-            expect.assertions(2);
+        test('if no search term in local storage, call searchHost', async () => {
             getLocalStorageKeyMock.mockResolvedValue(undefined);
-            return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                expect(searchMock.mock.calls).toEqual([]);
-                expect(searchHostMock.mock.calls).toEqual([['url.test']]);
-            });
+            await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+            expect(searchMock.mock.calls).toEqual([]);
+            expect(searchHostMock.mock.calls).toEqual([['url.test']]);
         });
 
         describe('handles authUrl query parameter', () => {
@@ -172,47 +158,38 @@ describe('gopassbridge', () => {
                 document.body.innerHTML = documentHtml;
             });
 
-            test('by showing auth login info and calling search', () => {
-                expect.assertions(6);
-
+            test('by showing auth login info and calling search', async () => {
                 expect(document.getElementById('auth_login').style.display).toEqual('none');
                 expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
 
-                return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                    expect(document.getElementById('auth_login').style.display).toEqual('block');
-                    expect(document.getElementById('auth_login_url').textContent).toEqual('https://example.test');
+                await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+                expect(document.getElementById('auth_login').style.display).toEqual('block');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('https://example.test');
 
-                    expect(searchMock.mock.calls).toEqual([]);
-                    expect(searchHostMock.mock.calls).toEqual([['https://example.test']]);
-                });
+                expect(searchMock.mock.calls).toEqual([]);
+                expect(searchHostMock.mock.calls).toEqual([['https://example.test']]);
             });
 
-            test('ignores authUrl if window location does not match the popup url of gopassbridge', () => {
-                expect.assertions(4);
-
+            test('ignores authUrl if window location does not match the popup url of gopassbridge', async () => {
                 getPopupUrlMock.mockImplementation(() => 'http://localhost.invalid/');
 
-                return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                    expect(document.getElementById('auth_login').style.display).toEqual('none');
-                    expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
+                await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+                expect(document.getElementById('auth_login').style.display).toEqual('none');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
 
-                    expect(searchMock.mock.calls).toEqual([]);
-                    expect(searchHostMock.mock.calls).toEqual([['http://url.test']]);
-                });
+                expect(searchMock.mock.calls).toEqual([]);
+                expect(searchHostMock.mock.calls).toEqual([['http://url.test']]);
             });
 
-            test('ignores any other search parameter when authUrl is missing', () => {
-                expect.assertions(4);
-
+            test('ignores any other search parameter when authUrl is missing', async () => {
                 jsdom.reconfigure({ url: 'http://localhost.test/?otherUrl=https://not.authUrl.test' });
 
-                return gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' }).then(() => {
-                    expect(document.getElementById('auth_login').style.display).toEqual('none');
-                    expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
+                await gopassbridge.switchTab({ url: 'http://url.test', id: 'someid' });
+                expect(document.getElementById('auth_login').style.display).toEqual('none');
+                expect(document.getElementById('auth_login_url').textContent).toEqual('(?)');
 
-                    expect(global.search.mock.calls).toEqual([]);
-                    expect(global.searchHost.mock.calls).toEqual([['http://url.test']]);
-                });
+                expect(global.search.mock.calls).toEqual([]);
+                expect(global.searchHost.mock.calls).toEqual([['http://url.test']]);
             });
         });
     });

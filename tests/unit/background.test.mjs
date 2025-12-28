@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 let showNotificationOnSettingMock;
 let sendNativeAppMessageMock;
@@ -14,8 +14,6 @@ let background;
 
 describe('background', () => {
     beforeEach(async () => {
-        vi.resetModules();
-
         showNotificationOnSettingMock = vi.fn();
         vi.stubGlobal('showNotificationOnSetting', showNotificationOnSettingMock);
 
@@ -77,30 +75,36 @@ describe('background', () => {
     });
 
     describe('processMessageAndCatch', () => {
-        test('raises on content script messages', () => {
+        test('raises on content script messages', async () => {
             expect.assertions(2);
             const msg = 'Background script received unexpected message {} from content script or popup window.';
-            return background.processMessageAndCatch({}, { tab: 42 }).catch((error) => {
+            try {
+                await background.processMessageAndCatch({}, { tab: 42 });
+            } catch (error) {
                 expect(showNotificationOnSettingMock.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
-            });
+            }
         });
 
-        test('raises on unknown message types', () => {
+        test('raises on unknown message types', async () => {
             expect.assertions(2);
             const msg = `Background script received unexpected message {"type":"UNKNOWN"} from extension`;
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((error) => {
+            try {
+                await background.processMessageAndCatch({ type: 'UNKNOWN' }, {});
+            } catch (error) {
                 expect(showNotificationOnSettingMock.mock.calls).toEqual([[msg]]);
                 expect(error.message).toBe(msg);
-            });
+            }
         });
 
-        test('do not show notification if popup is shown', () => {
+        test('do not show notification if popup is shown', async () => {
             expect.assertions(1);
             browser.extension.getViews.mockReturnValueOnce({ length: 1 });
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch(() => {
+            try {
+                await background.processMessageAndCatch({ type: 'UNKNOWN' }, {});
+            } catch {
                 expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-            });
+            }
         });
 
         describe('message OPEN_TAB', () => {
@@ -109,7 +113,6 @@ describe('background', () => {
             }
 
             beforeEach(() => {
-                vi.useFakeTimers();
                 openURLMock.mockResolvedValue();
                 sendNativeAppMessageMock.mockResolvedValue({
                     url: 'https://www.host.test',
@@ -122,63 +125,56 @@ describe('background', () => {
                 };
             });
 
-            afterEach(() => {
-                vi.useRealTimers();
-            });
-
-            test('opens tab and immediately loads credentials if tab is loaded', () => {
-                expect.assertions(1);
+            test('opens tab and immediately loads credentials if tab is loaded', async () => {
                 openURLMock.mockResolvedValue({
                     id: 42,
                     status: 'complete',
                     url: 'http://www.host.test',
                 });
-                return openTabMessage().then(() => {
-                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
-                        [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
-                    ]);
-                });
+                await openTabMessage();
+                expect(browser.tabs.sendMessage.mock.calls).toEqual([
+                    [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
+                ]);
             });
 
-            test('raises error if no url in entry', () => {
+            test('raises error if no url in entry', async () => {
                 sendNativeAppMessageMock.mockResolvedValue({});
                 expect.assertions(1);
                 openURLMock.mockResolvedValue({ id: 42, status: 'complete' });
-                return openTabMessage().catch((error) => {
+                try {
+                    await openTabMessage();
+                } catch (error) {
                     expect(error.message).toBe('__translated_noURLInEntry__');
-                });
+                }
             });
 
-            test('opens tab and loads credentials when tab is ready', () => {
-                expect.assertions(1);
+            test('opens tab and loads credentials when tab is ready', async () => {
                 openURLMock.mockResolvedValue({ id: 42, status: 'loading' });
 
-                const promise = openTabMessage().then(() => {
-                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
-                        [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
-                    ]);
-                });
-
+                const promise = openTabMessage();
                 vi.advanceTimersByTime(1000);
+                await promise;
 
-                return promise;
+                expect(browser.tabs.sendMessage.mock.calls).toEqual([
+                    [42, { login: 'username', password: 'somepass', type: 'FILL_LOGIN_FIELDS' }],
+                ]);
             });
 
-            test('raises error on timeout when waiting for new tab to be ready', () => {
+            test('raises error on timeout when waiting for new tab to be ready', async () => {
                 sendNativeAppMessageMock.mockResolvedValue({ url: 'url.test' });
                 expect.assertions(2);
                 openURLMock.mockResolvedValue({ id: 42, status: 'loading' });
-
-                const promise = openTabMessage().catch((error) => {
-                    expect(browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
-                    expect(error).toBe('Loading timed out');
-                });
 
                 browser.tabs.onUpdated.addListener = vi.fn(() => {
                     vi.advanceTimersByTime(11000);
                 });
 
-                return promise;
+                try {
+                    await openTabMessage();
+                } catch (error) {
+                    expect(browser.tabs.onUpdated.removeListener.mock.calls.length).toBe(1);
+                    expect(error).toBe('Loading timed out');
+                }
             });
         });
 
@@ -194,42 +190,41 @@ describe('background', () => {
                 );
             }
 
-            test('raises if native app message response contains error', () => {
+            test('raises if native app message response contains error', async () => {
                 sendNativeAppMessageMock.mockResolvedValue({ error: 'some native app error' });
                 expect.assertions(1);
-                return loginTabMessage().catch((error) => {
+                try {
+                    await loginTabMessage();
+                } catch (error) {
                     expect(error.message).toBe('some native app error');
-                });
+                }
             });
 
-            test('raises if username is equal to the domain message response contains error', () => {
+            test('raises if username is equal to the domain message response contains error', async () => {
                 sendNativeAppMessageMock.mockResolvedValue({ username: 'url.test', password: 'waldfee' });
                 expect.assertions(1);
-                return loginTabMessage().catch((error) => {
+                try {
+                    await loginTabMessage();
+                } catch (error) {
                     expect(error.message).toBe('__translated_couldNotDetermineUsernameMessage__');
-                });
+                }
             });
 
-            test('sends browser tab fill login field message', () => {
-                expect.assertions(1);
-                return loginTabMessage().then(() => {
-                    expect(browser.tabs.sendMessage.mock.calls).toEqual([
-                        [42, { login: undefined, password: 'waldfee', type: 'FILL_LOGIN_FIELDS' }],
-                    ]);
-                });
+            test('sends browser tab fill login field message', async () => {
+                await loginTabMessage();
+                expect(browser.tabs.sendMessage.mock.calls).toEqual([
+                    [42, { login: undefined, password: 'waldfee', type: 'FILL_LOGIN_FIELDS' }],
+                ]);
             });
 
-            test('sends browser tab submit after fill message if setting is on', () => {
-                expect.assertions(5);
-                return loginTabMessage().then(() => {
-                    expect(browser.tabs.sendMessage.mock.calls.length).toEqual(1);
-                    expect(executeOnSettingMock.mock.calls.length).toEqual(1);
-                    expect(executeOnSettingMock.mock.calls[0][0]).toEqual('submitafterfill');
-                    return executeOnSettingMock.mock.calls[0][1]().then(() => {
-                        expect(browser.tabs.sendMessage.mock.calls.length).toEqual(2);
-                        expect(browser.tabs.sendMessage.mock.calls[1]).toEqual([42, { type: 'TRY_LOGIN' }]);
-                    });
-                });
+            test('sends browser tab submit after fill message if setting is on', async () => {
+                await loginTabMessage();
+                expect(browser.tabs.sendMessage.mock.calls.length).toEqual(1);
+                expect(executeOnSettingMock.mock.calls.length).toEqual(1);
+                expect(executeOnSettingMock.mock.calls[0][0]).toEqual('submitafterfill');
+                await executeOnSettingMock.mock.calls[0][1]();
+                expect(browser.tabs.sendMessage.mock.calls.length).toEqual(2);
+                expect(browser.tabs.sendMessage.mock.calls[1]).toEqual([42, { type: 'TRY_LOGIN' }]);
             });
         });
     });
@@ -242,8 +237,6 @@ describe('background', () => {
         let onAuthRequiredCallback, windowCreatePromise;
 
         beforeEach(() => {
-            vi.useFakeTimers();
-
             vi.spyOn(console, 'warn').mockImplementation(() => {});
 
             executeOnSettingMock.mockImplementation((_, enabled) => enabled());
@@ -256,185 +249,155 @@ describe('background', () => {
             sendNativeAppMessageMock.mockResolvedValue({ username: 'url.test', password: 'waldfee' });
         });
 
-        afterEach(() => {
-            vi.useRealTimers();
-        });
-
-        test('opens auth popup and resolves auth request successfully with login credentials', () => {
-            expect.assertions(5);
-
+        test('opens auth popup and resolves auth request successfully with login credentials', async () => {
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
-            return windowCreatePromise.then(() => {
-                const processMessagePromise = background.processMessageAndCatch(
-                    { type: 'LOGIN_TAB', entry: 'some/entry' },
-                    { tab: {}, url: validAuthPopupUrl }
-                );
+            await windowCreatePromise;
+            const processMessagePromise = background.processMessageAndCatch(
+                { type: 'LOGIN_TAB', entry: 'some/entry' },
+                { tab: {}, url: validAuthPopupUrl }
+            );
 
-                return Promise.all([authRequiredPromise, processMessagePromise]).then(([authRequiredResult, _]) => {
-                    expect(browser.windows.create.mock.calls.length).toBe(1);
-                    expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
-                        browser.windows.onRemoved.removeListener.mock.calls
-                    );
-                    expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
-                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-                    expect(authRequiredResult).toEqual({
-                        authCredentials: { username: 'url.test', password: 'waldfee' },
-                    });
-                });
+            const [authRequiredResult, _] = await Promise.all([authRequiredPromise, processMessagePromise]);
+            expect(browser.windows.create.mock.calls.length).toBe(1);
+            expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
+                browser.windows.onRemoved.removeListener.mock.calls
+            );
+            expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+            expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
+            expect(authRequiredResult).toEqual({
+                authCredentials: { username: 'url.test', password: 'waldfee' },
             });
         });
 
-        test('opens auth popup but when popup is closed falls back to browser auth dialog', () => {
-            expect.assertions(5);
-
+        test('opens auth popup but when popup is closed falls back to browser auth dialog', async () => {
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
-            return windowCreatePromise.then(() => {
-                browser.windows.onRemoved.addListener.mock.calls[0][0](42);
+            await windowCreatePromise;
+            browser.windows.onRemoved.addListener.mock.calls[0][0](42);
 
-                return authRequiredPromise.then((authRequiredResult) => {
-                    expect(browser.windows.create.mock.calls.length).toBe(1);
-                    expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
-                        browser.windows.onRemoved.removeListener.mock.calls
-                    );
-                    expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
-                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-                    expect(authRequiredResult).toEqual({ cancel: false });
-                });
-            });
+            const authRequiredResult = await authRequiredPromise;
+            expect(browser.windows.create.mock.calls.length).toBe(1);
+            expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
+                browser.windows.onRemoved.removeListener.mock.calls
+            );
+            expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
+            expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
+            expect(authRequiredResult).toEqual({ cancel: false });
         });
 
-        test('opens auth popup but does not resolve auth request after native app error', () => {
+        test('opens auth popup but does not resolve auth request after native app error', async () => {
             expect.assertions(6);
 
             sendNativeAppMessageMock.mockResolvedValueOnce({ error: 'native app broken' });
 
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
-            return windowCreatePromise.then(() => {
-                const processMessagePromise = background.processMessageAndCatch(
+            await windowCreatePromise;
+            const processMessagePromise = background.processMessageAndCatch(
+                { type: 'LOGIN_TAB', entry: 'some/entry' },
+                { tab: {}, url: validAuthPopupUrl }
+            );
+
+            try {
+                await Promise.all([authRequiredPromise, processMessagePromise]);
+            } catch (processMessageError) {
+                expect(browser.windows.create.mock.calls.length).toBe(1);
+                expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
+                expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
+                expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
+                expect(processMessageError.message).toEqual('native app broken');
+
+                await background.processMessageAndCatch(
+                    // Cleanup remaining popup
                     { type: 'LOGIN_TAB', entry: 'some/entry' },
                     { tab: {}, url: validAuthPopupUrl }
                 );
-
-                return Promise.all([authRequiredPromise, processMessagePromise]).then(null, (processMessageError) => {
-                    expect(browser.windows.create.mock.calls.length).toBe(1);
-                    expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
-                    expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
-                    expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
-                    expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-                    expect(processMessageError.message).toEqual('native app broken');
-
-                    return background.processMessageAndCatch(
-                        // Cleanup remaining popup
-                        { type: 'LOGIN_TAB', entry: 'some/entry' },
-                        { tab: {}, url: validAuthPopupUrl }
-                    );
-                });
-            });
+            }
         });
 
-        test('opens auth popup but does not resolve auth request after URL mismatch', () => {
-            expect.assertions(6);
-
+        test('opens auth popup but does not resolve auth request after URL mismatch', async () => {
             const authRequiredPromise = onAuthRequiredCallback({ url: authUrl });
 
-            return windowCreatePromise.then(() => {
-                return background
-                    .processMessageAndCatch(
-                        { type: 'LOGIN_TAB', entry: 'some/entry' },
-                        { tab: {}, url: invalidAuthPopupUrl }
-                    )
-                    .then(() => {
-                        expect(browser.windows.create.mock.calls.length).toBe(1);
-                        expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
-                        expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
-                        expect(sendNativeAppMessageMock.mock.calls.length).toBe(1);
-                        expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-                        expect(global.console.warn.mock.calls).toEqual([
-                            [
-                                'Could not resolve auth request due to URL mismatch',
-                                validAuthPopupUrl,
-                                invalidAuthPopupUrl,
-                            ],
-                        ]);
+            await windowCreatePromise;
+            await background.processMessageAndCatch(
+                { type: 'LOGIN_TAB', entry: 'some/entry' },
+                { tab: {}, url: invalidAuthPopupUrl }
+            );
 
-                        const cleanupPopupPromise = background.processMessageAndCatch(
-                            { type: 'LOGIN_TAB', entry: 'some/entry' },
-                            { tab: {}, url: validAuthPopupUrl }
-                        );
-                        return Promise.all([authRequiredPromise, cleanupPopupPromise]);
-                    });
-            });
+            expect(browser.windows.create.mock.calls.length).toBe(1);
+            expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(1);
+            expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0); // popup still open
+            expect(sendNativeAppMessageMock.mock.calls.length).toBe(1);
+            expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
+            expect(global.console.warn.mock.calls).toEqual([
+                ['Could not resolve auth request due to URL mismatch', validAuthPopupUrl, invalidAuthPopupUrl],
+            ]);
+
+            const cleanupPopupPromise = background.processMessageAndCatch(
+                { type: 'LOGIN_TAB', entry: 'some/entry' },
+                { tab: {}, url: validAuthPopupUrl }
+            );
+            await Promise.all([authRequiredPromise, cleanupPopupPromise]);
         });
 
-        test('does not open auth popup when setting is disabled', () => {
-            expect.assertions(6);
-
+        test('does not open auth popup when setting is disabled', async () => {
             executeOnSettingMock.mockImplementation((_, __, disabled) => disabled());
 
-            return onAuthRequiredCallback({ url: authUrl }).then((authRequiredResult) => {
-                expect(browser.windows.create.mock.calls.length).toBe(0);
-                expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
-                expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
-                expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
-                expect(authRequiredResult).toEqual({});
-                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-            });
+            const authRequiredResult = await onAuthRequiredCallback({ url: authUrl });
+            expect(browser.windows.create.mock.calls.length).toBe(0);
+            expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
+            expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
+            expect(sendNativeAppMessageMock.mock.calls.length).toBe(0);
+            expect(authRequiredResult).toEqual({});
+            expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
         });
 
-        test('does not open multiple auth popups at the same time', () => {
-            expect.assertions(6);
-
+        test('does not open multiple auth popups at the same time', async () => {
             const firstAuthRequiredPromise = onAuthRequiredCallback({ url: authUrl });
-            return windowCreatePromise.then(() => {
-                const secondAuthRequiredPromise = onAuthRequiredCallback({ url: authUrl });
-                const processMessagePromise = background.processMessageAndCatch(
-                    { type: 'LOGIN_TAB', entry: 'some/entry' },
-                    { tab: {}, url: validAuthPopupUrl }
-                );
+            await windowCreatePromise;
+            const secondAuthRequiredPromise = onAuthRequiredCallback({ url: authUrl });
+            const processMessagePromise = background.processMessageAndCatch(
+                { type: 'LOGIN_TAB', entry: 'some/entry' },
+                { tab: {}, url: validAuthPopupUrl }
+            );
 
-                return Promise.all([firstAuthRequiredPromise, secondAuthRequiredPromise, processMessagePromise]).then(
-                    ([firstAuthRequiredResult, secondAuthRequiredResult, _]) => {
-                        expect(browser.windows.create.mock.calls.length).toBe(1);
-                        expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
-                            browser.windows.onRemoved.removeListener.mock.calls
-                        );
-                        expect(sendNativeAppMessageMock.mock.calls).toEqual([
-                            [{ type: 'getLogin', entry: 'some/entry' }],
-                        ]);
-                        expect(firstAuthRequiredResult).toEqual({
-                            authCredentials: { username: 'url.test', password: 'waldfee' },
-                        });
-                        expect(secondAuthRequiredResult).toEqual({});
-                        expect(showNotificationOnSettingMock.mock.calls).toEqual([
-                            ['__translated_cannotHandleMultipleAuthRequests__'],
-                        ]);
-                    }
-                );
+            const [firstAuthRequiredResult, secondAuthRequiredResult, _] = await Promise.all([
+                firstAuthRequiredPromise,
+                secondAuthRequiredPromise,
+                processMessagePromise,
+            ]);
+            expect(browser.windows.create.mock.calls.length).toBe(1);
+            expect(browser.windows.onRemoved.addListener.mock.calls).toEqual(
+                browser.windows.onRemoved.removeListener.mock.calls
+            );
+            expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+            expect(firstAuthRequiredResult).toEqual({
+                authCredentials: { username: 'url.test', password: 'waldfee' },
             });
+            expect(secondAuthRequiredResult).toEqual({});
+            expect(showNotificationOnSettingMock.mock.calls).toEqual([
+                ['__translated_cannotHandleMultipleAuthRequests__'],
+            ]);
         });
 
-        test('does not resolve auth request when no request is pending', () => {
-            expect.assertions(6);
-
+        test('does not resolve auth request when no request is pending', async () => {
             const url = validAuthPopupUrl;
             const processMessagePromise = background.processMessageAndCatch(
                 { type: 'LOGIN_TAB', entry: 'some/entry' },
                 { tab: {}, url }
             );
 
-            return processMessagePromise.then(() => {
-                expect(browser.windows.create.mock.calls.length).toBe(0);
-                expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
-                expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
-                expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
-                expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
-                expect(global.console.warn.mock.calls).toEqual([
-                    ['Tried to resolve auth request, but no auth request is currently pending.', url],
-                ]);
-            });
+            await processMessagePromise;
+            expect(browser.windows.create.mock.calls.length).toBe(0);
+            expect(browser.windows.onRemoved.addListener.mock.calls.length).toBe(0);
+            expect(browser.windows.onRemoved.removeListener.mock.calls.length).toBe(0);
+            expect(sendNativeAppMessageMock.mock.calls).toEqual([[{ type: 'getLogin', entry: 'some/entry' }]]);
+            expect(showNotificationOnSettingMock.mock.calls.length).toEqual(0);
+            expect(global.console.warn.mock.calls).toEqual([
+                ['Tried to resolve auth request, but no auth request is currently pending.', url],
+            ]);
         });
 
         test('ignores unrelated popup close', async () => {
@@ -460,14 +423,6 @@ describe('background', () => {
     });
 
     describe('_waitForTabLoaded', () => {
-        beforeEach(() => {
-            vi.useFakeTimers();
-        });
-
-        afterEach(() => {
-            vi.useRealTimers();
-        });
-
         test('resolves if tab is already complete', async () => {
             sendNativeAppMessageMock.mockResolvedValue({ url: 'http://url.test' });
             openURLMock.mockResolvedValue({ id: 42, status: 'complete', url: 'http://url.test' });
@@ -501,19 +456,25 @@ describe('background', () => {
     });
 
     describe('Manifest V2 compatibility', () => {
-        test('checks for popup presence when getViews exists', () => {
+        test('checks for popup presence when getViews exists', async () => {
+            expect.assertions(2);
             const msg = 'Background script received unexpected message {"type":"UNKNOWN"} from extension';
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((_e) => {
+            try {
+                await background.processMessageAndCatch({ type: 'UNKNOWN' }, {});
+            } catch (_e) {
                 expect(showNotificationOnSettingMock).toHaveBeenCalledWith(msg);
                 expect(browser.extension.getViews).toHaveBeenCalledWith({ type: 'popup' });
-            });
+            }
         });
 
-        test('falls back to notification if getViews missing', () => {
+        test('falls back to notification if getViews missing', async () => {
+            expect.assertions(1);
             delete browser.extension.getViews;
-            return background.processMessageAndCatch({ type: 'UNKNOWN' }, {}).catch((_e) => {
+            try {
+                await background.processMessageAndCatch({ type: 'UNKNOWN' }, {});
+            } catch (_e) {
                 expect(showNotificationOnSettingMock).toHaveBeenCalledTimes(0);
-            });
+            }
         });
     });
 });

@@ -4,12 +4,9 @@ import path from 'node:path';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('create', () => {
-    let mockEvent;
-    let promise;
     let create;
 
     beforeEach(async () => {
-        vi.resetModules();
         vi.stubGlobal('armSpinnerTimeout', vi.fn());
         vi.stubGlobal('sendNativeAppMessage', vi.fn());
         vi.stubGlobal('getSettings', vi.fn());
@@ -38,6 +35,9 @@ describe('create', () => {
     });
 
     describe('onDoCreate', () => {
+        let mockEvent;
+        let promise;
+
         beforeEach(() => {
             mockEvent = { preventDefault: vi.fn() };
             global.sendNativeAppMessage.mockResolvedValue({});
@@ -85,12 +85,10 @@ describe('create', () => {
             });
         });
 
-        test('starts query after successful finishing', () => {
-            expect.assertions(2);
-            return promise.then(() => {
-                expect(global.searchHost).toHaveBeenCalledTimes(1);
-                expect(global.getSettings).toHaveBeenCalledTimes(1);
-            });
+        test('starts query after successful finishing', async () => {
+            await promise;
+            expect(global.searchHost).toHaveBeenCalledTimes(1);
+            expect(global.getSettings).toHaveBeenCalledTimes(1);
         });
     });
 
