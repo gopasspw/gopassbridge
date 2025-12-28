@@ -229,11 +229,9 @@ function initBackground() {
 
 initBackground();
 
-if ('window' in globalThis) {
-    window.tests = {
-        background: {
-            initBackground,
-            processMessageAndCatch,
-        },
+try {
+    module.exports = {
+        initBackground,
+        processMessageAndCatch,
     };
-}
+} catch (_) {}

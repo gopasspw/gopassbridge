@@ -1,6 +1,9 @@
-import { beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, vi } from 'vitest';
 
 beforeEach(() => {
+    vi.resetModules();
+    vi.useFakeTimers();
+
     const mockBrowser = {
         runtime: {
             onMessage: {
@@ -14,7 +17,7 @@ beforeEach(() => {
         },
         tabs: {
             query: vi.fn(),
-            sendMessage: vi.fn(),
+            sendMessage: vi.fn().mockResolvedValue({}),
             create: vi.fn(),
             update: vi.fn(),
             remove: vi.fn(),
@@ -77,4 +80,8 @@ beforeEach(() => {
     vi.stubGlobal('browser', mockBrowser);
     vi.stubGlobal('chrome', mockBrowser);
     vi.stubGlobal('i18n', mockBrowser.i18n);
+});
+
+afterEach(() => {
+    vi.useRealTimers();
 });

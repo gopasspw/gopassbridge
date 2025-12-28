@@ -133,9 +133,9 @@ function restoreDetailView() {
     });
 }
 
-window.tests = {
-    details: {
+try {
+    module.exports = {
         onEntryData,
         restoreDetailView,
-    },
-};
+    };
+} catch (_) {}

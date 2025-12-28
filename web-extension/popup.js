@@ -94,8 +94,8 @@ function copyToClipboard(text) {
     hiddenpass.remove();
 }
 
-window.tests = {
-    popup: {
+try {
+    module.exports = {
         armSpinnerTimeout,
         setStatusText,
         switchToCreateNewDialog,
@@ -103,5 +103,5 @@ window.tests = {
         logAndDisplayError,
         copyToClipboard,
         SETUP_URL,
-    },
-};
+    };
+} catch (_) {}

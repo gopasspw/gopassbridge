@@ -51,7 +51,6 @@ function isVisible(element) {
 }
 
 function selectFocusedElement(parent) {
-    parent = parent || document;
     if (
         parent.body === parent.activeElement ||
         parent.activeElement.tagName === 'IFRAME' ||
@@ -255,8 +254,8 @@ browser.runtime.onMessage.addListener(processMessage);
 
 console.log('Content script for gopassbridge initialized');
 
-window.tests = {
-    content: {
+try {
+    module.exports = {
         processMessage,
-    },
-};
+    };
+} catch (_) {}

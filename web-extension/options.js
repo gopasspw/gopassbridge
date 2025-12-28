@@ -79,10 +79,10 @@ function _showSavingIndicator() {
 
 window.addEventListener('load', init);
 
-window.tests = {
-    options: {
+try {
+    module.exports = {
         init,
         _onTextinputChange,
         _showSavingIndicator,
-    },
-};
+    };
+} catch (_) {}

@@ -8,8 +8,6 @@ let switchToEditPromise;
 
 describe('popup', () => {
     beforeEach(async () => {
-        vi.resetModules();
-        vi.useFakeTimers();
         vi.spyOn(global, 'setTimeout');
 
         global.logError = vi.fn();
@@ -19,8 +17,7 @@ describe('popup', () => {
         global.currentPageUrl = 'http://domain.test';
         global.openURLOnEvent = vi.fn();
 
-        await import('gopassbridge/web-extension/popup.js');
-        popup = window.tests.popup;
+        popup = await import('gopassbridge/web-extension/popup.js');
 
         document.body.innerHTML = fs.readFileSync(
             path.join(import.meta.dirname, '../../web-extension/gopassbridge.html'),
@@ -71,15 +68,12 @@ describe('popup', () => {
             expect(document.body.innerHTML).toBe(stateBefore);
         });
 
-        test('does not modify dom in initial state when switching to createNewDialog and back', () => {
-            expect.assertions(1);
-
+        test('does not modify dom in initial state when switching to createNewDialog and back', async () => {
             const stateBefore = document.body.innerHTML;
             popup.switchToSearch();
-            return popup.switchToCreateNewDialog().then(() => {
-                popup.switchToSearch();
-                expect(document.body.innerHTML).toBe(stateBefore);
-            });
+            await popup.switchToCreateNewDialog();
+            popup.switchToSearch();
+            expect(document.body.innerHTML).toBe(stateBefore);
         });
     });
 
@@ -88,20 +82,16 @@ describe('popup', () => {
             switchToEditPromise = popup.switchToCreateNewDialog();
         });
 
-        test('hides search and results and shows create dialog', () => {
-            expect.assertions(3);
-            return switchToEditPromise.then(() => {
-                expect(document.getElementsByClassName('search')[0].style.display).toBe('none');
-                expect(document.getElementsByClassName('results')[0].style.display).toBe('none');
-                expect(document.getElementsByClassName('create')[0].style.display).toBe('block');
-            });
+        test('hides search and results and shows create dialog', async () => {
+            await switchToEditPromise;
+            expect(document.getElementsByClassName('search')[0].style.display).toBe('none');
+            expect(document.getElementsByClassName('results')[0].style.display).toBe('none');
+            expect(document.getElementsByClassName('create')[0].style.display).toBe('block');
         });
 
-        test('fills in name from url', () => {
-            expect.assertions(1);
-            return switchToEditPromise.then(() => {
-                expect(document.getElementById('create_name').value).toBe('myfolder/domain.test');
-            });
+        test('fills in name from url', async () => {
+            await switchToEditPromise;
+            expect(document.getElementById('create_name').value).toBe('myfolder/domain.test');
         });
     });
 
@@ -117,18 +107,17 @@ describe('popup', () => {
             expect(document.getElementsByClassName('status-text')[0].innerHTML).toBe('sample error messsage');
         });
 
-        test('switches back to search', () => {
+        test('switches back to search', async () => {
             expect.assertions(4);
-            return popup.switchToCreateNewDialog().then(() => {
-                try {
-                    popup.logAndDisplayError({ message: 'sample error messsage' });
-                } catch (e) {
-                    expect(e).toEqual({ message: 'sample error messsage' });
-                }
-                expect(document.getElementsByClassName('search')[0].style.display).toBe('block');
-                expect(document.getElementsByClassName('results')[0].style.display).toBe('block');
-                expect(document.getElementsByClassName('create')[0].style.display).toBe('none');
-            });
+            await popup.switchToCreateNewDialog();
+            try {
+                popup.logAndDisplayError({ message: 'sample error messsage' });
+            } catch (e) {
+                expect(e).toEqual({ message: 'sample error messsage' });
+            }
+            expect(document.getElementsByClassName('search')[0].style.display).toBe('block');
+            expect(document.getElementsByClassName('results')[0].style.display).toBe('block');
+            expect(document.getElementsByClassName('create')[0].style.display).toBe('none');
         });
     });
 

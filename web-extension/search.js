@@ -247,8 +247,8 @@ function _onLoginCredentialsDidLogin(response) {
 
 initSearch();
 
-window.tests = {
-    search: {
+try {
+    module.exports = {
         initSearch,
         _onSearchInputEvent,
         _onSearchKeypressEvent,
@@ -256,5 +256,5 @@ window.tests = {
         searchHost,
         _onEntryAction,
         _onSearchResults,
-    },
-};
+    };
+} catch (_) {}
