@@ -23,7 +23,7 @@ updates:
             - "web-ext"
   - package-ecosystem: "docker"
     multi-ecosystem-group: "tools"
-    directory: "/"
+    directory: "/tests/e2e/setup"
     patterns:
       - "*"
   - package-ecosystem: "github-actions"
