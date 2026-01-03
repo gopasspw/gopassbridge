@@ -4,14 +4,16 @@
 version: 2
 
 multi-ecosystem-groups:
-  tests:
+  tools:
     schedule:
       interval: "weekly"
 
 updates:
   - package-ecosystem: "npm"
-    multi-ecosystem-group: "tests"
+    multi-ecosystem-group: "tools"
     directory: "/"
+    patterns:
+      - "*"
     groups:
        dev-dependencies:
           applies-to: version-updates
@@ -20,7 +22,7 @@ updates:
           exclude-patterns:
             - "web-ext"
   - package-ecosystem: "docker"
-    multi-ecosystem-group: "tests"
+    multi-ecosystem-group: "tools"
     directory: "/"
     patterns:
       - "*"
