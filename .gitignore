@@ -5,6 +5,8 @@ firefox
 chrome-release
 firefox-release
 test-client/test-client
+tests/e2e/test-results
+tests/e2e/playwright-report
 node_modules
 coverage
 *.pem
