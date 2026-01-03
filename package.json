@@ -6,6 +6,8 @@
   "scripts": {
     "test": "npm run lint && npm run test:vitest",
     "test:vitest": "vitest run --coverage",
+    "test:e2e": "./tests/e2e/run_docker.sh",
+    "test:e2e:internal": "playwright test -c tests/e2e/setup/playwright.config.mjs",
     "lint": "npm run lint:biome && npm run lint:webext",
     "lint:webext": "web-ext -s firefox-release lint",
     "lint:biome": "biome check --error-on-warnings",
@@ -30,6 +32,7 @@
   "dependencies": {},
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
+    "@playwright/test": "^1.57.0",
     "@vitest/coverage-v8": "^4.0.16",
     "jsdom": "^27.4.0",
     "vitest": "^4.0.16",

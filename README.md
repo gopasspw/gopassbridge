@@ -75,4 +75,5 @@ To start with development of this extension
 * run `make develop` to setup the development directories for Firefox and Chrome
 * run `make package` to setup the release directories for Firefox and Chrome
 * run `npm test` to run all unit tests, linters and auto-formatters
+* run `npm run test:e2e` to run Playwright tests within a temporary Docker container
 * run `make run-firefox` to start an empty Firefox profile with the extension loaded and a debugger open

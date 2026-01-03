@@ -2,11 +2,16 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+
+multi-ecosystem-groups:
+  tests:
     schedule:
       interval: "weekly"
+
+updates:
+  - package-ecosystem: "npm"
+    multi-ecosystem-group: "tests"
+    directory: "/"
     groups:
        dev-dependencies:
           applies-to: version-updates
@@ -14,6 +19,11 @@ updates:
             - "*"
           exclude-patterns:
             - "web-ext"
+  - package-ecosystem: "docker"
+    multi-ecosystem-group: "tests"
+    directory: "/"
+    patterns:
+      - "*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
