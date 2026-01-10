@@ -5,7 +5,7 @@ RUN wget -O /usr/share/keyrings/gopass-archive-keyring.gpg https://packages.gopa
 COPY tests/e2e/setup/gopass.sources /etc/apt/sources.list.d/gopass.sources
 
 RUN apt update && \
-    apt install -y age gopass gopass-jsonapi jq
+    apt install -y gopass gopass-jsonapi jq gnupg
 
 WORKDIR /workspace
 
