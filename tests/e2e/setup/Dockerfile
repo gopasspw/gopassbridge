@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.58.0-noble
+FROM mcr.microsoft.com/playwright:v1.58.1-noble
 
 RUN wget -O /usr/share/keyrings/gopass-archive-keyring.gpg https://packages.gopass.pw/repos/gopass/gopass-archive-keyring.gpg
 
