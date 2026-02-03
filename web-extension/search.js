@@ -10,6 +10,7 @@ function initSearch() {
 
     setTimeout(() => {
         input.focus();
+        _onSearchInputEvent();
     }, 200);
 }
 
@@ -29,8 +30,13 @@ function _onSearchInputEvent() {
     if (input.value.length) {
         search(input.value);
     } else {
-        const currentHost = urlDomain(currentPageUrl);
-        searchHost(currentHost);
+        // covers both chrome and ff
+        browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
+            const url = new URL(tabs[0].url);
+            const host = url.host;
+            document.getElementById('search_input').value = host;
+            searchHost(host);
+        }, console.error);
     }
 }
 
@@ -85,7 +91,7 @@ function search(term) {
 
 function searchHost(host) {
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
-    document.getElementById('search_input').value = '';
+    // document.getElementById('search_input').value = '';
 
     console.log(`Searching for host ${host}`);
     return _doSearch(host, true);
