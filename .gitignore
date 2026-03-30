@@ -10,3 +10,4 @@ tests/e2e/playwright-report
 node_modules
 coverage
 *.pem
+_work/

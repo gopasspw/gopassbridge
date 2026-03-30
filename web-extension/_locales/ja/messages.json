@@ -1,0 +1,183 @@
+{
+  "extensionDescription": {
+    "message": "Gopass Bridgeは、gopassパスワードマネージャーからログイン情報を検索・入力できる拡張機能です。",
+    "description": "Description of the extension."
+  },
+  "browserActionTitle": {
+    "message": "gopassからパスワードを入力",
+    "description": "Title of the popup menu."
+  },
+  "createNewEntryButtonText": {
+    "message": "新しいログイン情報を作成",
+    "description": "Text of create new entry button"
+  },
+  "createAnotherEntryButtonText": {
+    "message": "別のログイン情報を作成",
+    "description": "Text of create another entry button"
+  },
+  "copiedToClipboardMessage": {
+    "message": "クリップボードにコピーしました",
+    "description": "Text to display when an entry was copied to clipboard"
+  },
+  "couldNotDetermineUsernameMessage": {
+    "message": "ユーザー名を特定できませんでした",
+    "description": "shown when no username in response does not match current domain"
+  },
+  "authLoginDescription": {
+    "message": "次のサイトの認証情報を選択してください：",
+    "description": "description on basic auth login popup, url will be appended"
+  },
+  "authLoginOptionsInfo": {
+    "message": "（ブラウザ拡張機能の設定で無効にできます）",
+    "description": "info that basic auth handling can be disabled in options"
+  },
+  "searchPlaceholder": {
+    "message": "入力して検索...",
+    "description": "placeholder in search field"
+  },
+  "searchButtonText": {
+    "message": "検索",
+    "description": "caption of search button"
+  },
+  "searchResultLoginTooltip": {
+    "message": "ログイン",
+    "description": "tooltip for login button in search result"
+  },
+  "searchResultOpenTooltip": {
+    "message": "新しいタブで開く",
+    "description": "tooltip for open button in search result"
+  },
+  "searchResultCopyTooltip": {
+    "message": "コピー",
+    "description": "tooltip for copy button in search result"
+  },
+  "searchResultDetailsTooltip": {
+    "message": "詳細を表示",
+    "description": "tooltip for details button in search result"
+  },
+  "createNameLabel": {
+    "message": "名前",
+    "description": "label for name"
+  },
+  "createLoginLabel": {
+    "message": "ログイン / ユーザー名",
+    "description": "label for login"
+  },
+  "createPasswordLabel": {
+    "message": "パスワード",
+    "description": "label for password"
+  },
+  "createGenerateLabel": {
+    "message": "自動生成",
+    "description": "label for generate checkbox"
+  },
+  "createGenerateLengthLabel": {
+    "message": "パスワードの長さ",
+    "description": "label for length input"
+  },
+  "createUseSymbolsLabel": {
+    "message": "記号を使用する",
+    "description": "label for use symbols checkbox"
+  },
+  "createDoCreateButton": {
+    "message": "作成",
+    "description": "caption for create button"
+  },
+  "createDoAbortButton": {
+    "message": "キャンセル",
+    "description": "caption for abort button"
+  },
+  "createPasswordAutogeneratePlaceholder": {
+    "message": "自動生成されます",
+    "description": "password placeholder when autogeneration is used"
+  },
+  "createPasswordPlaceholder": {
+    "message": "パスワードを入力",
+    "description": "password placeholder when input is used"
+  },
+  "optionsChangelogTitle": {
+    "message": "変更履歴",
+    "description": "Title of changelog"
+  },
+  "optionsChangelogText": {
+    "message": "変更履歴は<a href=\"$URL$\" target=\"_blank\"/>GitHub 変更履歴</a>で確認できます。",
+    "description": "Text of changelog",
+    "placeholders": {
+      "url": {
+        "content": "https://github.com/gopasspw/gopassbridge/blob/master/CHANGELOG.md"
+      }
+    }
+  },
+  "optionsUsageHintsTitle": {
+    "message": "使い方のヒント",
+    "description": "Title of UsageHints"
+  },
+  "optionsUsageHintsClipboardText": {
+    "message": "シークレットをクリップボードにコピーするには、Shiftキーを押しながらシークレットをクリックしてください。",
+    "description": "Clipboard hint text"
+  },
+  "optionsUsageHintsDetailsText": {
+    "message": "エントリーの全内容を表示するには、Altキーを押しながらシークレットをクリックしてください。",
+    "description": "Details hint text"
+  },
+  "optionsUsageHintsKeyboardShortcutText": {
+    "message": "Ctrl+Shift+U または Cmd+Shift+U でポップアップを開くキーボードショートカットが使えます。",
+    "description": "Keyboard shortcut to trigger popup"
+  },
+  "optionsSettingsTitle": {
+    "message": "設定",
+    "description": "Title of Settings"
+  },
+  "optionsMarkFieldsLabel": {
+    "message": "ユーザー名・パスワード入力欄と認識したフィールドを青くハイライトする",
+    "description": "label of mark fields checkbox"
+  },
+  "optionsSendNotificationsLabel": {
+    "message": "必要に応じて通知を送信する",
+    "description": "label of send notifications checkbox"
+  },
+  "optionsAppendToLoginName": {
+    "message": "作成時にパスワードのパスへログイン名/ユーザー名を追加する",
+    "description": "label of append login to password path checkbox"
+  },
+  "optionsLoginAfterFillLabel": {
+    "message": "認証情報の入力後にログインする",
+    "description": "label of login after fill checkbox"
+  },
+  "optionsHandleAuthRequestsLabel": {
+    "message": "Basic認証のリクエストに認証情報を提供する",
+    "description": "label of handle auth requests checkbox"
+  },
+  "optionsDefaultFolderLabel": {
+    "message": "新しい認証情報のデフォルトフォルダ",
+    "description": "label of default folder"
+  },
+  "optionsOmitKeysLabel": {
+    "message": "詳細ビューに表示しないキー（カンマ区切り）",
+    "description": "keys to omit in detail view"
+  },
+  "optionsDefaultPasswordLengthLabel": {
+    "message": "新しいパスワードのデフォルトの長さ",
+    "description": "default length of new passwords"
+  },
+  "optionsResetButtonText": {
+    "message": "すべての設定をデフォルトに戻す",
+    "description": "text of reset button"
+  },
+  "noResultsForMessage": {
+    "message": "検索結果なし：",
+    "description": "Message shown if no results are found"
+  },
+  "noURLInEntry": {
+    "message": "このエントリーにはURL属性がありません",
+    "description": "Shown when no url attribute in entry and page is loaded"
+  },
+  "cannotHandleMultipleAuthRequests": {
+    "message": "前の認証がまだ処理中です。すべてのポップアップを閉じてから再試行してください。",
+    "description": "Error when another basic authentication popup is already open"
+  },
+  "correctlySetup": {
+    "message": "ブラウザとgopassの連携が設定されていない可能性があります。`gopass-jsonapi configure` を実行してください。",
+    "description": "Error when gopassbridge is not correctly setup"
+  }
+}
