@@ -9,3 +9,5 @@ function internationalize(text) {
 document.getElementsByTagName('body')[0].innerHTML = internationalize(
     document.getElementsByTagName('body')[0].innerHTML
 );
+
+document.documentElement.lang = i18n.getMessage('extensionLocale') || 'en';
