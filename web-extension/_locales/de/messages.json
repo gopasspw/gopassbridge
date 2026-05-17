@@ -179,5 +179,9 @@
   "correctlySetup": {
     "message": "Die Gopass Integration für diesen Browser ist wahrscheinlich nicht installiert. Bitte `gopass-jsonapi configure` ausführen.",
     "description": "Error when gopassbridge is not correctly setup"
+  },
+  "extensionLocale": {
+    "message": "de",
+    "description": "The language code of this locale file"
   }
 }

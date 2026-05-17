@@ -26,4 +26,18 @@ describe('i18n', () => {
         expect(document.body.innerHTML).toBe('<div>__chrome_translated_testkey__</div>');
         expect(global.chrome.i18n.getMessage).toHaveBeenCalledWith('testkey');
     });
+
+    it('should set document lang to the resolved locale via extensionLocale', async () => {
+        global.i18n.getMessage = vi.fn((key) => (key === 'extensionLocale' ? 'de' : `__translated_${key}__`));
+        await import(`../../web-extension/i18n.js`);
+
+        expect(document.documentElement.lang).toBe('de');
+    });
+
+    it('should fallback to en if getMessage returns empty', async () => {
+        global.i18n.getMessage = vi.fn((key) => (key === 'extensionLocale' ? '' : `__translated_${key}__`));
+        await import(`../../web-extension/i18n.js`);
+
+        expect(document.documentElement.lang).toBe('en');
+    });
 });
