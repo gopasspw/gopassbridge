@@ -138,7 +138,7 @@
   },
   "optionsAppendToLoginName": {
     "message": "Append login/username to password path on creation",
-    "description" : "label of append login to password path checkbox"
+    "description": "label of append login to password path checkbox"
   },
   "optionsLoginAfterFillLabel": {
     "message": "Login after filling in credentials",
@@ -179,5 +179,9 @@
   "correctlySetup": {
     "message": "Your browser's integration with gopass is probably not set up. Please run `gopass-jsonapi configure`.",
     "description": "Error when gopassbridge is not correctly setup"
+  },
+  "extensionLocale": {
+    "message": "en",
+    "description": "The language code of this locale file"
   }
 }

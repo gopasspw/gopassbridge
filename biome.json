@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "*.json",
+      "manifests/**",
+      "tests/**",
+      "!tests/unit/login_pages",
+      "web-extension/**",
+      "!web-extension/vendor"
+    ]
+  },
+  "formatter": {
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "lineEnding": "auto",
+    "lineWidth": 120
+  },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noConsole": "off",
+        "useStrictMode": "error"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "trailingCommas": "es5",
+      "indentWidth": 4,
+      "quoteStyle": "single"
+    },
+    "globals": [
+      "chrome",
+      "browser",
+      "i18n"
+    ]
+  },
+  "json": {
+    "formatter": {
+      "indentWidth": 2
+    }
+  },
+  "css": {
+    "formatter": {
+      "indentWidth": 4,
+      "quoteStyle": "single"
+    }
+  },
+  "html": {
+    "formatter": {
+      "enabled": true
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "*.json",
+        "manifests/**"
+      ],
+      "json": {
+        "formatter": {
+          "expand": "always"
+        }
+      }
+    }
+  ]
+}

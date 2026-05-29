@@ -1,11 +1,10 @@
 ![Build Status](https://github.com/gopasspw/gopassbridge/actions/workflows/nodejs.yml/badge.svg?branch=master)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gopasspw/gopass/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/gopasspw/gopassbridge/branch/master/graph/badge.svg)](https://codecov.io/gh/gopasspw/gopassbridge)
-[![Maintainability](https://api.codeclimate.com/v1/badges/2dc6eded0845ab008be7/maintainability)](https://codeclimate.com/github/gopasspw/gopassbridge/maintainability)
 
 ### Firefox:
 [![Mozilla Add-on](https://img.shields.io/amo/v/gopass-bridge.svg?colorB=45bf1e)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
-[![Mozilla Add-on](https://img.shields.io/amo/d/gopass-bridge.svg)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
+[![Mozilla Add-on](https://img.shields.io/amo/users/gopass-bridge?color=45bf1e)](https://addons.mozilla.org/firefox/addon/gopass-bridge/)
 
 ### Chrome / Edge ([via Chrome Webstore](https://support.microsoft.com/en-us/microsoft-edge/add-turn-off-or-remove-extensions-in-microsoft-edge-9c0ec68c-2fbc-2f2c-9ff0-bdc76f46b026)):
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/kkhfnlkhiapbiehimabddjbimfaijdhk.svg?colorB=45bf1e)](https://chrome.google.com/webstore/detail/gopass-bridge/kkhfnlkhiapbiehimabddjbimfaijdhk)
@@ -70,8 +69,11 @@ For details on Pull Requests please read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 To start with development of this extension
 * clone the repo
-* run `yarn` to install the dependencies
+* install latest Node.js LTS version (includes `corepack`)
+* run `corepack enable pnpm` to enable the `pnpm` package manager
+* run `pnpm install` to install the dependencies
 * run `make develop` to setup the development directories for Firefox and Chrome
 * run `make package` to setup the release directories for Firefox and Chrome
-* run `yarn test` to run all unit tests, linters and auto-formatters
+* run `npm test` to run all unit tests, linters and auto-formatters
+* run `npm run test:e2e` to run Playwright tests within a temporary Docker container
 * run `make run-firefox` to start an empty Firefox profile with the extension loaded and a debugger open

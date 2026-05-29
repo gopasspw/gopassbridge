@@ -1,3 +1,8 @@
+## 2.1.1 / 2025-11-28
+
+* Specify "No data collection" for Firefox (#310)
+* Maintenance updates
+
 ## 2.1.0 / 2024-11-17
 
 * Support dark mode (#266, #270)

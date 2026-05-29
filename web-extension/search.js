@@ -41,14 +41,14 @@ function _onSearchInputEvent() {
 }
 
 function _queueSearch(term, queryHost) {
-    console.log('You type fast, queuing search for ' + term);
+    console.log(`You type fast, queuing search for ${term}`);
     queuedSearch = () => {
-        console.log('Starting search for ' + term);
+        console.log(`Starting search for ${term}`);
         return _doSearch(term, queryHost);
     };
     return searching.then(() => {
         if (queuedSearch) {
-            console.log('Running queued search for ' + term);
+            console.log(`Running queued search for ${term}`);
             const searchToExecute = queuedSearch;
             queuedSearch = false;
             return searchToExecute();
@@ -85,7 +85,7 @@ function _doSearch(term, queryHost) {
 function search(term) {
     document.getElementById('search_input').value = term;
 
-    console.log('Searching for string ' + term);
+    console.log(`Searching for string ${term}`);
     return _doSearch(term);
 }
 
@@ -93,7 +93,7 @@ function searchHost(host) {
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
     // document.getElementById('search_input').value = '';
 
-    console.log('Searching for host ' + host);
+    console.log(`Searching for host ${host}`);
     return _doSearch(host, true);
 }
 
@@ -162,7 +162,7 @@ const _createSimpleSearchResultButton = (className, text, title, clickHandler) =
 
 function _displayNoResults() {
     const results = document.getElementById('results');
-    setStatusText(i18n.getMessage('noResultsForMessage') + ' ' + searchTerm);
+    setStatusText(`${i18n.getMessage('noResultsForMessage')} ${searchTerm}`);
     results.appendChild(
         createButtonWithCallback(
             {
@@ -244,7 +244,7 @@ function _onLoginCredentialsDoCopyClipboard(response) {
 }
 
 function _onLoginCredentialsDidLogin(response) {
-    if (response && response.error) {
+    if (response?.error) {
         setStatusText(response.error);
         return;
     }
@@ -253,8 +253,8 @@ function _onLoginCredentialsDidLogin(response) {
 
 initSearch();
 
-window.tests = {
-    search: {
+try {
+    module.exports = {
         initSearch,
         _onSearchInputEvent,
         _onSearchKeypressEvent,
@@ -262,5 +262,5 @@ window.tests = {
         searchHost,
         _onEntryAction,
         _onSearchResults,
-    },
-};
+    };
+} catch (_) {}

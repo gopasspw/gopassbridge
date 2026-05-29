@@ -12,7 +12,7 @@ browser.tabs.onActivated.addListener(switchTab);
 function switchTab(tab) {
     console.log('Switching to tab', tab);
 
-    const isContentTab = tab && tab.url && tab.id && tab.url.startsWith('http');
+    const isContentTab = tab?.url && tab.id && tab.url.startsWith('http');
 
     if (isContentTab) {
         currentTabUrl = tab.url;
@@ -70,9 +70,9 @@ function _handleUrlSearch(url) {
     return Promise.resolve();
 }
 
-window.tests = {
-    gopassbridge: {
+try {
+    module.exports = {
         switchTab,
         getCurrentTab: () => ({ currentPageUrl, currentTabId, currentTabFavIconUrl }),
-    },
-};
+    };
+} catch (_) {}
