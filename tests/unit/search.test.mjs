@@ -205,6 +205,14 @@ describe('search method', () => {
                     ],
                     [
                         {
+                            className: 'copy_username',
+                            textContent: 'some/entry',
+                            title: '__translated_searchResultCopyUsernameTooltip__',
+                        },
+                        expect.any(Function),
+                    ],
+                    [
+                        {
                             className: 'details',
                             textContent: 'some/entry',
                             title: '__translated_searchResultDetailsTooltip__',
@@ -254,7 +262,7 @@ describe('search method', () => {
                 sendNativeAppMessage.mockResolvedValueOnce(['some/entry']);
                 await search.searchHost('mih');
                 sendNativeAppMessage.mockClear();
-                createButtonWithCallback.mock.calls[3][1]({
+                createButtonWithCallback.mock.calls[4][1]({
                     target: { innerText: 'text' },
                 });
                 expect(sendNativeAppMessage.mock.calls).toEqual([[{ entry: 'text', type: 'getData' }]]);

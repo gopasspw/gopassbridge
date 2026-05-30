@@ -51,6 +51,10 @@
     "message": "Kopieren",
     "description": "tooltip for copy button in search result"
   },
+  "searchResultCopyUsernameTooltip": {
+    "message": "Benutzername kopieren",
+    "description": "tooltip for copy username button in search result"
+  },
   "searchResultDetailsTooltip": {
     "message": "Details anzeigen",
     "description": "tooltip for details button in search result"
