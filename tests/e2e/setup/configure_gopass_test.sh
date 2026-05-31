@@ -30,6 +30,12 @@ DEV_ID="nmlipgjeejicjaapphmmonmlfkecmnoi"
 # Use dev package extension ID in browser manifest
 sed -i 's/'$PROD_ID'/'$DEV_ID'/g' "$MANIFEST_PATH"
 
+# Copy the manifest to Chrome for Testing for amd64
+# https://playwright.dev/docs/release-notes#chrome-for-testing
+CFT_MANIFEST_DIR="/etc/opt/chrome_for_testing/native-messaging-hosts"
+mkdir -p "$CFT_MANIFEST_DIR"
+cp "$MANIFEST_PATH" "$CFT_MANIFEST_DIR/com.justwatch.gopass.json"
+
 # Enable debug logging in the wrapper script
 WRAPPER_PATH="$(jq -r '.path' "$MANIFEST_PATH")"
 sed -i 's/# export GOPASS_DEBUG_LOG/export GOPASS_DEBUG_LOG/g' "$WRAPPER_PATH"
