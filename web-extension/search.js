@@ -118,6 +118,14 @@ function _displaySearchResults(response, isHostQuery) {
         );
         entry.appendChild(
             _createSimpleSearchResultButton(
+                'copy_username',
+                item,
+                i18n.getMessage('searchResultCopyUsernameTooltip'),
+                _onEntryCopyUsername
+            )
+        );
+        entry.appendChild(
+            _createSimpleSearchResultButton(
                 'details',
                 item,
                 i18n.getMessage('searchResultDetailsTooltip'),
@@ -213,6 +221,22 @@ function _onEntryCopy(element) {
     );
 }
 
+function _onEntryCopyUsername(element) {
+    sendNativeAppMessage({ type: 'getLogin', entry: element.innerText }).then((response) => {
+        if (response.error) {
+            setStatusText(response.error);
+            return;
+        }
+        if (!response.username) {
+            setStatusText(i18n.getMessage('couldNotDetermineUsernameMessage'));
+            return;
+        }
+        navigator.clipboard
+            .writeText(response.username)
+            .then(() => _onLoginCredentialsDoCopyClipboard({}), logAndDisplayError);
+    }, logAndDisplayError);
+}
+
 function _onEntryOpen(element) {
     browser.runtime
         .sendMessage({ type: 'OPEN_TAB', entry: element.innerText })
@@ -256,5 +280,6 @@ try {
         searchHost,
         _onEntryAction,
         _onSearchResults,
+        _onEntryCopyUsername,
     };
 } catch (_) {}

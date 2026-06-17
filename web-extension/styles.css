@@ -126,6 +126,7 @@ input {
 }
 
 .entry .copy,
+.entry .copy_username,
 .entry .open,
 .entry .details {
     display: none;
@@ -153,18 +154,25 @@ input {
     background-image: url('icons/si-glyph-document-copy.svg');
 }
 
-.entry .open {
+.entry .copy_username {
     right: 65px;
+    background-image: url('icons/si-glyph-person.svg');
+}
+
+.entry .open {
+    right: 95px;
     background-image: url('icons/si-glyph-arrow-forward.svg');
 }
 
 .entry:hover .copy,
+.entry:hover .copy_username,
 .entry:hover .open,
 .entry:hover .details {
     display: block;
 }
 
 .entry .copy:hover,
+.entry .copy_username:hover,
 .entry .open:hover,
 .entry .details:hover {
     opacity: 0.6;
@@ -173,6 +181,7 @@ input {
 }
 
 .entry .copy:active,
+.entry .copy_username:active,
 .entry .open:active,
 .entry .details:active {
     opacity: 0.6;
