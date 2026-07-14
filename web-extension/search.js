@@ -10,7 +10,6 @@ function initSearch() {
 
     setTimeout(() => {
         input.focus();
-        _onSearchInputEvent();
     }, 200);
 }
 
@@ -30,13 +29,8 @@ function _onSearchInputEvent() {
     if (input.value.length) {
         search(input.value);
     } else {
-        // covers both chrome and ff
-        browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
-            const url = new URL(tabs[0].url);
-            const host = url.host;
-            document.getElementById('search_input').value = host;
-            searchHost(host);
-        }, console.error);
+        const currentHost = urlDomain(currentPageUrl);
+        searchHost(currentHost);
     }
 }
 
@@ -91,7 +85,7 @@ function search(term) {
 
 function searchHost(host) {
     browser.storage.local.remove(LAST_DOMAIN_SEARCH_PREFIX + host);
-    // document.getElementById('search_input').value = '';
+    document.getElementById('search_input').value = '';
 
     console.log('Searching for host ' + host);
     return _doSearch(host, true);
@@ -102,7 +96,8 @@ function _faviconUrl() {
         return currentTabFavIconUrl;
     }
 
-    return 'icons/si-glyph-key-2.svg';
+    // No matching favicon: the stylesheet provides the theme-aware default key icon
+    return null;
 }
 
 function _displaySearchResults(response, isHostQuery) {
@@ -146,16 +141,18 @@ const _createAnotherEntryButton = () =>
         switchToCreateNewDialog
     );
 
-const _createSearchResultLoginButton = (item, isHostQuery) =>
-    createButtonWithCallback(
-        {
-            className: 'login',
-            textContent: item,
-            title: i18n.getMessage('searchResultLoginTooltip'),
-            style: `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-        },
-        _onEntryAction
-    );
+const _createSearchResultLoginButton = (item, isHostQuery) => {
+    const attributes = {
+        className: 'login',
+        textContent: item,
+        title: i18n.getMessage('searchResultLoginTooltip'),
+    };
+    const faviconUrl = isHostQuery ? _faviconUrl() : null;
+    if (faviconUrl) {
+        attributes.style = `background-image: url('${faviconUrl}')`;
+    }
+    return createButtonWithCallback(attributes, _onEntryAction);
+};
 
 const _createSimpleSearchResultButton = (className, text, title, clickHandler) =>
     createButtonWithCallback({ className, title, textContent: text }, (event) => clickHandler(event.target));
@@ -239,7 +236,11 @@ function _onLoginCredentialsDoCopyClipboard(response) {
     }
 
     const content = document.getElementById('content');
-    content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
+    content.innerHTML = '';
+    const copied = document.createElement('div');
+    copied.className = 'copied';
+    copied.textContent = i18n.getMessage('copiedToClipboardMessage');
+    content.appendChild(copied);
     setTimeout(window.close, 1000);
 }
 

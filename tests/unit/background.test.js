@@ -187,6 +187,40 @@ describe('background', () => {
                 });
             });
 
+            test('fetches current_totp via getData and includes it in the fill message', () => {
+                expect.assertions(2);
+                global.sendNativeAppMessage.mockImplementation((message) => {
+                    if (message.type === 'getLogin') {
+                        return Promise.resolve({ username: 'holla', password: 'waldfee' });
+                    }
+                    return Promise.resolve({ url: 'https://some.url', current_totp: '123456' });
+                });
+                return loginTabMessage().then(() => {
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        [{ type: 'getLogin', entry: 'some/entry' }],
+                        [{ type: 'getData', entry: 'some/entry' }],
+                    ]);
+                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                        [42, { login: 'holla', password: 'waldfee', otp: '123456', type: 'FILL_LOGIN_FIELDS' }],
+                    ]);
+                });
+            });
+
+            test('getData failure does not block the credential fill', () => {
+                expect.assertions(1);
+                global.sendNativeAppMessage.mockImplementation((message) => {
+                    if (message.type === 'getLogin') {
+                        return Promise.resolve({ username: 'holla', password: 'waldfee' });
+                    }
+                    return Promise.reject(new Error('no data'));
+                });
+                return loginTabMessage().then(() => {
+                    expect(global.browser.tabs.sendMessage.mock.calls).toEqual([
+                        [42, { login: 'holla', password: 'waldfee', type: 'FILL_LOGIN_FIELDS' }],
+                    ]);
+                });
+            });
+
             test('sends browser tab submit after fill message if setting is on', () => {
                 expect.assertions(5);
                 return loginTabMessage().then(() => {

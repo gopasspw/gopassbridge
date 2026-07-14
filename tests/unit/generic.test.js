@@ -118,10 +118,10 @@ describe('localStorage wrappers', () => {
 
     test('get key', () => {
         expect.assertions(1);
-        return generic.setLocalStorageKey('muh', 123).then(() => {
-            return generic.getLocalStorageKey('muh').then((value) => {
-                expect(value).toBe(123);
-            });
+        // jest-webextension-mock 3.9.x resolveKey is broken for string keys, mock explicitly
+        global.browser.storage.local.get.mockResolvedValueOnce({ muh: 123 });
+        return generic.getLocalStorageKey('muh').then((value) => {
+            expect(value).toBe(123);
         });
     });
 });

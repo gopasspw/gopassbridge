@@ -1,26 +1,46 @@
-@media (prefers-color-scheme: light) {
-    :root {
-        --background-color: #fff;
-        --text-color: #000;
-        --link-color: #004650;
-    }
+:root {
+    --background-color: #ffffff;
+    --text-color: #1f2328;
+    --border-color: #d1d9e0;
+    --accent-color: #0e7e8f;
+    --link-color: #0e7e8f;
 }
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-color: #23222b;
-        --text-color: #ddd;
-        --link-color: #bde;
+        --background-color: #15181b;
+        --text-color: #e6e8ea;
+        --border-color: #343b42;
+        --accent-color: #58c5d6;
+        --link-color: #58c5d6;
     }
 }
 
 body {
     min-width: 600px;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        sans-serif;
+    line-height: 1.618;
 }
 
 body,
 input {
     background-color: var(--background-color);
     color: var(--text-color);
+}
+
+input {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font: inherit;
+}
+
+input:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: -1px;
 }
 
 a {

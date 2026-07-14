@@ -238,7 +238,6 @@ describe('search method', () => {
                             {
                                 className: 'login',
                                 textContent: 'some/entry',
-                                style: "background-image: url('icons/si-glyph-key-2.svg')",
                                 title: '__KEY_searchResultLoginTooltip__',
                             },
                             search._onEntryAction,
@@ -351,7 +350,6 @@ describe('search method', () => {
                         {
                             className: 'login',
                             textContent: 'some\\entry',
-                            style: "background-image: url('icons/si-glyph-key-2.svg')",
                             title: '__KEY_searchResultLoginTooltip__',
                         },
                         search._onEntryAction,
@@ -369,7 +367,6 @@ describe('search method', () => {
                         {
                             className: 'login',
                             textContent: 'some/entry',
-                            style: "background-image: url('icons/si-glyph-key-2.svg')",
                             title: '__KEY_searchResultLoginTooltip__',
                         },
                         search._onEntryAction,
@@ -407,7 +404,6 @@ describe('search method', () => {
                         {
                             className: 'login',
                             textContent: 'some/entry',
-                            style: "background-image: url('icons/si-glyph-key-2.svg')",
                             title: '__KEY_searchResultLoginTooltip__',
                         },
                         search._onEntryAction,

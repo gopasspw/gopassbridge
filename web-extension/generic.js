@@ -23,9 +23,7 @@ function checkVersion() {
     }
 
     return sendNativeAppMessage({ type: 'getVersion' }).then((response) => {
-        let major = REQUIRED_GOPASS_VERSION[0];
-        let minor = REQUIRED_GOPASS_VERSION[1];
-        let patch = REQUIRED_GOPASS_VERSION[2];
+        const [major, minor, patch] = REQUIRED_GOPASS_VERSION;
         if (
             response.major > major ||
             (response.major === major &&
@@ -50,7 +48,8 @@ function getSettings() {
 
 function sendNativeAppMessage(message) {
     const app = 'com.justwatch.gopass';
-    console.log(JSON.stringify(message));
+    // Log only the message type: create/copy messages contain secrets
+    console.log('Sending native message of type', message.type);
     return browser.runtime.sendNativeMessage(app, message);
 }
 

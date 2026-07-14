@@ -14,6 +14,7 @@ global.currentTabId = 42;
 global.currentPageUrl = 'http://other.domain';
 global.re_weburl = new RegExp('https://.*');
 global.logAndDisplayError = jest.fn();
+global.logError = jest.fn();
 global.openURLOnEvent = jest.fn((event) => {
     event.preventDefault();
 });
@@ -68,7 +69,7 @@ describe('onEntryData', () => {
             expect.assertions(2);
             return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
                 expect(document.getElementsByClassName('detail-key')[0].innerText).toBe('hallo:');
-                expect(document.getElementsByClassName('detail-clickable-value')[0].innerText).toBe('welt');
+                expect(document.getElementsByClassName('detail-clickable-value')[0].textContent).toBe('welt');
             });
         });
 
@@ -133,12 +134,64 @@ describe('onEntryData', () => {
 
                     let values = document.getElementsByClassName('detail-clickable-value');
                     expect(values.length).toBe(3);
-                    expect(values[0].innerText).toBe('waldfee');
-                    expect(values[1].innerText).toBe('wald');
-                    expect(values[2].innerText).toBe('fee');
+                    expect(values[0].textContent).toBe('waldfee');
+                    expect(values[1].textContent).toBe('wald');
+                    expect(values[2].textContent).toBe('fee');
 
                     expect(document.getElementsByClassName('detail-nested').length).toBe(2);
                 });
+        });
+    });
+
+    describe('draggable password row', () => {
+        beforeEach(() => {
+            global.sendNativeAppMessage.mockReset();
+        });
+
+        test('prepends masked draggable password entry from getLogin', () => {
+            expect.assertions(4);
+            global.sendNativeAppMessage.mockResolvedValueOnce({ username: 'user', password: 'supersecret' });
+            return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
+                return Promise.resolve().then(() => {
+                    const detailView = document.getElementsByClassName('detail-view')[0];
+                    const firstKey = detailView.getElementsByClassName('detail-key')[0];
+                    expect(global.sendNativeAppMessage.mock.calls).toEqual([
+                        [{ type: 'getLogin', entry: 'secret/entry' }],
+                    ]);
+                    expect(firstKey.innerText).toBe('password:');
+                    const value = firstKey.parentElement.getElementsByClassName('detail-clickable-value')[0];
+                    expect(value.textContent).toBe('\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022');
+                    expect(value.getAttribute('draggable')).toBe('true');
+                });
+            });
+        });
+
+        test('dragstart exposes the real password, click copies it', () => {
+            expect.assertions(2);
+            global.sendNativeAppMessage.mockResolvedValueOnce({ username: 'user', password: 'supersecret' });
+            return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
+                return Promise.resolve().then(() => {
+                    const detailView = document.getElementsByClassName('detail-view')[0];
+                    const value = detailView.getElementsByClassName('detail-clickable-value')[0];
+                    const setData = jest.fn();
+                    const event = new window.Event('dragstart', { bubbles: true });
+                    event.dataTransfer = { setData };
+                    value.dispatchEvent(event);
+                    expect(setData.mock.calls).toEqual([['text/plain', 'supersecret']]);
+                    value.click();
+                    expect(global.copyToClipboard.mock.calls).toEqual([['supersecret']]);
+                });
+            });
+        });
+
+        test('does not add a password row on getLogin error', () => {
+            expect.assertions(1);
+            global.sendNativeAppMessage.mockResolvedValueOnce({ error: 'broken' });
+            return details.onEntryData(loginElement, { hallo: 'welt' }).then(() => {
+                return Promise.resolve().then(() => {
+                    expect(document.getElementsByClassName('detail-key').length).toBe(1);
+                });
+            });
         });
     });
 

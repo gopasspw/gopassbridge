@@ -2,12 +2,27 @@
 
 let currentAuthRequest = null;
 
-function _processLoginTabMessage(entry, tab) {
+function _getLogin(entry) {
     return sendNativeAppMessage({ type: 'getLogin', entry: entry }).then((response) => {
         if (response.error) {
             throw new Error(response.error);
         }
+        return response;
+    });
+}
 
+function _getCurrentTotp(entry) {
+    // getLogin does not include OTP data; gopass-jsonapi only provides the current
+    // TOTP code via getData as 'current_totp'. Failures here must never block the
+    // username/password fill.
+    return Promise.resolve(sendNativeAppMessage({ type: 'getData', entry: entry })).then(
+        (data) => (data && !data.error && data.current_totp) || undefined,
+        () => undefined
+    );
+}
+
+function _processLoginTabMessage(entry, tab) {
+    return Promise.all([_getLogin(entry), _getCurrentTotp(entry)]).then(([response, otp]) => {
         if (response.username === urlDomain(tab.url)) {
             throw new Error(i18n.getMessage('couldNotDetermineUsernameMessage'));
         }
@@ -17,6 +32,7 @@ function _processLoginTabMessage(entry, tab) {
                 type: 'FILL_LOGIN_FIELDS',
                 login: response.username,
                 password: response.password,
+                otp: otp,
             })
             .then(() => {
                 return executeOnSetting('submitafterfill', () => {

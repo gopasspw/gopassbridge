@@ -380,3 +380,145 @@ for (const page in pages) {
         });
     });
 }
+
+describe('OTP field handling', () => {
+    beforeEach(() => {
+        heightMockReturn = 10;
+        widthMockReturn = 50;
+    });
+
+    describe('login form with an OTP input', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <input id='login' type='text' class='test-login'>
+                    <input type='password' class='test-password'>
+                    <input id='otp-code' type='text' class='test-otp'>
+                    <input id='submit' type='submit'>
+                </form>`;
+        });
+
+        test('marks login, password and otp fields', () => {
+            content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+            expectLoginAndPassword();
+            expectClassHasBorder('test-otp');
+        });
+
+        test('fills otp value along with login and password', () => {
+            content.processMessage({
+                type: 'FILL_LOGIN_FIELDS',
+                login: 'someuser',
+                password: 'mypassword',
+                otp: '123456',
+            });
+            expectLoginAndPasswordHaveValues('someuser', 'mypassword');
+            expectClassHasValue('test-otp', '123456');
+        });
+
+        test('does not touch otp field when no otp value is provided', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'someuser', password: 'mypassword' });
+            expectClassHasValue('test-otp', '');
+        });
+    });
+
+    describe('detection by autocomplete attribute', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <input name='challenge' autocomplete='one-time-code' type='tel' class='test-otp'>
+                    <input id='submit' type='submit'>
+                </form>`;
+        });
+
+        test('marks otp field', () => {
+            content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+            expectClassHasBorder('test-otp');
+        });
+
+        test('fills otp field', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pass', otp: '654321' });
+            expectClassHasValue('test-otp', '654321');
+        });
+    });
+
+    describe('detection of standalone 2fa page by name attribute', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <input name='two-factor-code' type='text' class='test-otp'>
+                    <input id='submit' type='submit'>
+                </form>`;
+        });
+
+        test('fills otp field', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pass', otp: '111222' });
+            expectClassHasValue('test-otp', '111222');
+        });
+    });
+
+    describe('focused otp input wins', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <input id='mfa' name='mfa' type='text' class='test-otp'>
+                    <input id='submit' type='submit'>
+                </form>`;
+            document.getElementById('mfa').focus();
+        });
+
+        test('fills the focused otp field', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pass', otp: '999000' });
+            expectClassHasValue('test-otp', '999000');
+        });
+    });
+
+    describe('split single-digit otp inputs', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <div class='otp-boxes'>
+                        <input maxlength='1' type='tel' class='digit-0'>
+                        <input maxlength='1' type='tel' class='digit-1'>
+                        <input maxlength='1' type='tel' class='digit-2'>
+                        <input maxlength='1' type='tel' class='digit-3'>
+                        <input maxlength='1' type='tel' class='digit-4'>
+                        <input maxlength='1' type='tel' class='digit-5'>
+                    </div>
+                    <input id='submit' type='submit'>
+                </form>`;
+        });
+
+        test('distributes otp digits over the boxes', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pass', otp: '135790' });
+            '135790'.split('').forEach((digit, index) => {
+                expectClassHasValue(`digit-${index}`, digit);
+            });
+        });
+
+        test('does not fill boxes when otp length does not match', () => {
+            content.processMessage({ type: 'FILL_LOGIN_FIELDS', login: 'user', password: 'pass', otp: '12345678' });
+            expectClassHasValue('digit-0', '');
+        });
+    });
+
+    describe('login form without any otp field', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+                <form id='form' action='/session' method='post'>
+                    <input id='login' type='text' class='test-login'>
+                    <input type='password' class='test-password'>
+                    <input id='submit' type='submit'>
+                </form>`;
+        });
+
+        test('fill with otp value does not break login/password fill', () => {
+            content.processMessage({
+                type: 'FILL_LOGIN_FIELDS',
+                login: 'someuser',
+                password: 'mypassword',
+                otp: '123456',
+            });
+            expectLoginAndPasswordHaveValues('someuser', 'mypassword');
+        });
+    });
+});

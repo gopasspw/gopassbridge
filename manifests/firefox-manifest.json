@@ -1,32 +1,33 @@
 {
-
   "manifest_version": 2,
   "short_name": "gopassbridge",
   "name": "Gopass Bridge",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "__MSG_extensionDescription__",
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/gopasspw/gopassbridge",
   "incognito": "spanning",
-
   "icons": {
     "48": "icons/gopassbridge-48.png",
     "96": "icons/gopassbridge-96.png"
   },
-
   "browser_specific_settings": {
     "gecko": {
       "id": "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}",
-      "strict_min_version": "79.0"
+      "strict_min_version": "79.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
     }
   },
-
   "content_scripts": [
     {
       "matches": [
-          "http://*/*",
-          "https://*/*"
-        ],
+        "http://*/*",
+        "https://*/*"
+      ],
       "js": [
         "vendor/browser-polyfill.js",
         "generic.js",
@@ -34,7 +35,6 @@
       ]
     }
   ],
-
   "background": {
     "scripts": [
       "vendor/browser-polyfill.js",
@@ -43,14 +43,11 @@
       "background.js"
     ]
   },
-
   "options_ui": {
     "browser_style": true,
     "page": "options.html"
   },
-
   "default_locale": "en",
-
   "browser_action": {
     "browser_style": true,
     "default_icon": {
@@ -60,7 +57,6 @@
     "default_title": "__MSG_browserActionTitle__",
     "default_popup": "gopassbridge.html"
   },
-
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
@@ -68,7 +64,6 @@
       }
     }
   },
-
   "permissions": [
     "<all_urls>",
     "activeTab",
