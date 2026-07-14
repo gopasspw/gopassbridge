@@ -1,45 +1,45 @@
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
 
-const fs = require('fs');
-
-global.armSpinnerTimeout = jest.fn();
-global.sendNativeAppMessage = jest.fn();
-global.sendNativeAppMessage.mockResolvedValue({});
-global.getSettings = jest.fn();
-global.getSettings.mockResolvedValue({ appendlogintoname: true });
-global.switchToSearch = jest.fn();
-global.setStatusText = jest.fn();
-global.urlDomain = jest.fn(() => 'some.domain');
-global.searchHost = jest.fn();
-global.logAndDisplayError = jest.fn();
-global.currentPageUrl = 'http://some.domain';
-global.searchTerm = '';
-global.i18n = {
-    getMessage: jest.fn((key) => {
-        return `__MSG_${key}__`;
-    }),
-};
-
-document.body.innerHTML = fs.readFileSync(`${__dirname}/../../web-extension/gopassbridge.html`);
-require('create.js');
-
-let mockEvent, promise;
-const create = window.tests.create;
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 describe('create', () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+    let create;
+
+    beforeEach(async () => {
+        vi.stubGlobal('armSpinnerTimeout', vi.fn());
+        vi.stubGlobal('sendNativeAppMessage', vi.fn());
+        vi.stubGlobal('getSettings', vi.fn());
+        global.getSettings.mockResolvedValue({ appendlogintoname: true });
+        vi.stubGlobal('switchToSearch', vi.fn());
+        vi.stubGlobal('setStatusText', vi.fn());
+        vi.stubGlobal(
+            'urlDomain',
+            vi.fn(() => 'domain.test')
+        );
+        vi.stubGlobal('searchHost', vi.fn());
+        vi.stubGlobal('logAndDisplayError', vi.fn());
+        vi.stubGlobal('currentPageUrl', 'http://domain.test');
+        vi.stubGlobal('searchTerm', '');
+
+        document.body.innerHTML = fs.readFileSync(
+            path.join(import.meta.dirname, '../../web-extension/gopassbridge.html'),
+            'utf8'
+        );
+        create = await import('gopassbridge/web-extension/create.js');
     });
 
     test('doAbort switches to search', () => {
         create.onDoAbort();
         expect(global.switchToSearch).toHaveBeenCalledTimes(1);
-        global.switchToSearch.mockReset();
     });
 
     describe('onDoCreate', () => {
+        let mockEvent;
+        let promise;
+
         beforeEach(() => {
-            mockEvent = { preventDefault: jest.fn() };
+            mockEvent = { preventDefault: vi.fn() };
             global.sendNativeAppMessage.mockResolvedValue({});
             promise = create.onDoCreate(mockEvent);
         });
@@ -68,12 +68,27 @@ describe('create', () => {
             ]);
         });
 
-        test('starts query after successful finishing', () => {
-            expect.assertions(2);
-            promise.then(() => {
-                expect(global.searchHost).toHaveBeenCalledTimes(1);
-                expect(global.getSettings).toHaveBeenCalledTimes(4);
+        test('sends native message without appended login if setting disabled', async () => {
+            vi.stubGlobal('getSettings', vi.fn().mockResolvedValue({ appendlogintoname: false }));
+
+            await create.onDoCreate(mockEvent);
+
+            const lastCallArgs = global.sendNativeAppMessage.mock.lastCall;
+            expect(lastCallArgs[0]).toEqual({
+                entry_name: '',
+                generate: true,
+                length: 24,
+                login: '',
+                password: '',
+                type: 'create',
+                use_symbols: true,
             });
+        });
+
+        test('starts query after successful finishing', async () => {
+            await promise;
+            expect(global.searchHost).toHaveBeenCalledTimes(1);
+            expect(global.getSettings).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -99,10 +114,6 @@ describe('create', () => {
         describe('response with error', () => {
             beforeEach(() => {
                 create.onCreateResult({ error: 'some error' });
-            });
-
-            afterEach(() => {
-                global.setStatusText.mockClear();
             });
 
             test('switches to search', () => {
@@ -138,7 +149,7 @@ describe('create', () => {
 
             test('has no value and placeholder is set to autogenerate', () => {
                 expect(password.value).toBe('');
-                expect(password.placeholder).toBe('__MSG_createPasswordAutogeneratePlaceholder__');
+                expect(password.placeholder).toBe('__translated_createPasswordAutogeneratePlaceholder__');
             });
 
             test('length and use symbols are enabled', () => {
@@ -166,7 +177,7 @@ describe('create', () => {
 
             test('has value and placeholder is set to autogenerate', () => {
                 expect(password.value).toBe('muh');
-                expect(password.placeholder).toBe('__MSG_createPasswordPlaceholder__');
+                expect(password.placeholder).toBe('__translated_createPasswordPlaceholder__');
             });
 
             test('length and use symbols are disable', () => {
@@ -180,7 +191,7 @@ describe('create', () => {
         ['create_docreate', 'create_doabort', 'create_generate'].forEach((id) => {
             test(`registers eventhandler for ${id}`, () => {
                 const element = document.getElementById('create_docreate');
-                const mock = jest.spyOn(element, 'addEventListener');
+                vi.spyOn(element, 'addEventListener');
                 create.initCreate();
                 expect(element.addEventListener).toHaveBeenCalledTimes(1);
             });

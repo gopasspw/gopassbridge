@@ -1,7 +1,7 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
+
+permissions:
+  contents: read
 
 on: [push, pull_request]
 
@@ -13,22 +13,24 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [18.x, 20.x]
+        node-version: [22.x, 24.x]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn --frozen-lockfile --non-interactive --no-progress --check-files
+      - run: pnpm install
 
-      - run: npm run lint:prettier
+      - run: npm run lint:biome
 
-      - run: make package  # Includes auto-formatting, so we run "lint:prettier" check before
+      - run: make package  # Includes auto-formatting, so we run "lint:biome" check before
 
       - run: npm test
         env:
@@ -36,7 +38,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         # Docs: https://github.com/marketplace/actions/codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         if: ${{ env.CODECOV_TOKEN != '' }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -46,14 +46,14 @@ function _waitForTabLoaded(tab) {
     return new Promise((resolve, reject) => {
         let timeout;
         const waitForCreated = (tabId, changeInfo) => {
-            console.log('Tab ' + tab.id + ' changed ' + changeInfo);
+            console.log(`Tab ${tab.id} changed ${changeInfo}`);
             if (tabId === tab.id && changeInfo.status === 'complete') {
                 browser.tabs.onUpdated.removeListener(waitForCreated);
                 resolve(tab);
                 clearTimeout(timeout);
             }
         };
-        console.log('Status on initial tab load ' + tab.status + ' ' + tab.url);
+        console.log(`Status on initial tab load ${tab.status} ${tab.url}`);
         if (tab.status === 'complete' && tab.url && tab.url !== 'about:blank') {
             resolve(tab);
         } else {
@@ -108,7 +108,6 @@ function _processExtensionMessage(message) {
     switch (message.type) {
         case 'LOGIN_TAB':
             return _processLoginTabMessage(entry, tab);
-
         case 'OPEN_TAB':
             return _openEntry(entry);
 
@@ -151,7 +150,7 @@ function processMessageAndCatch(message, sender, sendResponse) {
  */
 function _onAuthRequired(details, chromeOnlyAsyncCallback) {
     console.log('Received request with pending authentication', details);
-    const popupUrl = getPopupUrl() + '?authUrl=' + encodeURIComponent(details.url);
+    const popupUrl = `${getPopupUrl()}?authUrl=${encodeURIComponent(details.url)}`;
 
     return new Promise((resolvePromise, _) => {
         const resolve = chromeOnlyAsyncCallback || resolvePromise;
@@ -246,11 +245,9 @@ function initBackground() {
 
 initBackground();
 
-if ('window' in globalThis) {
-    window.tests = {
-        background: {
-            initBackground,
-            processMessageAndCatch,
-        },
+try {
+    module.exports = {
+        initBackground,
+        processMessageAndCatch,
     };
-}
+} catch (_) {}

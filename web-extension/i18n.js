@@ -3,9 +3,11 @@
 var i18n = globalThis.i18n || chrome.i18n;
 
 function internationalize(text) {
-    return text.replace(/__MSG_([^_]+)__/g, (match, key) => i18n.getMessage(key));
+    return text.replace(/__MSG_([^_]+)__/g, (_, key) => i18n.getMessage(key));
 }
 
 document.getElementsByTagName('body')[0].innerHTML = internationalize(
     document.getElementsByTagName('body')[0].innerHTML
 );
+
+document.documentElement.lang = i18n.getMessage('extensionLocale') || 'en';
