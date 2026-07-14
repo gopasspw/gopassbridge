@@ -96,7 +96,8 @@ function _faviconUrl() {
         return currentTabFavIconUrl;
     }
 
-    return 'icons/si-glyph-key-2.svg';
+    // No matching favicon: the stylesheet provides the theme-aware default key icon
+    return null;
 }
 
 function _displaySearchResults(response, isHostQuery) {
@@ -140,16 +141,18 @@ const _createAnotherEntryButton = () =>
         switchToCreateNewDialog
     );
 
-const _createSearchResultLoginButton = (item, isHostQuery) =>
-    createButtonWithCallback(
-        {
-            className: 'login',
-            textContent: item,
-            title: i18n.getMessage('searchResultLoginTooltip'),
-            style: `background-image: url('${isHostQuery ? _faviconUrl() : 'icons/si-glyph-key-2.svg'}')`,
-        },
-        _onEntryAction
-    );
+const _createSearchResultLoginButton = (item, isHostQuery) => {
+    const attributes = {
+        className: 'login',
+        textContent: item,
+        title: i18n.getMessage('searchResultLoginTooltip'),
+    };
+    const faviconUrl = isHostQuery ? _faviconUrl() : null;
+    if (faviconUrl) {
+        attributes.style = `background-image: url('${faviconUrl}')`;
+    }
+    return createButtonWithCallback(attributes, _onEntryAction);
+};
 
 const _createSimpleSearchResultButton = (className, text, title, clickHandler) =>
     createButtonWithCallback({ className, title, textContent: text }, (event) => clickHandler(event.target));
@@ -233,7 +236,11 @@ function _onLoginCredentialsDoCopyClipboard(response) {
     }
 
     const content = document.getElementById('content');
-    content.innerHTML = `<div class="copied">${i18n.getMessage('copiedToClipboardMessage')}</div>`;
+    content.innerHTML = '';
+    const copied = document.createElement('div');
+    copied.className = 'copied';
+    copied.textContent = i18n.getMessage('copiedToClipboardMessage');
+    content.appendChild(copied);
     setTimeout(window.close, 1000);
 }
 

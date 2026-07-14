@@ -11,9 +11,8 @@ const DEFAULT_SETTINGS = {
     appendlogintoname: false,
 };
 
-globalThis.LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
-globalThis.LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
-
+const LAST_DOMAIN_SEARCH_PREFIX = 'LAST_DOMAIN_SEARCH_';
+const LAST_DETAIL_VIEW_PREFIX = 'LAST_DETAIL_VIEW_';
 const REQUIRED_GOPASS_VERSION = [1, 8, 5];
 
 let versionOK;
@@ -24,9 +23,7 @@ function checkVersion() {
     }
 
     return sendNativeAppMessage({ type: 'getVersion' }).then((response) => {
-        const major = REQUIRED_GOPASS_VERSION[0];
-        const minor = REQUIRED_GOPASS_VERSION[1];
-        const patch = REQUIRED_GOPASS_VERSION[2];
+        const [major, minor, patch] = REQUIRED_GOPASS_VERSION;
         if (
             response.major > major ||
             (response.major === major &&
@@ -51,7 +48,8 @@ function getSettings() {
 
 function sendNativeAppMessage(message) {
     const app = 'com.justwatch.gopass';
-    console.log(JSON.stringify(message));
+    // Log only the message type: create/copy messages contain secrets
+    console.log('Sending native message of type', message.type);
     return browser.runtime.sendNativeMessage(app, message);
 }
 
@@ -61,7 +59,7 @@ function logError(error) {
 
 function makeAbsolute(string) {
     if (!URL_PATTERN.test(string)) {
-        return `https://${string}`;
+        return 'https://' + string;
     }
     return string;
 }
@@ -97,7 +95,7 @@ function createButtonWithCallback(attributes, callback) {
 function urlDomain(urlString) {
     try {
         return new URL(urlString).hostname;
-    } catch (_) {
+    } catch (e) {
         return 'localhost';
     }
 }
@@ -135,19 +133,21 @@ function isChrome() {
     return browser.runtime.getURL('/').startsWith('chrome');
 }
 
-try {
-    module.exports = {
-        sendNativeAppMessage,
-        executeOnSetting,
-        urlDomain,
-        setLocalStorageKey,
-        getLocalStorageKey,
-        createButtonWithCallback,
-        showNotificationOnSetting,
-        getPopupUrl,
-        isChrome,
-        openURLOnEvent,
-        makeAbsolute,
-        checkVersion,
+if ('window' in globalThis) {
+    window.tests = {
+        generic: {
+            sendNativeAppMessage,
+            executeOnSetting,
+            urlDomain,
+            setLocalStorageKey,
+            getLocalStorageKey,
+            createButtonWithCallback,
+            showNotificationOnSetting,
+            getPopupUrl,
+            isChrome,
+            openURLOnEvent,
+            makeAbsolute,
+            checkVersion,
+        },
     };
-} catch (_) {}
+}

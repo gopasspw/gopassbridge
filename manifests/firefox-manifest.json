@@ -7,12 +7,10 @@
   "author": "Martin Hoefling",
   "homepage_url": "https://github.com/gopasspw/gopassbridge",
   "incognito": "spanning",
-
   "icons": {
     "48": "icons/gopassbridge-48.png",
     "96": "icons/gopassbridge-96.png"
   },
-
   "browser_specific_settings": {
     "gecko": {
       "id": "{eec37db0-22ad-4bf1-9068-5ae08df8c7e9}",
@@ -24,7 +22,6 @@
       }
     }
   },
-
   "content_scripts": [
     {
       "matches": [
@@ -38,7 +35,6 @@
       ]
     }
   ],
-
   "background": {
     "scripts": [
       "vendor/browser-polyfill.js",
@@ -47,14 +43,11 @@
       "background.js"
     ]
   },
-
   "options_ui": {
     "browser_style": true,
     "page": "options.html"
   },
-
   "default_locale": "en",
-
   "browser_action": {
     "browser_style": true,
     "default_icon": {
@@ -64,7 +57,6 @@
     "default_title": "__MSG_browserActionTitle__",
     "default_popup": "gopassbridge.html"
   },
-
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
@@ -72,7 +64,6 @@
       }
     }
   },
-
   "permissions": [
     "<all_urls>",
     "activeTab",
