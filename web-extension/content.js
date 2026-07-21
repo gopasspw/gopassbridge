@@ -19,6 +19,7 @@ const inputEventNames = ['click', 'focus', 'keypress', 'keydown', 'keyup', 'inpu
     // lowercasing and stripping separators, so 'one-time code', 'one_time_code' etc. all match.
     OTP_HINTS = [
         'otp',
+        'otc',
         'totp',
         '2fa',
         'mfa',
