@@ -17,9 +17,22 @@ function onEntryData(element, message) {
             const newDetailView = _detailViewFromMessage(message, settings);
             newDetailView.classList.add('detail-view');
             _insertAfter(newDetailView, element);
+            _prependPasswordEntry(newDetailView, element.innerText);
             setLocalStorageKey(LAST_DETAIL_VIEW_PREFIX + urlDomain(currentPageUrl), element.innerText);
         })
     );
+}
+
+function _prependPasswordEntry(detailView, entry) {
+    // The password is deliberately not part of getData responses; fetch it separately
+    // so it can be dragged into password fields (masked, never rendered as text).
+    return Promise.resolve(sendNativeAppMessage({ type: 'getLogin', entry: entry })).then((response) => {
+        if (!response || response.error || !response.password) {
+            return;
+        }
+        const entryElement = _createEntryElement('password', response.password, '••••••••••');
+        detailView.insertBefore(entryElement, detailView.firstChild);
+    }, logError);
 }
 
 function _insertAfter(newNode, referenceNode) {
@@ -68,10 +81,17 @@ function _createURLValueElement(value) {
     return valueElement;
 }
 
-function _createSimpleValueElement(value) {
+function _createSimpleValueElement(value, displayText) {
     const valueElement = document.createElement('span');
-    valueElement.innerText = value;
-    valueElement.addEventListener('click', _copyElementToClipboard);
+    const gripper = document.createElement('span');
+    gripper.classList.add('gripper');
+    valueElement.appendChild(gripper);
+    // textContent, never innerHTML: secret values must not be parsed as markup
+    valueElement.appendChild(document.createTextNode(displayText === undefined ? value : displayText));
+    valueElement.addEventListener('click', () => copyToClipboard(value));
+    valueElement.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData('text/plain', value);
+    });
     return valueElement;
 }
 
@@ -83,13 +103,17 @@ function _isURL(value) {
     return typeof value === 'string' && value.match(re_weburl);
 }
 
-function _createFlatValueElement(value) {
-    const valueElement = _isURL(value) ? _createURLValueElement(value) : _createSimpleValueElement(value);
+function _createFlatValueElement(value, displayText) {
+    const valueElement =
+        _isURL(value) && displayText === undefined
+            ? _createURLValueElement(value)
+            : _createSimpleValueElement(value, displayText);
     valueElement.classList.add('detail-clickable-value');
+    valueElement.setAttribute('draggable', 'true');
     return valueElement;
 }
 
-function _appendEntry(container, key, value) {
+function _createEntryElement(key, value, displayText) {
     const entryElement = document.createElement('li');
     const hasKey = key !== undefined && key !== null;
 
@@ -100,15 +124,16 @@ function _appendEntry(container, key, value) {
         entryElement.appendChild(keyElement);
     }
 
-    const valueElement = _isNested(value) ? _createNestedValueElement(value) : _createFlatValueElement(value);
+    const valueElement = _isNested(value)
+        ? _createNestedValueElement(value)
+        : _createFlatValueElement(value, displayText);
 
     entryElement.appendChild(valueElement);
-    container.appendChild(entryElement);
+    return entryElement;
 }
 
-function _copyElementToClipboard(event) {
-    const element = event.target;
-    copyToClipboard(element.innerText);
+function _appendEntry(container, key, value) {
+    container.appendChild(_createEntryElement(key, value));
 }
 
 function restoreDetailView() {
@@ -133,9 +158,9 @@ function restoreDetailView() {
     });
 }
 
-try {
-    module.exports = {
+window.tests = {
+    details: {
         onEntryData,
         restoreDetailView,
-    };
-} catch (_) {}
+    },
+};

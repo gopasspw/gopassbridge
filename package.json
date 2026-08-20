@@ -29,9 +29,8 @@
     "url": "https://github.com/gopasspw/gopassbridge/issues"
   },
   "homepage": "https://github.com/gopasspw/gopassbridge#readme",
-  "dependencies": {},
   "devDependencies": {
-    "@biomejs/biome": "^2.4.16",
+    "@biomejs/biome": "2.5.3",
     "@playwright/test": "1.60.0",
     "@vitest/coverage-v8": "^4.1.7",
     "jsdom": "^29.1.1",
