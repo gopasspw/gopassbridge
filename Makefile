@@ -1,7 +1,12 @@
+.PHONY: build-firefox run-firefox package release clean format web webextension-polyfill
+
 LOCAL_WEB_EXT=node_modules/.bin/web-ext
 
 run-firefox: develop
 		$(LOCAL_WEB_EXT) run -v --browser-console -s $(CURDIR)/firefox -u https://github.com/login
+
+build-firefox: package
+	cd firefox-release && web-ext build --artifacts-dir ..
 
 develop: format
 		rm -rf chrome firefox
