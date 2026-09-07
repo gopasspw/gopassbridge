@@ -289,6 +289,31 @@ describe('content', () => {
         });
     });
 
+    test('iframe with inaccessible document does not break login detection', () => {
+        jsdom.reconfigure({
+            url: 'https://www.somedomain.test/',
+        });
+        document.body.innerHTML =
+            "<form><input type='text' class='test-login'><input type='password' class='test-password'></form>" +
+            "<iframe src='https://www.somedomain.test/frame'></iframe>";
+
+        const iframe = document.querySelectorAll('iframe')[0];
+        // Simulates a sandboxed iframe or one redirected to another origin:
+        // src matches the page origin, but document access is denied.
+        Object.defineProperty(iframe, 'contentDocument', {
+            get() {
+                throw new DOMException(
+                    'Permission denied to access property "document" on cross-origin object',
+                    'SecurityError'
+                );
+            },
+        });
+
+        content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+
+        expectLoginAndPassword();
+    });
+
     describe('on sample login form with decoy password inputs with different tabIndex', () => {
         test('selects first input and password with larger tabindex if focused', () => {
             document.body.innerHTML = `

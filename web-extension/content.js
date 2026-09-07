@@ -50,6 +50,18 @@ function isVisible(element) {
     return elementStyle.visibility !== 'hidden';
 }
 
+function getIframeDocument(iframe) {
+    if (!iframe.src.startsWith(window.location.origin)) {
+        return null;
+    }
+    // A sandboxed or redirected iframe denies document access despite a matching src.
+    try {
+        return iframe.contentDocument;
+    } catch (_) {
+        return null;
+    }
+}
+
 function selectFocusedElement(parent) {
     if (
         parent.body === parent.activeElement ||
@@ -58,8 +70,9 @@ function selectFocusedElement(parent) {
     ) {
         let focusedElement = null;
         parent.querySelectorAll('iframe,frame').forEach((iframe) => {
-            if (iframe.src.startsWith(window.location.origin)) {
-                const focused = selectFocusedElement(iframe.contentWindow.document);
+            const iframeDocument = getIframeDocument(iframe);
+            if (iframeDocument) {
+                const focused = selectFocusedElement(iframeDocument);
                 if (focused) {
                     focusedElement = focused;
                 }
@@ -81,8 +94,9 @@ function selectVisibleElements(selector) {
     });
 
     document.querySelectorAll('iframe,frame').forEach((iframe) => {
-        if (iframe.src.startsWith(window.location.origin)) {
-            iframe.contentWindow.document.body.querySelectorAll(selector).forEach((element) => {
+        const iframeDocument = getIframeDocument(iframe);
+        if (iframeDocument) {
+            iframeDocument.body.querySelectorAll(selector).forEach((element) => {
                 if (isVisible(element)) {
                     visibleElements.push(element);
                 }
