@@ -26,6 +26,13 @@ function partialMatch(property, string) {
     return `${loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',')},input:not([type])${idstr}`;
 }
 
+function tokenMatch(property, string) {
+    const idstr = `[${property}~=${string} i]`;
+    return `${loginInputTypes.map((string) => `input[type=${string}]${idstr}`).join(',')},input:not([type])${idstr}`;
+}
+
+const standaloneLoginInputString = tokenMatch('autocomplete', 'username');
+
 const exactLoginInputIdString = loginInputIds.map(exactMatch.bind(null, 'id')).join(','),
     partialLoginInputIdString = loginInputIds.map(partialMatch.bind(null, 'id')).join(','),
     exactLoginInputNameString = loginInputIds.map(exactMatch.bind(null, 'name')).join(','),
@@ -179,6 +186,12 @@ function _getInputFieldsFromPasswordInput(passwordInput) {
     return { login: loginInput, password: passwordInput };
 }
 
+function getStandaloneLoginInput() {
+    const loginInputs = selectVisibleElements(standaloneLoginInputString);
+    const focusedInput = selectFocusedElement(document);
+    return loginInputs.find((element) => element === focusedInput) || loginInputs[0];
+}
+
 function getInputFields() {
     const focusedInputs = getInputFieldsFromFocus();
     const loginInput = focusedInputs.loginInput;
@@ -189,7 +202,8 @@ function getInputFields() {
     }
 
     return {
-        login: loginInput,
+        // Without a visible password field, this may be the first page of a username-first login
+        login: passwordInput ? loginInput : getStandaloneLoginInput(),
         password: passwordInput,
     };
 }
@@ -224,8 +238,9 @@ function tryLogIn() {
         passwortInputs[1].select();
     } else {
         window.requestAnimationFrame(() => {
-            if (passwortInputs.length === 1 && passwortInputs[0].form) {
-                const submitButton = selectFirstVisibleFormElement(passwortInputs[0].form, '[type=submit]');
+            const form = passwortInputs.length === 1 ? passwortInputs[0].form : getStandaloneLoginInput()?.form;
+            if (form) {
+                const submitButton = selectFirstVisibleFormElement(form, '[type=submit]');
                 if (submitButton) {
                     submitButton.click();
                 }

@@ -318,6 +318,71 @@ describe('content', () => {
         });
     });
 
+    describe('on username-first login form with hidden password input', () => {
+        beforeEach(() => {
+            document.body.innerHTML = `
+            <html><body><form id='form' action='/session' method='post'>
+                <input id='identifier' type='email' autocomplete='username' class='test-login'>
+                <input id='submit' type='submit'>
+                <input type='password' class='test-password' style='visibility: hidden'>
+            </form></body></html>`;
+        });
+
+        test('detects login only', () => {
+            content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+            expectClassHasBorder('test-login');
+            expectClassHasNoBorder('test-password');
+        });
+
+        test('inserts data to login field only', () => {
+            content.processMessage({
+                type: 'FILL_LOGIN_FIELDS',
+                login: 'someuser',
+                password: 'mypassword',
+            });
+            expectLoginAndPasswordHaveValues('someuser', '');
+        });
+
+        test('selects focused login if there are several', () => {
+            document.body.innerHTML = `
+            <html><body><form>
+                <input type='text' autocomplete='username' class='test-login-first'>
+                <input type='text' autocomplete='username webauthn' class='test-login-second'>
+            </form></body></html>`;
+            document.getElementsByClassName('test-login-second')[0].focus();
+            content.processMessage({ type: 'MARK_LOGIN_FIELDS' });
+            expectClassHasNoBorder('test-login-first');
+            expectClassHasBorder('test-login-second');
+        });
+
+        describe('submit', () => {
+            let onClick;
+
+            beforeEach(() => {
+                vi.stubGlobal('requestAnimationFrame', (fn) => {
+                    fn();
+                });
+                onClick = vi.fn();
+                document.addEventListener('click', onClick);
+                document.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                });
+            });
+
+            test('is clicked', () => {
+                content.processMessage({ type: 'TRY_LOGIN' });
+                expect(onClick.mock.calls.length).toBe(1);
+                expect(onClick.mock.calls[0][0].target.id).toBe('submit');
+            });
+
+            test('is not clicked if login input has no autocomplete=username', () => {
+                document.getElementById('identifier').removeAttribute('autocomplete');
+                content.processMessage({ type: 'TRY_LOGIN' });
+                expect(onClick.mock.calls.length).toBe(0);
+            });
+        });
+    });
+
     test('ignores password fields with specific ignored IDs', () => {
         document.body.innerHTML = `
             <html><body><form>
@@ -332,7 +397,7 @@ describe('content', () => {
         expectClassHasNoBorder('ignored_input');
     });
 
-    test('updateInputFields does not update standalone login field (requires password field)', () => {
+    test('updateInputFields does not update standalone login field without autocomplete=username', () => {
         document.body.innerHTML = `
              <html><body><form>
                  <input id='login' type='text'>
